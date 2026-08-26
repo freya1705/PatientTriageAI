@@ -3,8 +3,8 @@
 
 *Accenture Innovation Challenge 2026 — Round 2 Business Submission*  
 **Document Format**: Executive Business Proposal & Strategic Roadmap (PDF)  
-**Author**: Freya & Development Team  
-**Repository**: [https://github.com/freya1705/PatientTriage---Accenture-](https://github.com/freya1705/PatientTriage---Accenture-)  
+**Author**: Freya Jadhav  
+**Repository**: [https://github.com/freya1705/PatientTriageAI](https://github.com/freya1705/PatientTriageAI)  
 
 ---
 
@@ -99,7 +99,7 @@ $$\text{Action Priority Score} = (w_r \cdot \text{Risk} + \text{Urgency}) + (w_d
 | **Attending Emergency Physicians (MDs)** | Lack of visibility into which waiting patient has worsened since intake. | Real-time **Attention Gap Queue** ensures doctors are dispatched to the patient with the highest clinical risk-to-attention delta. |
 | **Nurse Supervisors / Charge Nurses** | Operational chaos during mass-casualty surges and shift handovers. | **3× Surge Mode** automatically compresses queue; persistent **Safety Summary Panel** provides instant hospital-wide situational awareness. |
 | **Chief Medical Officers (CMOs)** | Delayed diagnosis lawsuits, sentinel events in waiting rooms, accreditation risks. | **100% Downgrade Guardrails** and immutable **Append-Only Audit Trails** for malpractice defense. |
-| **Chief Financial Officers (CFOs)** | Uncompensated ICU transfers, LWBS revenue leakage, nurse turnover costs. | Delivers measurable **$3.82M annual net ROI** per 500-bed hospital facility. |
+| **Hospital CFOs** | Uncompensated ICU transfers, LWBS revenue leakage, nurse turnover costs. | Delivers measurable **$3.82M annual net ROI** per 500-bed hospital facility. |
 
 ---
 
@@ -177,4 +177,4 @@ PatientTriage.ai operates as a B2B Enterprise SaaS and On-Premise Licensed platf
 
 ---
 
-*PatientTriage.ai &bull; Accenture Innovation Challenge 2026 &bull; [GitHub Repository](https://github.com/freya1705/PatientTriage---Accenture-)*
+*PatientTriage.ai &bull; Accenture Innovation Challenge 2026 &bull; [GitHub Repository](https://github.com/freya1705/PatientTriageAI)*

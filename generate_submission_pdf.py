@@ -156,7 +156,7 @@ def build_pdf():
             Paragraph("<b>COMPETITION TRACK</b><br/>Round 2 Technical Prototype", body_style),
             Paragraph("<b>CORE STACK</b><br/>Python 3.13 / FastAPI / React 19", body_style),
             Paragraph("<b>DEPLOYMENT</b><br/>Edge / On-Premise Air-Gapped", body_style),
-            Paragraph("<b>REPOSITORY</b><br/>github.com/freya1705/PatientTriage---Accenture-", body_style)
+            Paragraph("<b>REPOSITORY</b><br/>github.com/freya1705/PatientTriageAI", body_style)
         ]
     ]
     meta_table = Table(meta_data, colWidths=[1.8 * inch, 1.8 * inch, 1.8 * inch, 2.1 * inch])

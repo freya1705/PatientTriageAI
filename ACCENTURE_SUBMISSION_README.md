@@ -40,7 +40,7 @@ The platform answers the single most critical operational question facing emerge
 > **“Who in the waiting room is no longer safe to keep waiting?”**
 
 ### Key Project Details:
-- **Repository**: [https://github.com/freya1705/PatientTriage---Accenture-](https://github.com/freya1705/PatientTriage---Accenture-)
+- **Repository**: [https://github.com/freya1705/PatientTriageAI](https://github.com/freya1705/PatientTriageAI)
 - **Competition Track**: Accenture Innovation Challenge 2026 — Round 2 Prototype Track
 - **License**: MIT Open Source License
 - **Deployment Profile**: Air-gapped, on-premise edge deployable with zero third-party cloud API dependencies.
@@ -263,7 +263,7 @@ PatientTriageAI/
 
 ### Step 1: Clone Repository
 ```bash
-git clone https://github.com/freya1705/PatientTriage---Accenture-.git
+git clone https://github.com/freya1705/PatientTriageAI.git
 cd PatientTriageAI
 ```
 
@@ -373,8 +373,8 @@ Evaluated across 20 synthetic clinical scenarios representing 5 systematic failu
 ## 16. Maintainers, Project Links & Regulatory Disclaimer
 
 ### Maintainers & Team
-- **Lead Developer & Healthcare Product Designer**: Freya & Team
-- **Project Repository**: [https://github.com/freya1705/PatientTriage---Accenture-](https://github.com/freya1705/PatientTriage---Accenture-)
+- **Lead Developer & Healthcare Product Designer**: Freya Jadhav
+- **Project Repository**: [https://github.com/freya1705/PatientTriageAI](https://github.com/freya1705/PatientTriageAI)
 
 ### Regulatory & Safety Disclaimer
 *PatientTriage.ai is a clinical decision-support research prototype developed for the Accenture Innovation Challenge 2026. All patient cohorts are synthetically generated. This system is not a certified medical device and does not replace professional clinical judgment.*
