@@ -54,7 +54,7 @@ class NumberedCanvas(canvas.Canvas):
         self.restoreState()
 
 def build_pdf():
-    pdf_path = os.path.join(os.path.dirname(__file__), "PatientTriage_AI_Accenture_Submission_README.pdf")
+    pdf_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "PatientTriage_AI_Accenture_Submission_README.pdf")
     doc = SimpleDocTemplate(
         pdf_path,
         pagesize=letter,
