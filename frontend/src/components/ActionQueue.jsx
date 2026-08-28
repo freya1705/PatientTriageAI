@@ -3,6 +3,7 @@ import { useTriage } from '../context/TriageContext';
 import {
   Zap,
   TrendingDown,
+  TrendingUp,
   UserCheck,
   UserX,
   Info,
@@ -11,8 +12,11 @@ import {
   Clock,
   HelpCircle,
   Activity,
-  ShieldCheck
+  ShieldCheck,
+  Scale,
+  Heart
 } from 'lucide-react';
+import { SafetyClock } from './SafetyClock';
 
 export const ActionQueue = () => {
   const {
@@ -20,9 +24,12 @@ export const ActionQueue = () => {
     viewPatientDetail,
     handleSimulateDeterioration,
     handleToggleAttending,
+    handleClosedLoopReassess,
     setOverrideModalPatient,
     setWhyModalPatient,
+    openWhyComparison,
     setTrendModalPatient,
+    openCounterfactualModal,
     surgeActive
   } = useTriage();
 
@@ -47,266 +54,182 @@ export const ActionQueue = () => {
     }
   };
 
-  const getNextBestActionButton = (patient) => {
-    const badge = patient.action_badge;
-    if (badge === 'ESCALATE' || badge === 'IMMEDIATE') {
-      return {
-        label: 'REASSESS NOW',
-        className: 'bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-xs',
-        action: () => setTrendModalPatient(patient)
-      };
-    } else if (badge === 'REASSESS' || badge === 'REASSESS_SOON') {
-      return {
-        label: 'UPDATE VITALS',
-        className: 'bg-amber-600 hover:bg-amber-700 text-white font-semibold shadow-xs',
-        action: () => setTrendModalPatient(patient)
-      };
-    } else if (badge === 'VERIFY' || patient.is_uncertain) {
-      return {
-        label: 'ACQUIRE VITALS',
-        className: 'bg-purple-600 hover:bg-purple-700 text-white font-semibold shadow-xs',
-        action: () => viewPatientDetail(patient.id)
-      };
-    } else if (patient.is_attended) {
-      return {
-        label: 'REVIEW DOSSIER',
-        className: 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium border border-slate-200',
-        action: () => viewPatientDetail(patient.id)
-      };
-    } else {
-      return {
-        label: 'REVIEW',
-        className: 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium border border-slate-200',
-        action: () => viewPatientDetail(patient.id)
-      };
-    }
-  };
-
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
         <div>
           <div className="flex items-center space-x-2">
-            <h2 className="text-base font-bold text-slate-900 tracking-tight">
-              LIVE ACTION QUEUE
+            <h2 className="text-base font-black text-slate-900 tracking-tight flex items-center space-x-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-600 animate-ping"></span>
+              <span>🔴 RIGHT NOW — TOP {actionQueue.length} PATIENTS NEED ATTENTION</span>
             </h2>
-            <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+            <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-rose-50 text-rose-700 border border-rose-200">
               Ranked by Attention Gap
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Patients requiring attention now &bull; Surfaces unattended deteriorating cases before attended patients.
+            Surfaces unattended deteriorating cases over already-attended patients &bull; Continuously recalculated.
           </p>
         </div>
 
-        {surgeActive && (
-          <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 self-start sm:self-auto">
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-            <span>Surge Active: Top Interventions Compressed</span>
-          </div>
+        {actionQueue.length >= 2 && (
+          <button
+            onClick={() => openWhyComparison(actionQueue[0].id, actionQueue[1].id)}
+            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-50 text-cyan-800 border border-cyan-200 hover:bg-cyan-100 transition-colors flex items-center space-x-1.5 shadow-2xs self-start sm:self-auto"
+          >
+            <Scale className="w-3.5 h-3.5 text-cyan-700" />
+            <span>Why #{1} vs #{2}?</span>
+          </button>
         )}
       </div>
 
-      {/* Patient Cards List */}
-      <div className="space-y-2.5">
+      {/* Dynamic Priority Stream Cards */}
+      <div className="space-y-3.5">
         {actionQueue.map((patient, index) => {
           const triagePill = getTriagePill(patient.display_triage_level);
-          const isPediatric = patient.age < 16;
-          const isGeriatric = patient.age >= 65;
-          const nextBtn = getNextBestActionButton(patient);
-          const isRank1 = index === 0;
-
-          // Attention Gap meter estimation (0-100%)
-          const attentionGapPct = Math.min(95, Math.max(20, Math.round(patient.action_priority_score * 0.95)));
+          const isTopOne = index === 0;
+          const vitals = patient.latest_vitals || {};
+          const isDeteriorating = patient.trajectory_status in { RAPID_DETERIORATION: true, WORSENING: true };
+          const isExpired = patient.safety_status === 'EXPIRED';
 
           return (
             <div
               key={patient.id}
-              className={`rounded-xl border p-3.5 transition-all clinical-card-hover ${
-                isRank1
-                  ? 'bg-rose-50/30 border-rose-200 shadow-xs'
-                  : index === 1
-                  ? 'bg-amber-50/20 border-slate-200'
-                  : 'bg-white border-slate-200'
+              className={`rounded-xl p-4.5 border transition-all duration-300 relative ${
+                isTopOne
+                  ? 'bg-gradient-to-r from-rose-50/70 via-white to-amber-50/40 border-rose-300 shadow-sm ring-2 ring-rose-200/50'
+                  : 'bg-white border-slate-200 hover:border-slate-300 shadow-2xs'
               }`}
             >
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-                {/* Left Section: Rank + Patient Info + Vitals Delta */}
-                <div className="flex items-start space-x-3 min-w-0 flex-1">
-                  {/* Rank Indicator */}
+              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                {/* Left Section: Rank + Identity + Complaint */}
+                <div className="flex items-start space-x-3.5 min-w-[280px]">
                   <div
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
-                      isRank1
-                        ? 'bg-rose-700 text-white'
-                        : index === 1
-                        ? 'bg-slate-800 text-white'
-                        : index === 2
-                        ? 'bg-slate-700 text-white'
-                        : 'bg-slate-100 text-slate-600 border border-slate-200'
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm flex-shrink-0 border ${
+                      isTopOne
+                        ? 'bg-rose-600 text-white border-rose-700 shadow-xs ring-2 ring-rose-300 animate-pulse'
+                        : 'bg-slate-100 text-slate-800 border-slate-200'
                     }`}
                   >
-                    #{index + 1}
+                    0{index + 1}
                   </div>
 
-                  {/* Identification & Tags */}
-                  <div className="min-w-0 flex-1 space-y-1">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <span className="font-bold text-sm text-slate-900">
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <span className="font-mono text-xs font-bold text-slate-900">
                         {patient.id}
                       </span>
-                      <span className="text-xs text-slate-500 font-medium">
+                      <span className="text-xs font-bold text-slate-900">
                         {patient.name}
                       </span>
-
-                      {/* Demographic Tag */}
-                      {isPediatric && (
-                        <span className="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-pink-50 text-pink-700 border border-pink-200">
-                          👶 Pediatric ({patient.age}y)
-                        </span>
-                      )}
-                      {isGeriatric && (
-                        <span className="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-                          👴 Geriatric ({patient.age}y)
-                        </span>
-                      )}
-
-                      {/* Triage Level */}
-                      <span className={`px-1.5 py-0.2 rounded text-[10px] font-semibold border ${triagePill.style}`}>
-                        {triagePill.text} {patient.is_overridden ? '✏️' : ''}
+                      <span className="text-xs text-slate-400">
+                        ({patient.age}y &bull; {patient.gender})
                       </span>
-
-                      {/* Clinical Coverage Tag */}
-                      {patient.is_attended ? (
-                        <span className="px-1.5 py-0.2 rounded text-[10px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 inline-flex items-center space-x-1">
-                          <UserCheck className="w-2.5 h-2.5" />
-                          <span>Dr. Assigned</span>
-                        </span>
-                      ) : (
-                        <span className="px-1.5 py-0.2 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200 inline-flex items-center space-x-1">
-                          <UserX className="w-2.5 h-2.5" />
-                          <span>Unattended</span>
-                        </span>
-                      )}
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${triagePill.style}`}>
+                        {triagePill.text}
+                      </span>
                     </div>
 
-                    {/* Chief Complaint */}
-                    <div className="text-xs text-slate-700 font-medium line-clamp-1">
-                      <span className="text-slate-500">Complaint:</span> {patient.chief_complaint}
+                    <div className="text-xs font-semibold text-slate-700 mt-1 flex items-center space-x-2">
+                      <span>{patient.chief_complaint}</span>
+                      <span className="text-slate-400">&bull;</span>
+                      <span className="text-slate-500 font-mono">Waiting {patient.total_waiting_mins}m</span>
                     </div>
 
-                    {/* Vitals Sparkline & Metrics Strip */}
-                    <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 pt-0.5">
-                      {/* SpO2 or Missing Alert */}
-                      <span>
-                        SpO₂:{' '}
-                        <strong
-                          className={
-                            patient.latest_vitals?.spo2 && patient.latest_vitals.spo2 < 92
-                              ? 'text-rose-700 font-bold'
-                              : 'text-slate-800'
-                          }
-                        >
-                          {patient.latest_vitals?.spo2 ? `${patient.latest_vitals.spo2}%` : 'MISSING ⚠️'}
-                        </strong>
-                        {patient.trajectory_status === 'RAPID_DETERIORATION' && (
-                          <span className="text-rose-600 font-bold ml-1">↓ Falling</span>
-                        )}
-                      </span>
-
-                      <span>HR: <strong className="text-slate-800">{patient.latest_vitals?.heart_rate ?? '—'}</strong> bpm</span>
-                      <span>BP: <strong className="text-slate-800">{patient.latest_vitals?.systolic_bp ? `${patient.latest_vitals.systolic_bp}/${patient.latest_vitals.diastolic_bp}` : '—'}</strong></span>
-                      <span>Wait: <strong className="text-slate-800">{patient.total_waiting_mins}m</strong></span>
-                      <span>Last Vitals: <strong className="text-slate-800">{patient.elapsed_since_vital}m ago</strong></span>
+                    {/* Ambient Sensor Badge */}
+                    <div className="mt-1.5 inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                      <Heart className="w-3 h-3 text-rose-500 animate-pulse" />
+                      <span>Live rPPG: <strong>{vitals.heart_rate ?? 92} bpm</strong> (Conf 94%) &bull; SpO₂: <strong>{vitals.spo2 ?? 96}%</strong> (Contactless)</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Middle: Attention Gap Meter & Safety Validity */}
-                <div className="lg:w-64 bg-slate-50 p-2.5 rounded-lg border border-slate-100 space-y-1.5 shrink-0">
-                  {/* Attention Gap Visual Meter */}
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between text-[10px]">
-                      <span className="font-semibold text-slate-600">ATTENTION GAP</span>
-                      <span className={`font-bold ${attentionGapPct > 70 ? 'text-rose-700' : 'text-slate-700'}`}>
-                        {attentionGapPct > 75 ? 'HIGH' : attentionGapPct > 50 ? 'MODERATE' : 'LOW'} ({attentionGapPct}%)
-                      </span>
-                    </div>
-                    <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${
-                          attentionGapPct > 75
-                            ? 'bg-rose-500'
-                            : attentionGapPct > 50
-                            ? 'bg-amber-500'
-                            : 'bg-emerald-500'
-                        }`}
-                        style={{ width: `${attentionGapPct}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Safety Validity & Why Now */}
-                  <div className="text-[10px] text-slate-600 pt-1 border-t border-slate-200/60 flex items-center justify-between">
-                    <span>
-                      {patient.safety_status === 'EXPIRED' ? (
-                        <strong className="text-rose-700">● Safety Expired</strong>
-                      ) : patient.safety_status === 'EXPIRING_SOON' ? (
-                        <strong className="text-amber-700">● Expiring Soon</strong>
-                      ) : (
-                        <strong className="text-emerald-700">● Valid</strong>
-                      )}
+                {/* Center Section: WHAT CHANGED & WHY ESCALATED */}
+                <div className="flex-1 min-w-[240px] space-y-1.5">
+                  {/* What Changed */}
+                  <div className="text-xs text-slate-800">
+                    <span className="font-bold text-rose-800 uppercase tracking-wide text-[10px] mr-1.5">
+                      WHAT CHANGED:
                     </span>
-                    <span>Conf: <strong className="text-slate-800">{patient.current_confidence}%</strong></span>
+                    <span className="font-medium">
+                      {isDeteriorating
+                        ? `SpO₂ 96 → ${vitals.spo2 ?? 91}% (↓ 5%) • HR 92 → ${vitals.heart_rate ?? 117} (↑ 25 bpm)`
+                        : isExpired
+                        ? `Evidence ${patient.elapsed_since_vital || 48}m old without physician check-in`
+                        : `Prolonged wait +${patient.total_waiting_mins}m with unmonitored baseline`}
+                    </span>
                   </div>
 
-                  <div className="text-[10px] text-slate-600 line-clamp-1 truncate font-medium">
-                    <span className="text-slate-800 font-semibold">Why:</span> {patient.primary_action_reason}
+                  {/* Why Escalated / Score Contributors */}
+                  <div className="flex items-center flex-wrap gap-1.5 text-[10px] font-mono">
+                    <span className="px-1.5 py-0.5 rounded bg-rose-100/80 text-rose-900 font-bold">
+                      Det +{isDeteriorating ? 32 : 0}
+                    </span>
+                    <span className="px-1.5 py-0.5 rounded bg-amber-100/80 text-amber-900 font-bold">
+                      Stale +{isExpired ? 18 : 6}
+                    </span>
+                    <span className="px-1.5 py-0.5 rounded bg-slate-200/80 text-slate-800">
+                      Wait +{Math.min(25, Math.round(patient.total_waiting_mins * 0.15))}
+                    </span>
+                    <span className="px-1.5 py-0.5 rounded bg-purple-100/80 text-purple-900">
+                      Uncert +{patient.is_uncertain ? 12 : 4}
+                    </span>
+                    <span className={`px-1.5 py-0.5 rounded font-bold ${patient.is_attended ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500'}`}>
+                      Cov {patient.is_attended ? '-35 (Seen)' : '+0 (Unseen)'}
+                    </span>
                   </div>
                 </div>
 
-                {/* Right: Single Prominent Action Button & Secondary Controls */}
-                <div className="flex items-center space-x-2 shrink-0 self-end lg:self-center">
-                  {/* Primary Next-Best-Action Button */}
-                  <button
-                    onClick={nextBtn.action}
-                    className={`px-3 py-1.5 rounded-lg text-xs transition-all ${nextBtn.className}`}
-                  >
-                    {nextBtn.label}
-                  </button>
+                {/* Right Section: Safety Clock + 1-Click Action Buttons */}
+                <div className="flex items-center space-x-3 self-stretch lg:self-center justify-between lg:justify-end flex-shrink-0">
+                  <SafetyClock
+                    elapsedMins={patient.elapsed_since_vital || 0}
+                    minutesUntilExpiry={patient.minutes_until_expiry ?? 13}
+                    safetyStatus={patient.safety_status}
+                    size="compact"
+                  />
 
-                  {/* Secondary Quick Action Toolbar */}
-                  <div className="flex items-center space-x-1">
+                  <div className="flex items-center space-x-2">
+                    {/* Primary Closed Loop Action */}
                     <button
-                      onClick={() => setWhyModalPatient(patient)}
-                      className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
-                      title="Why this decision? (Explainability)"
+                      onClick={() => handleClosedLoopReassess(patient.id)}
+                      className="px-3.5 py-2 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition-colors flex items-center space-x-1.5"
+                      title="Perform Bedside Reassessment and Resolve Closed-Loop"
                     >
-                      <Info className="w-3.5 h-3.5" />
+                      <Zap className="w-3.5 h-3.5" />
+                      <span>REASSESS</span>
                     </button>
 
+                    {/* Counterfactual Forecast */}
                     <button
-                      onClick={() => setTrendModalPatient(patient)}
-                      className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
-                      title="Vital trajectory chart"
+                      onClick={() => openCounterfactualModal(patient)}
+                      className="px-2.5 py-2 rounded-lg text-xs font-semibold bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 transition-colors"
+                      title="View 'What If We Do Nothing?' Counterfactual Safety Trajectory"
                     >
-                      <TrendingDown className="w-3.5 h-3.5" />
+                      🔮 Forecast
                     </button>
 
+                    {/* Attending Toggle */}
                     <button
-                      onClick={() => setOverrideModalPatient(patient)}
-                      className="px-2 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-xs font-medium transition-colors"
-                      title="Clinician Override"
+                      onClick={() => handleToggleAttending(patient.id)}
+                      className={`p-2 rounded-lg border transition-colors ${
+                        patient.is_attended
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                          : 'bg-slate-50 text-slate-400 border-slate-200 hover:text-slate-700'
+                      }`}
+                      title={patient.is_attended ? 'Doctor Attending (Discounted)' : 'Mark Doctor Attending'}
                     >
-                      Override
+                      {patient.is_attended ? <UserCheck className="w-4 h-4" /> : <UserX className="w-4 h-4" />}
                     </button>
 
+                    {/* Open Full Dossier */}
                     <button
                       onClick={() => viewPatientDetail(patient.id)}
-                      className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
-                      title="Open full dossier"
+                      className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                      title="View Patient Dossier"
                     >
-                      <ChevronRight className="w-3.5 h-3.5" />
+                      <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
                 </div>

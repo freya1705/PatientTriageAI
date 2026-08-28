@@ -1,7 +1,8 @@
 # 🎬 PatientTriage.ai — Official Prototype Demonstration Video Script
 **Accenture Innovation Challenge 2026 — Round 2 Video Submission**  
 **Target Duration:** 2 Minutes 45 Seconds (165 Seconds)  
-**Target Output Format:** MP4 / MOV (H.264 / AAC, 1080p/720p, < 20 MB)
+**Target Output Format:** MP4 / MOV (H.264 / AAC, 1080p/720p, < 20 MB)  
+**Participant:** Freya Jadhav (`freya1705`)
 
 ---
 
@@ -9,115 +10,113 @@
 
 | Scene | Time | Focus Area | Key Visual / Action on Screen |
 |---|---|---|---|
-| **Scene 1** | `0:00 – 0:30` | **The Hook & Problem** | Live Command Center & Right Safety Summary Panel |
-| **Scene 2** | `0:30 – 0:55` | **"Unknown ≠ Safe" Engine** | Rapid Intake Page & Missing Vitals Preset |
-| **Scene 3** | `0:55 – 1:30` | **The Hero Demo: Deterioration & Attention Gap** | Live Action Queue & "Simulate Vital Drop" *(2s Pause)* |
-| **Scene 4** | `1:30 – 1:55` | **Explainable AI & Clinician Governance** | Decision Rationale Modal & Override Audit Trail |
-| **Scene 5** | `1:55 – 2:25` | **Scalability: 3× Surge & Profiles** | 1-Click 🚨 3× Surge Mode & Hospital Profile Toggle |
-| **Scene 6** | `2:25 – 2:45` | **Measurable Impact & Closing** | Empirical Evaluation Matrix Page & GitHub Outro |
+| **Scene 1** | `0:00 – 0:20` | **The Hook & ED Control Tower** | 3 Giant Hero Numbers (47 Waiting, 6 Attention, 13m Window) + Status Ribbon |
+| **Scene 2** | `0:20 – 0:50` | **The Replay Demo: Dynamic Risk & Surge to #1** | Press `▶ START SIMULATION` → P-017 drops SpO₂ 96%→91% and surges #17 → #1 |
+| **Scene 3** | `0:50 – 1:20` | **Explainability & Counterfactual Safety** | "Why #1?" Breakdown + "What If We Do Nothing?" Trajectory Modal |
+| **Scene 4** | `1:20 – 1:50` | **Closed-Loop Action & Safety Outcome** | Click `[ REASSESS ]` → Risk drops 67→38 → Safety Outcome Screen (Time to Intervention 3m 42s) |
+| **Scene 5** | `1:50 – 2:20` | **Multi-Views: Nurse View & Floor Map** | Nurse Action View ("Next 5 Mins") & ED Pressure Map with Chairs/Bays |
+| **Scene 6** | `2:20 – 2:45` | **Patient Companion & Executive Outro** | Mobile QR Smart Transparency Portal + ROI ($3.82M Annual Net Impact) |
 
 ---
 
-## 🎙️ Complete Shot-by-Shot Video Script
+## 🎙️ Complete Word-for-Word Video Script
 
 ---
 
-### 📍 Scene 1: The Problem & The Core Hook (`0:00 – 0:30`)
+### 📍 Scene 1: The Problem & The ED Control Tower (`0:00 – 0:20`)
 - **Visual on Screen:**  
-  Start on the **Live Command Center** (`http://localhost:5173`). Show the crisp 3-zone cockpit: Left navigation rail, Center Live Action Queue, and Right persistent Safety Summary Panel.
+  Start on the **ED Safety Control Tower** (`http://localhost:5173`). Highlight the **3 Giant Hero Metrics**: `47 Patients Waiting`, `6 Requiring Attention`, `13 min Shortest Safety Window`, and the live state ribbon.
 - **Presenter Action:**  
-  Mouse slowly hovers over the header showing `● Monitoring 20 patients` and points to the waiting room census.
+  Cursor hovers over the 3 numbers and the live status ribbon showing `12 LOW RISK | 21 STABLE | 7 WATCH | 4 REASSESS | 2 ESCALATE | 1 UNCERTAIN`.
 - **Voiceover (Audio Track):**  
   > *"Welcome to PatientTriage.ai. In emergency medicine today, triage is treated as a one-time snapshot at the front door. But patients wait for hours, and risk continuously changes.*  
   >  
-  > *Traditional static systems fail because they only ask: 'Who was the sickest when they arrived?'  
-  > PatientTriage.ai shifts the paradigm to answer: **'Who is no longer safe to keep waiting?'**"*
+  > *Traditional EHRs leave the waiting room as a dangerous blind spot. PatientTriage.ai transforms the emergency department into an **Active Autonomous Safety Control Tower** that continuously decides: who needs attention, why, and what action should happen next."*
 
 ---
 
-### 📍 Scene 2: Uncertainty-as-Risk — "Unknown is NOT Safe" (`0:30 – 0:55`)
+### 📍 Scene 2: 🎬 ED Replay Mode — Dynamic Risk in Action (`0:20 – 0:50`)
 - **Visual on Screen:**  
-  Click **Rapid Intake** on the left sidebar. Click the demo preset button: **`⚠️ Incomplete Vitals (Missing SpO₂ & BP)`**.
+  Point to Patient **`P-017`** sitting at position **#17** in the morning census (`🟢 Stable, ESI 3, Risk 18`).
+- **Presenter Action (KEY DEMO SEQUENCE):**  
+  👉 Click the **`▶ START SIMULATION`** button on the Replay Simulation Bar.  
+  👉 Watch the clock advance from `10:00 AM → 11:21 AM`.  
+  👉 The Safety Clock for `P-017` counts down to `EXPIRED`.  
+  👉 Vital drop occurs: SpO₂ falls from $96\% \rightarrow 91\%$, Heart Rate jumps $92 \rightarrow 117\text{ bpm}$.  
+  👉 Watch `P-017` dynamically surge in real time from **#17 → #9 → #4 → #1** in the Live Action Queue!  
+  👉 Screen flashes `🔴 REASSESS NOW`.
+- **Voiceover (Audio Track):**  
+  > *"Here is the platform in live action. At 10:00 AM, Patient P-017 arrives with mild viral symptoms, triaged at Level 3, sitting at position #17.*  
+  >  
+  > *Watch what happens as we run our live ED Replay. As waiting time accumulates, the patient's Safety Clock expires. Suddenly, ambient sensors detect an acute drop in oxygen saturation from 96% down to 91%.*  
+  >  
+  > *Instead of remaining buried at #17, our Attention Gap engine instantly re-ranks P-017 straight to **Rank #1** — outranking attended trauma cases who already have doctors at their bedside."*
+
+---
+
+### 📍 Scene 3: Explainability & "Counterfactual Safety" (`0:50 – 1:20`)
+- **Visual on Screen:**  
+  Click **`Why #1 vs #2?`** button, then click **`🔮 Forecast`** on Patient `P-017`.
 - **Presenter Action:**  
-  Show the rapid intake form populate with missing vitals, and click **Assess & Admit to Waiting Queue**.
+  Show the **Score Decomposition Matrix** (Deterioration $+32$, Staleness $+18$, Waiting Hazard $+12$, Uncertainty $+8$, Coverage $+0 \rightarrow 70\text{ pts}$).  
+  Open the **Counterfactual Safety Modal** showing Path A (Inaction $\rightarrow$ risk climbing to 81, potential septic crash in 40 mins) vs Path B (Immediate Intervention $\rightarrow$ risk dropping to 38).
 - **Voiceover (Audio Track):**  
-  > *"Traditional systems make a fatal assumption: if a vital sign is missing, they default to low urgency and assume the patient is safe.*  
+  > *"Why did the system escalate P-017? With one click, clinicians see the exact mathematical waterfall.*  
   >  
-  > *In PatientTriage.ai, our Uncertainty-as-Risk Engine enforces the principle that **Unknown is NOT Safe**. Missing oxygen saturation or zero prior history immediately penalizes confidence, prevents false reassurance, and assigns a mandatory Next-Best-Action: **[ ACQUIRE VITALS ]**."*
+  > *Even more powerful is our **Counterfactual Safety Engine**. PatientTriage doesn't just ask 'Who is risky?' — it asks: **'Who becomes unsafe if we keep waiting?'**  
+  > If unattended for 20 more minutes, P-017 faces a projected risk score of 81 with imminent respiratory failure. But with immediate intervention, uncertainty collapses and risk drops to 38."*
 
 ---
 
-### 📍 Scene 3: The Killer Feature — Deterioration & Attention Gap (`0:55 – 1:30`)
+### 📍 Scene 4: Closed-Loop Action & Safety Outcome (`1:20 – 1:50`)
 - **Visual on Screen:**  
-  Navigate back to **Command Center**. Point out patient **`P-002`** (Marcus Vance — Attended STEMI with a doctor) vs. patient **`P-017`** (Grace Hopper — Unattended viral pneumonia in the waiting room).
-- **Presenter Action (KEY TRANSITION TIMING):**  
-  👉 **Pause cursor for 2 seconds** over `P-017` so judges clearly see her current lower rank and baseline SpO₂ of 96%.  
-  👉 Click the **`⚡ Simulate Vital Drop`** button.  
-  👉 **Pause cursor for 2 seconds** as `P-017`'s SpO₂ drops from $96\% \rightarrow 89\%$, and see `P-017` dynamically surge straight to **Rank #1** in the Live Action Queue with `🔴 RAPID DETERIORATION` and action `[ REASSESS NOW ]`.
-- **Voiceover (Audio Track):**  
-  > *"Here is our core differentiator: The **Attention Gap Engine**.*  
-  >  
-  > *Notice Patient P-002 is a critical cardiac case, but is already attended by an emergency physician. Meanwhile, Patient P-017 is waiting unmonitored with pneumonia.*  
-  >  
-  > *When we simulate a sudden drop in oxygen saturation—from 96% down to 89%—our continuous delta analyzer instantly detects the negative trajectory velocity.  
-  > The Attention Gap formula balances clinical need against active coverage, dynamically elevating the unattended deteriorating patient to Rank Number 1 with an immediate **[ REASSESS NOW ]** directive."*
-
----
-
-### 📍 Scene 4: Explainable AI & Human Governance (`1:30 – 1:55`)
-- **Visual on Screen:**  
-  Click the **`🔍 Info`** icon on `P-017` to open the **Decision Explainability Modal**. Then open patient dossier and click **`🛡️ Override`**.
+  Click the **`[ REASSESS ]`** button on Patient `P-017`.
 - **Presenter Action:**  
-  Show the plain-English physiological rationale. In the override modal, show the Counterfactual Downgrade Safety check and enter a mandatory clinical rationale. Then click **Audit Ledger** on the sidebar to show the append-only entry.
+  Show the in-flight reassessment apply: SpO₂ recovers to $97\%$, Heart Rate normalizes to $78\text{ bpm}$, Risk drops from $84 \rightarrow 38$, and the patient smoothly exits the emergency intervention queue.  
+  The **Safety Outcome Modal** appears, displaying:  
+  `✓ Action Completed | Time to Intervention: 3m 42s | Risk Reduction: -46 pts | Audit Ledger Updated`.
 - **Voiceover (Audio Track):**  
-  > *"The intelligence layer performs continuous physiological trend analysis, uncertainty scoring, confidence decay and dynamic attention-gap prioritization, while deterministic safety rules provide hard guardrails and clinicians retain final decision authority.*  
+  > *"When the triage nurse clicks **[ REASSESS ]**, the system closes the clinical loop. Supplemental oxygen is administered, repeat vitals are verified, and risk is immediately recalculated from 84 down to 38.*  
   >  
-  > *Our Counterfactual Downgrade Guardrail blocks unsafe de-escalation without objective proof of stability, and all overrides require mandatory rationale logged to an append-only audit ledger."*
+  > *The Safety Outcome is recorded in our tamper-evident audit ledger, documenting a **3-minute 42-second Time to Intervention**."*
 
 ---
 
-### 📍 Scene 5: Scalability — 🚨 3× Surge Mode & Hospital Profiles (`1:55 – 2:25`)
+### 📍 Scene 5: Nurse View ("Next 5 Minutes") & ED Pressure Map (`1:50 – 2:20`)
 - **Visual on Screen:**  
-  Click **`🚨 Simulate 3× Surge`** in the top header.  
-  Show the census expand from 20 to 60 patients, and show the UI compress into a focused **Top Action Priority Queue**.
+  Toggle to **`🩺 Nurse View (Next 5 Mins)`**, then toggle to **`🗺️ ED Floor Pressure Map`**, then **`🧪 Pre-Orders Hub`**.
 - **Presenter Action:**  
-  Navigate to **About & Scoring** page and toggle between **Level-1 Academic Trauma Center** and **Community Rural Clinic**.
+  Show the time-budgeted micro-tasks (`P-017 — 90s`, `P-001 — 60s`, `P-007 — 45s`).  
+  Switch to the Pressure Map showing Waiting Room Chairs 1–20 vs Treatment Bays with live color-coded status halos (🟢, 🟡, 🟠, 🔴).  
+  Show the **Autonomous Pre-Orders Hub** auto-drafting Troponin/ECG and Lactate orders with 1-click approval.
 - **Voiceover (Audio Track):**  
-  > *"To prove enterprise scalability, PatientTriage.ai features a live **3× Surge Mode Simulator** for disaster mass-casualty events.*  
+  > *"PatientTriage is built for hospital realities. In **Nurse View**, AI converts abstract numbers into an actionable 5-minute task schedule.*  
   >  
-  > *With one click, volume expands from 20 to 60 patients. Instead of flooding staff with alarm fatigue, the system compresses into a high-yield Action Queue.*  
+  > *In the **ED Pressure Map**, charge nurses visualize every waiting room chair and treatment bay in real time.*  
   >  
-  > *The architecture also adapts across hospital profiles—from Level-1 Trauma Centers with tight 15-minute staleness windows to Rural Clinics with automated telemedicine dispatch."*
+  > *And through our **Standing Pre-Order Hub**, diagnostic orders like Troponin and Lactate are auto-drafted before physician assignment, cutting diagnostic turnaround by 18 minutes."*
 
 ---
 
-### 📍 Scene 6: Measurable Impact & Outro (`2:25 – 2:45`)
+### 📍 Scene 6: Patient Transparency Companion & ROI Closing (`2:20 – 2:45`)
 - **Visual on Screen:**  
-  Navigate to **Baseline vs AI Impact** (`EvaluationPage.jsx`). Show the side-by-side evaluation table.
+  Open the **Patient Transparency Companion** mobile simulator (QR / SMS view).  
+  Show the transparent care progress tracker (`Triage` $\rightarrow$ `Pre-Labs` $\rightarrow$ `Surveillance` $\rightarrow$ `Care Bay`), contextual safety messaging, and the **$3.82M Annual Net ROI** summary.
 - **Presenter Action:**  
-  Point to the $20/20$ synthetic benchmark detection rate and zero unmonitored stale waits. Transition to closing title card with GitHub link.
+  Close on the master landing page with Freya Jadhav contributor badge and GitHub link.
 - **Voiceover (Audio Track):**  
-  > *"Across 20 synthetic clinical benchmark scenarios, PatientTriage.ai detected 20 out of 20 deteriorating cases and completely eliminated unmonitored stale waits.*  
+  > *"Finally, our **Patient Transparency Companion** gives waiting patients live status updates directly on their phones via triage QR code — eliminating anxiety and recovering $1.12M in lost walkout revenue.*  
   >  
-  > *Built with Python 3.13, FastAPI, and React 19, PatientTriage.ai is open-source, air-gapped, and ready for deployment.*  
+  > *Together with avoided ICU transfers and diagnostic fast-tracking, PatientTriage delivers **$3.82M in annual net value** for a 50,000-visit emergency department.*  
   >  
-  > *Thank you—because **Triage is a snapshot. Risk isn't.**"*
+  > *Triage is a snapshot. Risk isn't.  
+  > Thank you — explore our open-source prototype on GitHub."*
 
 ---
 
-## 🛠️ Video Recording & Compression Guidelines (< 20 MB)
-
-To ensure your recording stays well below the 20 MB competition limit while maintaining crystal-clear text readability:
-
-### Recommended OBS / Screen Recorder Settings:
-- **Resolution**: 1920 × 1080 (or 1280 × 720)
-- **Framerate**: 30 fps
-- **Video Bitrate**: 800–1200 kbps (H.264)
-- **Audio Bitrate**: 128 kbps (AAC)
-- **Expected File Size**: ~12 MB to 16 MB for a 2.5-minute video.
-
-### 1-Command FFmpeg Compression (If needed):
-If your raw recorded video is over 20 MB, run this command to compress it to ~12 MB without losing text sharpness:
-```bash
-ffmpeg -i raw_demo.mp4 -vcodec libx264 -crf 24 -preset fast -acodec aac -b:a 128k PatientTriage_Demo_Accenture.mp4
-```
+## 🎯 Recording Checklist for Freya:
+1. **Screen Resolution:** 1920x1080 (16:9).
+2. **Browser:** Chrome full-screen (`F11`) at `http://localhost:5173`.
+3. **Cursor Movement:** Smooth, deliberate cursor pacing with 1–2 second pauses during key simulation transitions.
+4. **Audio:** Clear microphone recording matching the voiceover lines above.
+5. **Output:** MP4 under 20 MB (compressed with HandBrake or ffmpeg if necessary).

@@ -1,8 +1,21 @@
 import React, { useState } from 'react';
 import { useTriage } from '../context/TriageContext';
-import { KPICards } from '../components/KPICards';
+import { EDControlTowerHeader } from '../components/EDControlTowerHeader';
+import { ReplaySimulationBar } from '../components/ReplaySimulationBar';
 import { ActionQueue } from '../components/ActionQueue';
+import { NurseNext5Minutes } from '../components/NurseNext5Minutes';
+import { EDPressureMap } from '../components/EDPressureMap';
+import { StandingPreOrdersHub } from '../components/StandingPreOrdersHub';
+import { LiveSafetyFeed } from '../components/LiveSafetyFeed';
 import { SafetySummaryPanel } from '../components/SafetySummaryPanel';
+import { CounterfactualWidget } from '../components/CounterfactualWidget';
+import { SafetyOutcomeModal } from '../components/SafetyOutcomeModal';
+import { WhyComparisonModal } from '../components/WhyComparisonModal';
+import { PatientTransparencyCompanion } from '../components/PatientTransparencyCompanion';
+import { OverrideModal } from '../components/OverrideModal';
+import { WhyExplanationModal } from '../components/WhyExplanationModal';
+import { VitalTrendModal } from '../components/VitalTrendModal';
+import { SafetyClock } from '../components/SafetyClock';
 import {
   Search,
   RefreshCw,
@@ -15,19 +28,32 @@ import {
   Activity,
   Layers,
   PanelRightClose,
-  PanelRightOpen
+  PanelRightOpen,
+  HelpCircle,
+  Clock,
+  ShieldCheck
 } from 'lucide-react';
 
 export const Dashboard = () => {
   const {
     queueData,
     loading,
+    controlViewMode,
     fetchQueue,
     viewPatientDetail,
     setWhyModalPatient,
     setTrendModalPatient,
     setOverrideModalPatient,
-    handleSimulateDeterioration
+    counterfactualPatient,
+    setCounterfactualPatient,
+    openCounterfactualModal,
+    whyComparisonPair,
+    setWhyComparisonPair,
+    portalPatientId,
+    setPortalPatientId,
+    handleSimulateDeterioration,
+    handleClosedLoopReassess,
+    handleToggleAttending
   } = useTriage();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -79,237 +105,287 @@ export const Dashboard = () => {
     return matchesSearch && matchesLevel && matchesCategory && matchesStation;
   });
 
+  const getTriageBadge = (level) => {
+    switch (level) {
+      case 1:
+        return 'bg-rose-50 text-rose-700 border-rose-200';
+      case 2:
+        return 'bg-orange-50 text-orange-700 border-orange-200';
+      case 3:
+        return 'bg-amber-50 text-amber-700 border-amber-200';
+      case 4:
+        return 'bg-blue-50 text-blue-700 border-blue-200';
+      case 5:
+        return 'bg-slate-100 text-slate-700 border-slate-200';
+      default:
+        return 'bg-slate-100 text-slate-700 border-slate-200';
+    }
+  };
+
   return (
     <div className="space-y-6 pb-12">
-      {/* Top KPI Section */}
-      <KPICards />
+      {/* 1. ED Control Tower Header: 3 Giant Numbers + Status Ribbon + Workspace Selector */}
+      <EDControlTowerHeader />
 
-      {/* 2-Zone Workspace (Main Workspace + Right Safety Summary Panel) */}
-      <div className="flex flex-col lg:flex-row items-start gap-6">
-        {/* Center Workspace: Live Action Queue & Census Table */}
-        <div className="flex-1 w-full space-y-6 min-w-0">
-          {/* Hero: Live Action Priority Queue */}
-          <ActionQueue />
+      {/* 2. Interactive Pitch Feature: ED Replay Simulation Bar */}
+      <ReplaySimulationBar />
 
-          {/* Complete Patient Census Section */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
-              <div>
-                <div className="flex items-center space-x-2">
-                  <h2 className="text-sm font-bold text-slate-900 tracking-tight">
-                    Emergency Patient Census ({filteredPatients.length} of {allPatients.length})
-                  </h2>
-                  {stationFilter !== 'ALL' && (
+      {/* 3. Main Switchable Workspace */}
+      {controlViewMode === 'nurse-view' && <NurseNext5Minutes />}
+
+      {controlViewMode === 'pressure-map' && <EDPressureMap />}
+
+      {controlViewMode === 'preorders' && <StandingPreOrdersHub />}
+
+      {controlViewMode === 'control-tower' && (
+        <div className="flex flex-col lg:flex-row items-start gap-6">
+          {/* Center Column: Live Action Priority Queue & Patient Census */}
+          <div className="flex-1 w-full space-y-6 min-w-0">
+            {/* Dynamic Priority Stream */}
+            <ActionQueue />
+
+            {/* Complete Emergency Patient Census Table */}
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <h2 className="text-sm font-bold text-slate-900 tracking-tight">
+                      Emergency Patient Census ({filteredPatients.length} of {allPatients.length})
+                    </h2>
                     <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                      Station: {stationFilter}
+                      Auto-Updated
                     </span>
-                  )}
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Continuous physiological tracking, staleness expiration countdowns, and attention gap metrics.
+                  </p>
                 </div>
-                <p className="text-xs text-slate-500">
-                  Continuous surveillance census organized across the 5 failure modes of traditional triage.
-                </p>
-              </div>
-
-              {/* Search, Filter, and View Controls */}
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="relative">
-                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
-                  <input
-                    type="text"
-                    placeholder="Search ID, name, complaint..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-cyan-600 focus:bg-white w-44 sm:w-52"
-                  />
-                </div>
-
-                <select
-                  value={levelFilter}
-                  onChange={(e) => setLevelFilter(e.target.value)}
-                  className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-cyan-600 focus:bg-white"
-                >
-                  <option value="ALL">All Levels</option>
-                  <option value="1">Level 1 (Immediate)</option>
-                  <option value="2">Level 2 (Emergent)</option>
-                  <option value="3">Level 3 (Urgent)</option>
-                  <option value="4">Level 4 (Semi-Urgent)</option>
-                  <option value="5">Level 5 (Non-Urgent)</option>
-                </select>
-
-                <button
-                  onClick={() => setShowRightPanel(!showRightPanel)}
-                  className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 hidden lg:flex items-center space-x-1 text-xs"
-                  title="Toggle Safety Summary Panel"
-                >
-                  {showRightPanel ? <PanelRightClose className="w-4 h-4" /> : <PanelRightOpen className="w-4 h-4 text-cyan-700" />}
-                </button>
 
                 <button
                   onClick={fetchQueue}
-                  className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors"
-                  title="Refresh census"
+                  className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors self-start sm:self-auto"
+                  title="Force Refresh"
                 >
-                  <RefreshCw className="w-3.5 h-3.5" />
+                  <RefreshCw className="w-4 h-4" />
                 </button>
               </div>
-            </div>
 
-            {/* 5 Failure Mode Quick Filter Tabs */}
-            <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 text-xs">
-              <span className="text-slate-500 font-semibold text-[11px] shrink-0 mr-1 flex items-center space-x-1">
-                <Layers className="w-3.5 h-3.5 text-slate-400" />
-                <span>Failure Mode:</span>
-              </span>
-              {failureCategories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setFailureCatFilter(cat.id)}
-                  className={`px-2.5 py-1 rounded-md font-semibold text-[11px] shrink-0 transition-all ${
-                    failureCatFilter === cat.id
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'bg-slate-50 text-slate-600 hover:text-slate-900 border border-slate-200'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
+              {/* Filters & Search */}
+              <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search by Patient ID, Name, or Chief Complaint..."
+                    className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-cyan-700 focus:bg-white text-slate-900 placeholder:text-slate-400"
+                  />
+                </div>
 
-            {/* Patient Census Table */}
-            <div className="overflow-x-auto mt-2">
-              <table className="w-full text-left text-xs text-slate-700">
-                <thead className="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200">
-                  <tr>
-                    <th className="py-2.5 px-3">Patient</th>
-                    <th className="py-2.5 px-2">Failure Mode</th>
-                    <th className="py-2.5 px-2">Triage Level</th>
-                    <th className="py-2.5 px-3">Chief Complaint</th>
-                    <th className="py-2.5 px-2">SpO₂</th>
-                    <th className="py-2.5 px-2">Safety State</th>
-                    <th className="py-2.5 px-2">Coverage</th>
-                    <th className="py-2.5 px-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filteredPatients.map((p) => (
-                    <tr key={p.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3 px-3 font-semibold text-slate-900 whitespace-nowrap">
-                        <span className="text-cyan-800 font-bold">{p.id}</span>
-                        <div className="text-[11px] font-normal text-slate-500">{p.name}</div>
-                      </td>
-
-                      <td className="py-3 px-2 whitespace-nowrap">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                          {p.failure_mode_category?.badge || 'Standard'}
-                        </span>
-                      </td>
-
-                      <td className="py-3 px-2 whitespace-nowrap">
-                        <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${
-                            p.display_triage_level === 1
-                              ? 'bg-rose-50 text-rose-700 border-rose-200'
-                              : p.display_triage_level === 2
-                              ? 'bg-orange-50 text-orange-700 border-orange-200'
-                              : p.display_triage_level === 3
-                              ? 'bg-amber-50 text-amber-700 border-amber-200'
-                              : 'bg-blue-50 text-blue-700 border-blue-200'
-                          }`}
-                        >
-                          L{p.display_triage_level} {p.is_overridden ? '✏️' : ''}
-                        </span>
-                      </td>
-
-                      <td className="py-3 px-3 max-w-xs truncate font-medium text-slate-800">
-                        {p.chief_complaint}
-                      </td>
-
-                      <td className="py-3 px-2 whitespace-nowrap">
-                        {p.latest_vitals?.spo2 ? (
-                          <span className={p.latest_vitals.spo2 < 92 ? 'text-rose-700 font-bold' : 'text-slate-800'}>
-                            {p.latest_vitals.spo2}%
-                          </span>
-                        ) : (
-                          <span className="text-purple-700 font-semibold">MISSING</span>
-                        )}
-                      </td>
-
-                      <td className="py-3 px-2 whitespace-nowrap">
-                        <span
-                          className={`px-1.5 py-0.5 rounded text-[10px] font-semibold border ${
-                            p.safety_status === 'EXPIRED'
-                              ? 'bg-rose-50 text-rose-700 border-rose-200'
-                              : p.safety_status === 'EXPIRING_SOON'
-                              ? 'bg-amber-50 text-amber-700 border-amber-200'
-                              : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                          }`}
-                        >
-                          {p.safety_status}
-                        </span>
-                      </td>
-
-                      <td className="py-3 px-2 whitespace-nowrap">
-                        {p.is_attended ? (
-                          <span className="text-emerald-700 text-[11px] font-semibold flex items-center space-x-1">
-                            <UserCheck className="w-3 h-3" />
-                            <span>Attended</span>
-                          </span>
-                        ) : (
-                          <span className="text-slate-500 text-[11px] flex items-center space-x-1">
-                            <UserX className="w-3 h-3" />
-                            <span>Waiting</span>
-                          </span>
-                        )}
-                      </td>
-
-                      <td className="py-3 px-3 text-right whitespace-nowrap">
-                        <div className="flex items-center justify-end space-x-1">
-                          <button
-                            onClick={() => setWhyModalPatient(p)}
-                            className="p-1 rounded border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-100"
-                            title="Why this decision?"
-                          >
-                            <Info className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => setTrendModalPatient(p)}
-                            className="p-1 rounded border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-100"
-                            title="Vital trend trajectory"
-                          >
-                            <TrendingDown className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => handleSimulateDeterioration(p.id)}
-                            className="p-1 rounded border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
-                            title="Simulate Deterioration"
-                          >
-                            <Zap className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => viewPatientDetail(p.id)}
-                            className="p-1 rounded border border-slate-200 text-slate-700 hover:bg-slate-100"
-                            title="View detail"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+                {/* Level Filter */}
+                <div className="flex items-center space-x-1 overflow-x-auto pb-1 md:pb-0 text-xs">
+                  {['ALL', '1', '2', '3', '4', '5'].map((lvl) => (
+                    <button
+                      key={lvl}
+                      onClick={() => setLevelFilter(lvl)}
+                      className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors flex-shrink-0 ${
+                        levelFilter === lvl
+                          ? 'bg-slate-900 text-white'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {lvl === 'ALL' ? 'All ESI' : `L${lvl}`}
+                    </button>
                   ))}
-                </tbody>
-              </table>
+                </div>
+
+                {/* Station Filter */}
+                <select
+                  value={stationFilter}
+                  onChange={(e) => setStationFilter(e.target.value)}
+                  className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 font-semibold focus:outline-none focus:ring-1 focus:ring-cyan-700"
+                >
+                  <option value="ALL">All Stations</option>
+                  <option value="UNATTENDED">Unattended Only</option>
+                  <option value="ATTENDED">Attended Only</option>
+                  <option value="PEDIATRIC">Pediatric (&lt;16y)</option>
+                  <option value="GERIATRIC">Geriatric (65y+)</option>
+                </select>
+              </div>
+
+              {/* Census Table */}
+              <div className="overflow-x-auto border border-slate-100 rounded-lg">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px] tracking-wider">
+                      <th className="py-2.5 px-3">Patient ID</th>
+                      <th className="py-2.5 px-3">Demographics & Complaint</th>
+                      <th className="py-2.5 px-3">Triage</th>
+                      <th className="py-2.5 px-3">Safety Clock</th>
+                      <th className="py-2.5 px-3">Risk & Trajectory</th>
+                      <th className="py-2.5 px-3">Attention Gap</th>
+                      <th className="py-2.5 px-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-sans">
+                    {filteredPatients.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" className="py-8 text-center text-slate-400">
+                          No patients match your active filters.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredPatients.map((p) => {
+                        const vitals = p.latest_vitals || {};
+                        const isExpired = p.safety_status === 'EXPIRED';
+                        return (
+                          <tr
+                            key={p.id}
+                            className="hover:bg-slate-50/70 transition-colors group"
+                          >
+                            <td className="py-3 px-3 font-mono font-bold text-slate-800">
+                              {p.id}
+                              {p.is_overridden ? (
+                                <span className="ml-1 text-[9px] text-amber-700 bg-amber-50 px-1 rounded border border-amber-200 font-sans">
+                                  Override
+                                </span>
+                              ) : null}
+                            </td>
+
+                            <td className="py-3 px-3">
+                              <div className="font-bold text-slate-900">
+                                {p.name}
+                              </div>
+                              <div className="text-[11px] text-slate-500 truncate max-w-[200px]">
+                                {p.age}y &bull; {p.gender} &bull; {p.chief_complaint}
+                              </div>
+                            </td>
+
+                            <td className="py-3 px-3">
+                              <span className={`px-2 py-0.5 rounded text-[11px] font-bold border ${getTriageBadge(p.display_triage_level)}`}>
+                                Level {p.display_triage_level}
+                              </span>
+                            </td>
+
+                            <td className="py-3 px-3">
+                              <SafetyClock
+                                elapsedMins={p.elapsed_since_vital || 0}
+                                minutesUntilExpiry={p.minutes_until_expiry ?? 15}
+                                safetyStatus={p.safety_status}
+                                size="compact"
+                              />
+                            </td>
+
+                            <td className="py-3 px-3">
+                              <div className="flex items-center space-x-1.5">
+                                <span className="font-bold text-slate-900 font-mono">
+                                  {p.risk_score}
+                                </span>
+                                <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
+                                  p.trajectory_status === 'RAPID_DETERIORATION'
+                                    ? 'bg-rose-100 text-rose-800'
+                                    : p.trajectory_status === 'WORSENING'
+                                    ? 'bg-amber-100 text-amber-800'
+                                    : 'bg-slate-100 text-slate-600'
+                                }`}>
+                                  {p.trajectory_status}
+                                </span>
+                              </div>
+                              <div className="text-[10px] font-mono text-slate-400 mt-0.5">
+                                SpO₂ {vitals.spo2 ?? 96}% &bull; HR {vitals.heart_rate ?? 85}
+                              </div>
+                            </td>
+
+                            <td className="py-3 px-3">
+                              <div className="font-mono font-bold text-slate-900">
+                                {p.action_priority_score} pts
+                              </div>
+                              <div className="text-[10px] text-slate-500">
+                                {p.is_attended ? '👨⚕️ Attended' : '⚠️ Unattended'}
+                              </div>
+                            </td>
+
+                            <td className="py-3 px-3 text-right">
+                              <div className="flex items-center justify-end space-x-1">
+                                <button
+                                  onClick={() => handleClosedLoopReassess(p.id)}
+                                  className="p-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors"
+                                  title="1-Click Reassessment"
+                                >
+                                  <Zap className="w-3.5 h-3.5" />
+                                </button>
+
+                                <button
+                                  onClick={() => openCounterfactualModal(p)}
+                                  className="p-1.5 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors"
+                                  title="🔮 Counterfactual Trajectory"
+                                >
+                                  🔮
+                                </button>
+
+                                <button
+                                  onClick={() => setWhyModalPatient(p)}
+                                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                                  title="Why did AI recommend this score?"
+                                >
+                                  <HelpCircle className="w-3.5 h-3.5" />
+                                </button>
+
+                                <button
+                                  onClick={() => viewPatientDetail(p.id)}
+                                  className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 transition-colors"
+                                >
+                                  Dossier
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Right Zone: Persistent Safety Summary Panel */}
-        {showRightPanel && (
-          <SafetySummaryPanel
-            onSelectFilter={(stn) => setStationFilter(stn)}
-            activeFilter={stationFilter}
-          />
-        )}
-      </div>
+          {/* Right Column: Live Safety Feed Ticker + Safety Radar */}
+          <div className="w-full lg:w-80 space-y-6 flex-shrink-0">
+            <LiveSafetyFeed />
+            <SafetySummaryPanel />
+          </div>
+        </div>
+      )}
+
+      {/* Global Modals & Overlays */}
+      {counterfactualPatient && (
+        <CounterfactualWidget
+          patient={counterfactualPatient}
+          onClose={() => setCounterfactualPatient(null)}
+        />
+      )}
+
+      {safetyOutcomeData && <SafetyOutcomeModal />}
+
+      {whyComparisonPair && (
+        <WhyComparisonModal
+          p1Id={whyComparisonPair[0]}
+          p2Id={whyComparisonPair[1]}
+          onClose={() => setWhyComparisonPair(null)}
+        />
+      )}
+
+      {portalPatientId && (
+        <PatientTransparencyCompanion
+          patientId={portalPatientId}
+          onClose={() => setPortalPatientId(null)}
+        />
+      )}
+
+      <OverrideModal />
+      <WhyExplanationModal />
+      <VitalTrendModal />
     </div>
   );
 };

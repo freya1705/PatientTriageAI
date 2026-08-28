@@ -71,16 +71,71 @@ export const api = {
     return res.data;
   },
 
-  getSurgeStatus: async () => {
-    const res = await axios.get(`${API_BASE}/surge/status`);
-    return res.data;
-  },
-
-  // Audit
+  // Audit Logs
   getAuditLogs: async (limit = 100, patientId = null) => {
     const params = { limit };
     if (patientId) params.patient_id = patientId;
     const res = await axios.get(`${API_BASE}/audit/logs`, { params });
+    return res.data;
+  },
+
+  getAuditSummary: async () => {
+    const res = await axios.get(`${API_BASE}/audit/summary`);
+    return res.data;
+  },
+
+  // --- Control Tower Extensions ---
+  // Simulation & ED Replay Mode
+  getSimulationTimeline: async () => {
+    const res = await axios.get(`${API_BASE}/simulation/timeline`);
+    return res.data;
+  },
+
+  applySimulationStep: async (stepIndex) => {
+    const res = await axios.post(`${API_BASE}/simulation/apply-step/${stepIndex}`);
+    return res.data;
+  },
+
+  // Closed-Loop Clinical Actions & Outcomes
+  reassessAction: async (payload) => {
+    const res = await axios.post(`${API_BASE}/actions/reassess`, payload);
+    return res.data;
+  },
+
+  getCounterfactualView: async (patientId) => {
+    const res = await axios.get(`${API_BASE}/actions/counterfactual/${patientId}`);
+    return res.data;
+  },
+
+  getWhyComparison: async (p1Id, p2Id) => {
+    const res = await axios.get(`${API_BASE}/actions/why-comparison/${p1Id}/${p2Id}`);
+    return res.data;
+  },
+
+  // Standing Pre-Orders Hub
+  listPreorders: async () => {
+    const res = await axios.get(`${API_BASE}/preorders/`);
+    return res.data;
+  },
+
+  approvePreorder: async (orderId, payload = {}) => {
+    const res = await axios.post(`${API_BASE}/preorders/${orderId}/approve`, payload);
+    return res.data;
+  },
+
+  dismissPreorder: async (orderId, payload) => {
+    const res = await axios.post(`${API_BASE}/preorders/${orderId}/dismiss`, payload);
+    return res.data;
+  },
+
+  // Patient Smart Transparency Companion & Live Safety Feed
+  getPatientPortalView: async (patientId) => {
+    const res = await axios.get(`${API_BASE}/portal/patient/${patientId}`);
+    return res.data;
+  },
+
+  getLiveSafetyFeed: async () => {
+    const res = await axios.get(`${API_BASE}/portal/feed/live-events`);
     return res.data;
   }
 };

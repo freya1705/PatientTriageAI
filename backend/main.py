@@ -13,6 +13,10 @@ from .routes.queue_routes import router as queue_router
 from .routes.surge_routes import router as surge_router
 from .routes.audit_routes import router as audit_router
 from .routes.triage_routes import router as triage_router
+from .routes.simulation_routes import router as simulation_router
+from .routes.action_routes import router as action_router
+from .routes.preorder_routes import router as preorder_router
+from .routes.portal_routes import router as portal_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -23,8 +27,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="PatientTriage.ai API",
-    description="Dynamic Safety Intelligence for Emergency Departments — Decide First. Watch Continuously. Act in Time.",
-    version="2.0.0",
+    description="Active Autonomous ED Safety Control Tower — Decide First. Watch Continuously. Act in Time.",
+    version="2.1.0",
     lifespan=lifespan
 )
 
@@ -43,6 +47,10 @@ app.include_router(queue_router)
 app.include_router(surge_router)
 app.include_router(audit_router)
 app.include_router(triage_router)
+app.include_router(simulation_router)
+app.include_router(action_router)
+app.include_router(preorder_router)
+app.include_router(portal_router)
 
 @app.get("/api/health")
 def health_check():
