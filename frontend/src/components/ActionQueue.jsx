@@ -1,5 +1,5 @@
-import React from 'react';
-import { useTriage } from '../context/TriageContext';
+import React from "react";
+import { useTriage } from "../context/TriageContext";
 import {
   Zap,
   Clock,
@@ -12,11 +12,11 @@ import {
   ShieldCheck,
   TrendingDown,
   AlertOctagon,
-  Scale
-} from 'lucide-react';
-import { SafetyClock } from './SafetyClock';
+  Scale,
+} from "lucide-react";
+import { SafetyClock } from "./SafetyClock";
 
-export const ActionQueue = ({ filterMode = 'ALL' }) => {
+export const ActionQueue = ({ filterMode = "ALL" }) => {
   const {
     queueData,
     viewPatientDetail,
@@ -28,7 +28,7 @@ export const ActionQueue = ({ filterMode = 'ALL' }) => {
     handlingMap,
     activeNurseName,
     assignedPatientIds,
-    setActiveTab
+    setActiveTab,
   } = useTriage();
 
   if (!queueData) return null;
@@ -37,71 +37,99 @@ export const ActionQueue = ({ filterMode = 'ALL' }) => {
 
   // Filter based on parent tab if needed
   let displayPatients = allPatients;
-  if (filterMode === 'MY_PATIENTS') {
+  if (filterMode === "MY_PATIENTS") {
     displayPatients = allPatients.filter((p) => assignedPatientIds.has(p.id));
-  } else if (filterMode === 'ACTION_NOW') {
-    displayPatients = allPatients.filter((p) => p.action_badge === 'ESCALATE' || p.action_badge === 'IMMEDIATE' || (p.risk_score || 0) >= 70);
-  } else if (filterMode === 'EXPIRING') {
-    displayPatients = allPatients.filter((p) => p.safety_status === 'EXPIRED' || (p.minutes_until_expiry ?? 15) <= 5);
-  } else if (filterMode === 'UNATTENDED') {
+  } else if (filterMode === "ACTION_NOW") {
+    displayPatients = allPatients.filter(
+      (p) =>
+        p.action_badge === "ESCALATE" ||
+        p.action_badge === "IMMEDIATE" ||
+        (p.risk_score || 0) >= 70,
+    );
+  } else if (filterMode === "EXPIRING") {
+    displayPatients = allPatients.filter(
+      (p) =>
+        p.safety_status === "EXPIRED" || (p.minutes_until_expiry ?? 15) <= 5,
+    );
+  } else if (filterMode === "UNATTENDED") {
     displayPatients = allPatients.filter((p) => !p.is_attended);
   }
 
   // Segment into clinical priority groups
   const urgentPatients = displayPatients.filter(
-    (p) => p.action_badge === 'ESCALATE' || p.action_badge === 'IMMEDIATE' || p.trajectory_status === 'RAPID_DETERIORATION' || (p.risk_score || 0) >= 70
+    (p) =>
+      p.action_badge === "ESCALATE" ||
+      p.action_badge === "IMMEDIATE" ||
+      p.trajectory_status === "RAPID_DETERIORATION" ||
+      (p.risk_score || 0) >= 70,
   );
 
   const reassessSoonPatients = displayPatients.filter(
-    (p) => !urgentPatients.some((u) => u.id === p.id) && (p.action_badge === 'REASSESS' || p.safety_status === 'EXPIRED' || p.is_uncertain)
+    (p) =>
+      !urgentPatients.some((u) => u.id === p.id) &&
+      (p.action_badge === "REASSESS" ||
+        p.safety_status === "EXPIRED" ||
+        p.is_uncertain),
   );
 
   const watchPatients = displayPatients.filter(
-    (p) => !urgentPatients.some((u) => u.id === p.id) && !reassessSoonPatients.some((r) => r.id === p.id) && (p.risk_score || 0) >= 35
+    (p) =>
+      !urgentPatients.some((u) => u.id === p.id) &&
+      !reassessSoonPatients.some((r) => r.id === p.id) &&
+      (p.risk_score || 0) >= 35,
   );
 
-  const stableCount = allPatients.length - (urgentPatients.length + reassessSoonPatients.length + watchPatients.length);
+  const stableCount =
+    allPatients.length -
+    (urgentPatients.length +
+      reassessSoonPatients.length +
+      watchPatients.length);
 
   const renderActionCard = (patient, index, priorityLevel) => {
     const vitals = patient.latest_vitals || {};
-    const isDeteriorating = patient.trajectory_status in { RAPID_DETERIORATION: true, WORSENING: true };
-    const isExpired = patient.safety_status === 'EXPIRED';
+    const isDeteriorating =
+      patient.trajectory_status in
+      { RAPID_DETERIORATION: true, WORSENING: true };
+    const isExpired = patient.safety_status === "EXPIRED";
     const handling = handlingMap[patient.id];
     const isHandledByMe = handling?.nurseName === activeNurseName;
 
     // What Changed summary
-    let whatChangedText = 'Vitals stable since arrival';
+    let whatChangedText = "Vitals stable since arrival";
     if (isDeteriorating) {
       whatChangedText = `SpO₂ 96% → ${vitals.spo2 ?? 91}% (↓ 5%) • HR 92 → ${vitals.heart_rate ?? 117} bpm (↑ 25 bpm)`;
     } else if (isExpired) {
       whatChangedText = `Evidence ${patient.elapsed_since_vital || 48}m old without clinician update`;
     } else if (patient.is_uncertain) {
-      whatChangedText = 'Missing baseline SpO₂ & blood pressure at triage intake';
+      whatChangedText =
+        "Missing baseline SpO₂ & blood pressure at triage intake";
     } else if (patient.total_waiting_mins > 30) {
       whatChangedText = `Waiting ${patient.total_waiting_mins}m unmonitored in waiting room`;
     }
 
     // Why summary
-    let whySummary = 'Routine waiting surveillance';
-    if (isDeteriorating) whySummary = 'Rapid physiological deterioration detected';
-    else if (isExpired) whySummary = 'Recommended reassessment window expired';
-    else if (patient.is_uncertain) whySummary = 'High clinical uncertainty (Unknown ≠ Safe)';
+    let whySummary = "Routine waiting surveillance";
+    if (isDeteriorating)
+      whySummary = "Rapid physiological deterioration detected";
+    else if (isExpired) whySummary = "Recommended reassessment window expired";
+    else if (patient.is_uncertain)
+      whySummary = "High clinical uncertainty (Unknown ≠ Safe)";
 
     // Primary Action Label
-    let actionLabel = 'RECHECK VITALS';
-    if (priorityLevel === 'URGENT') actionLabel = 'REASSESS NOW';
-    else if (patient.is_uncertain) actionLabel = 'ACQUIRE VITALS';
-    else if (patient.is_attended) actionLabel = 'REVIEW PATIENT';
+    let actionLabel = "RECHECK VITALS";
+    if (priorityLevel === "URGENT") actionLabel = "REASSESS NOW";
+    else if (patient.is_uncertain) actionLabel = "ACQUIRE VITALS";
+    else if (patient.is_attended) actionLabel = "REVIEW PATIENT";
 
     return (
       <div
         key={patient.id}
         className={`bg-white rounded-xl border p-4 transition-all ${
-          priorityLevel === 'URGENT'
-            ? 'border-rose-300 ring-2 ring-rose-100 shadow-sm'
-            : priorityLevel === 'NEXT'
-            ? 'border-amber-200 shadow-2xs hover:border-amber-300'
-            : 'border-slate-200 hover:border-slate-300'
+          priorityLevel === "URGENT"
+            ? "border-rose-300 ring-2 ring-rose-100 shadow-sm"
+            : priorityLevel === "NEXT"
+              ? "border-amber-200 shadow-2xs hover:border-amber-300"
+              : "border-slate-200 hover:border-slate-300"
         }`}
       >
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -109,14 +137,18 @@ export const ActionQueue = ({ filterMode = 'ALL' }) => {
           <div className="flex items-start space-x-3 min-w-[260px]">
             <div
               className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs flex-shrink-0 border ${
-                priorityLevel === 'URGENT'
-                  ? 'bg-rose-600 text-white border-rose-700 shadow-xs animate-pulse'
-                  : priorityLevel === 'NEXT'
-                  ? 'bg-amber-500 text-white border-amber-600'
-                  : 'bg-slate-100 text-slate-700 border-slate-200'
+                priorityLevel === "URGENT"
+                  ? "bg-rose-600 text-white border-rose-700 shadow-xs animate-pulse"
+                  : priorityLevel === "NEXT"
+                    ? "bg-amber-500 text-white border-amber-600"
+                    : "bg-slate-100 text-slate-700 border-slate-200"
               }`}
             >
-              {priorityLevel === 'URGENT' ? '🔴' : priorityLevel === 'NEXT' ? '🟠' : '🟡'}
+              {priorityLevel === "URGENT"
+                ? "🔴"
+                : priorityLevel === "NEXT"
+                  ? "🟠"
+                  : "🟡"}
             </div>
 
             <div>
@@ -137,13 +169,32 @@ export const ActionQueue = ({ filterMode = 'ALL' }) => {
               </div>
 
               <div className="text-[11px] text-slate-400 font-mono mt-0.5">
-                Waiting <strong>{patient.total_waiting_mins} min</strong> &bull; Level {patient.display_triage_level}
+                Waiting <strong>{patient.total_waiting_mins} min</strong> &bull;
+                Level {patient.display_triage_level}
               </div>
 
               {/* Handling Status Badge */}
               {handling && (
                 <div className="mt-1.5 inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 animate-pulse">
                   <span>🟡 Being handled by {handling.nurseName}</span>
+                </div>
+              )}
+
+              {/* Attendant Away Badge */}
+              {patient.attendant_away && (
+                <div className="mt-1 inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-900 border border-orange-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-orange-600 animate-ping" />
+                  <span>Attendant Away</span>
+                </div>
+              )}
+
+              {/* Referral Candidate Badge */}
+              {patient.referral_eligible && (
+                <div
+                  className="mt-1 inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300"
+                  title={patient.referral_reason}
+                >
+                  <span>🏥 Referral Candidate (Urgent Care / PHC)</span>
                 </div>
               )}
             </div>
@@ -164,9 +215,7 @@ export const ActionQueue = ({ filterMode = 'ALL' }) => {
               <span className="font-bold uppercase tracking-wide text-[10px] mr-1.5">
                 WHY:
               </span>
-              <span className="text-slate-600">
-                {whySummary}
-              </span>
+              <span className="text-slate-600">{whySummary}</span>
             </div>
 
             <div className="pt-1 flex items-center space-x-2">
@@ -186,8 +235,8 @@ export const ActionQueue = ({ filterMode = 'ALL' }) => {
               onClick={() => handleImOnIt(patient.id)}
               className={`px-3 py-2 rounded-lg text-xs font-bold transition-all border ${
                 isHandledByMe
-                  ? 'bg-amber-100 text-amber-900 border-amber-300'
-                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                  ? "bg-amber-100 text-amber-900 border-amber-300"
+                  : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
               }`}
               title="Claim this patient to prevent duplicate work"
             >
@@ -198,9 +247,9 @@ export const ActionQueue = ({ filterMode = 'ALL' }) => {
             <button
               onClick={() => openReassessmentModal(patient)}
               className={`px-4 py-2 rounded-lg text-xs font-black shadow-xs transition-colors flex items-center space-x-1.5 ${
-                priorityLevel === 'URGENT'
-                  ? 'bg-rose-600 hover:bg-rose-700 text-white shadow-rose-200'
-                  : 'bg-amber-600 hover:bg-amber-700 text-white'
+                priorityLevel === "URGENT"
+                  ? "bg-rose-600 hover:bg-rose-700 text-white shadow-rose-200"
+                  : "bg-amber-600 hover:bg-amber-700 text-white"
               }`}
             >
               <Zap className="w-3.5 h-3.5" />
@@ -247,7 +296,8 @@ export const ActionQueue = ({ filterMode = 'ALL' }) => {
           <div className="flex items-center space-x-2">
             <span className="w-3 h-3 rounded-full bg-rose-600 animate-ping"></span>
             <h2 className="text-sm font-black text-slate-900 tracking-tight uppercase">
-              🔴 ACTION REQUIRED NOW ({urgentPatients.length} {urgentPatients.length === 1 ? 'Patient' : 'Patients'})
+              🔴 ACTION REQUIRED NOW ({urgentPatients.length}{" "}
+              {urgentPatients.length === 1 ? "Patient" : "Patients"})
             </h2>
           </div>
           <span className="text-xs text-slate-500 font-medium">
@@ -258,10 +308,13 @@ export const ActionQueue = ({ filterMode = 'ALL' }) => {
         {urgentPatients.length === 0 ? (
           <div className="bg-emerald-50/60 border border-emerald-200 rounded-xl p-4 text-center text-xs text-emerald-800 font-semibold flex items-center justify-center space-x-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-            <span>All acute physiological alarms resolved &bull; No critical deteriorations in waiting room.</span>
+            <span>
+              All acute physiological alarms resolved &bull; No critical
+              deteriorations in waiting room.
+            </span>
           </div>
         ) : (
-          urgentPatients.map((p, idx) => renderActionCard(p, idx, 'URGENT'))
+          urgentPatients.map((p, idx) => renderActionCard(p, idx, "URGENT"))
         )}
       </div>
 
@@ -281,7 +334,9 @@ export const ActionQueue = ({ filterMode = 'ALL' }) => {
           </div>
 
           <div className="space-y-3">
-            {reassessSoonPatients.slice(0, 4).map((p, idx) => renderActionCard(p, idx, 'NEXT'))}
+            {reassessSoonPatients
+              .slice(0, 4)
+              .map((p, idx) => renderActionCard(p, idx, "NEXT"))}
           </div>
         </div>
       )}
@@ -298,7 +353,7 @@ export const ActionQueue = ({ filterMode = 'ALL' }) => {
         </div>
 
         <button
-          onClick={() => setActiveTab('all-waiting')}
+          onClick={() => setActiveTab("all-waiting")}
           className="font-bold text-cyan-700 hover:text-cyan-900 flex items-center space-x-1"
         >
           <span>View complete census</span>

@@ -1,5 +1,5 @@
-import React from 'react';
-import { useTriage } from '../context/TriageContext';
+import React from "react";
+import { useTriage } from "../context/TriageContext";
 import {
   Clock,
   CheckCircle2,
@@ -10,9 +10,9 @@ import {
   Zap,
   UserCheck,
   ShieldAlert,
-  Sparkles
-} from 'lucide-react';
-import { SafetyClock } from './SafetyClock';
+  Sparkles,
+} from "lucide-react";
+import { SafetyClock } from "./SafetyClock";
 
 export const NurseNext5Minutes = () => {
   const {
@@ -20,7 +20,7 @@ export const NurseNext5Minutes = () => {
     viewPatientDetail,
     handleClosedLoopReassess,
     openCounterfactualModal,
-    setWhyModalPatient
+    openPatientDrawer,
   } = useTriage();
 
   if (!queueData) return null;
@@ -28,40 +28,55 @@ export const NurseNext5Minutes = () => {
   const allPatients = queueData.all_patients || [];
   const topPatients = queueData.top_action_queue || allPatients.slice(0, 4);
 
+  // Check for any patient sitting alone because attendant stepped away
+  const awayPatient = allPatients.find((p) => p.attendant_away);
+
   // Micro-task schedule based on highest attention gap patients
   const microTasks = [
+    ...(awayPatient
+      ? [
+          {
+            timeBudget: "30 sec",
+            actionTitle: "Spot-Check Unattended Waiting Patient",
+            reason: `Family attendant stepped away; ${awayPatient.name} (${awayPatient.id}) sitting unmonitored`,
+            patient: awayPatient,
+            urgency: "HIGH",
+            badgeColor: "bg-orange-50 text-orange-800 border-orange-200",
+          },
+        ]
+      : []),
     {
-      timeBudget: '90 sec',
-      actionTitle: 'Bedside Reassessment & O₂ Titration',
-      reason: 'Acute vital velocity drop (SpO₂ 91% ↓)',
+      timeBudget: "90 sec",
+      actionTitle: "Bedside Reassessment & O₂ Titration",
+      reason: "Acute vital velocity drop (SpO₂ 91% ↓)",
       patient: topPatients[0] || allPatients[0],
-      urgency: 'HIGH',
-      badgeColor: 'bg-rose-50 text-rose-700 border-rose-200'
+      urgency: "HIGH",
+      badgeColor: "bg-rose-50 text-rose-700 border-rose-200",
     },
     {
-      timeBudget: '60 sec',
-      actionTitle: 'Physician Review & Lactate Screen',
-      reason: 'Prolonged wait without clinical attendance',
+      timeBudget: "60 sec",
+      actionTitle: "Physician Review & Lactate Screen",
+      reason: "Prolonged wait without clinical attendance",
       patient: topPatients[1] || allPatients[1],
-      urgency: 'MEDIUM',
-      badgeColor: 'bg-amber-50 text-amber-700 border-amber-200'
+      urgency: "MEDIUM",
+      badgeColor: "bg-amber-50 text-amber-700 border-amber-200",
     },
     {
-      timeBudget: '45 sec',
-      actionTitle: 'Acquire Repeat Vitals & ECG',
-      reason: 'Safety Clock expired; observations stale',
+      timeBudget: "45 sec",
+      actionTitle: "Acquire Repeat Vitals & ECG",
+      reason: "Safety Clock expired; observations stale",
       patient: topPatients[2] || allPatients[2],
-      urgency: 'MEDIUM',
-      badgeColor: 'bg-purple-50 text-purple-700 border-purple-200'
+      urgency: "MEDIUM",
+      badgeColor: "bg-purple-50 text-purple-700 border-purple-200",
     },
     {
-      timeBudget: '30 sec',
-      actionTitle: 'Confirm Symptom Progression',
-      reason: 'Initial intake uncertainty; verify pain delta',
+      timeBudget: "30 sec",
+      actionTitle: "Confirm Symptom Progression",
+      reason: "Initial intake uncertainty; verify pain delta",
       patient: topPatients[3] || allPatients[3],
-      urgency: 'LOW',
-      badgeColor: 'bg-blue-50 text-blue-700 border-blue-200'
-    }
+      urgency: "LOW",
+      badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
+    },
   ].filter((t) => t.patient);
 
   return (
@@ -78,7 +93,8 @@ export const NurseNext5Minutes = () => {
                 NURSE ACTION VIEW: YOUR NEXT 5 MINUTES
               </h2>
               <p className="text-xs text-blue-200">
-                Converting raw risk scores into an actionable, prioritized clinical workflow schedule.
+                Converting raw risk scores into an actionable, prioritized
+                clinical workflow schedule.
               </p>
             </div>
           </div>
@@ -121,7 +137,8 @@ export const NurseNext5Minutes = () => {
                     {task.actionTitle}
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Patient: <strong>{p.name}</strong> ({p.age}y &bull; {p.chief_complaint})
+                    Patient: <strong>{p.name}</strong> ({p.age}y &bull;{" "}
+                    {p.chief_complaint})
                   </p>
                 </div>
               </div>

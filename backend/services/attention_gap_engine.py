@@ -176,3 +176,42 @@ def compute_patient_action_priority(
         "action_reasons": reasons_why,
         "failure_mode_category": failure_cat
     }
+
+def compute_referral_eligibility(patient: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Evaluates whether a patient in an overcrowded tertiary ED is safely eligible
+    for diversion/referral to an Urgent Care Center or Primary Health Centre (PHC).
+    """
+    triage_level = patient.get("triage_level", 3)
+    risk_score = patient.get("risk_score", 50.0)
+    det_score = patient.get("deterioration_score", 0.0)
+    traj_status = patient.get("trajectory_status", "STABLE")
+    is_uncertain = patient.get("is_uncertain", False)
+    age = patient.get("age", 30)
+    pain_score = patient.get("pain_score", 0)
+
+    if (
+        triage_level in [4, 5]
+        and risk_score < 30.0
+        and det_score == 0.0
+        and traj_status == "STABLE"
+        and not is_uncertain
+        and 2 <= age < 75
+        and pain_score <= 4
+    ):
+        res_score = round(max(60.0, min(99.0, 100.0 - (risk_score * 1.2) - (pain_score * 2.5))), 1)
+        return {
+            "referral_eligible": True,
+            "referral_eligibility_score": res_score,
+            "referral_facility": "Primary Health Centre (PHC) / Urgent Care Clinic",
+            "referral_reason": "Stable low-acuity presentation; safe for community clinic referral to relieve tertiary ED volume"
+        }
+    
+    ineligible_score = round(max(0.0, min(45.0, 50.0 - (risk_score * 0.5) - (det_score * 0.8))), 1)
+    return {
+        "referral_eligible": False,
+        "referral_eligibility_score": ineligible_score,
+        "referral_facility": None,
+        "referral_reason": None
+    }
+

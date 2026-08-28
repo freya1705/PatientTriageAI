@@ -55,6 +55,11 @@ export const api = {
     return res.data;
   },
 
+  toggleAttendant: async (id) => {
+    const res = await axios.post(`${API_BASE}/patients/${id}/toggle-attendant`);
+    return res.data;
+  },
+
   simulateDeterioration: async (id) => {
     const res = await axios.post(`${API_BASE}/patients/${id}/simulate-deterioration`);
     return res.data;
@@ -136,6 +141,21 @@ export const api = {
 
   getLiveSafetyFeed: async () => {
     const res = await axios.get(`${API_BASE}/portal/feed/live-events`);
+    return res.data;
+  },
+
+  // 108 EMS Pre-Arrival Telemetry
+  getIncomingEms: async () => {
+    const res = await axios.get(`${API_BASE}/ems/incoming`);
+    return res.data;
+  },
+
+  preallocateBay: async (emsId, bayName, assignedBy = "Charge Nurse") => {
+    const res = await axios.post(`${API_BASE}/ems/pre-allocate-bay`, {
+      ems_id: emsId,
+      bay_name: bayName,
+      assigned_by: assignedBy
+    });
     return res.data;
   }
 };

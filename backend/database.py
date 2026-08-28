@@ -47,6 +47,7 @@ def init_db(seed_if_empty: bool = True):
         elapsed_since_vital INTEGER DEFAULT 0,
         is_attended INTEGER DEFAULT 0,
         attending_physician TEXT,
+        attendant_away INTEGER DEFAULT 0,
         is_overridden INTEGER DEFAULT 0,
         override_level INTEGER,
         override_reason TEXT,
@@ -106,6 +107,13 @@ def init_db(seed_if_empty: bool = True):
     """)
 
     conn.commit()
+
+    # Check and add attendant_away if missing (migration)
+    cursor.execute("PRAGMA table_info(patients)")
+    columns = [col["name"] for col in cursor.fetchall()]
+    if "attendant_away" not in columns:
+        cursor.execute("ALTER TABLE patients ADD COLUMN attendant_away INTEGER DEFAULT 0")
+        conn.commit()
 
     # Check if hospital config exists
     cursor.execute("SELECT COUNT(*) FROM hospital_config")
@@ -182,8 +190,8 @@ def seed_benchmark_patients(conn=None):
             triage_level, triage_category, risk_score, confidence_score,
             uncertainty_score, is_uncertain, safety_status, trajectory_status,
             total_waiting_mins, elapsed_since_vital, is_attended, attending_physician,
-            scenario_tag, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            attendant_away, scenario_tag, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             p["id"], p["name"], p["age"], p.get("gender", "Unknown"),
             p["chief_complaint"], json.dumps(p.get("symptoms", [])), p.get("pain_score", 0),
@@ -195,6 +203,7 @@ def seed_benchmark_patients(conn=None):
             safety_status, traj_status,
             p.get("total_waiting_mins", 0), p.get("elapsed_since_vital", 0),
             1 if p.get("is_attended", False) else 0, p.get("attending_physician"),
+            1 if p.get("attendant_away", p["id"] in ["P-008", "P-014"]) else 0,
             p.get("scenario_tag"), now_iso, now_iso
         ))
 

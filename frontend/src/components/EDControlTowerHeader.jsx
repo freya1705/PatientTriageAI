@@ -1,7 +1,6 @@
-import React from 'react';
-import { useTriage } from '../context/TriageContext';
+import React from "react";
+import { useTriage } from "../context/TriageContext";
 import {
-  Activity,
   AlertOctagon,
   Clock,
   ShieldCheck,
@@ -12,8 +11,7 @@ import {
   QrCode,
   LayoutGrid,
   Stethoscope,
-  TrendingDown
-} from 'lucide-react';
+} from "lucide-react";
 
 export const EDControlTowerHeader = () => {
   const {
@@ -23,7 +21,9 @@ export const EDControlTowerHeader = () => {
     surgeActive,
     handleToggleSurge,
     handleResetData,
-    openPatientPortalCompanion
+    openPatientPortalCompanion,
+    incomingEmsList,
+    handlePreallocateBay,
   } = useTriage();
 
   if (!queueData) return null;
@@ -33,15 +33,38 @@ export const EDControlTowerHeader = () => {
   const total = allPatients.length;
 
   // Counts for breakdown strip
-  const lowRiskCount = allPatients.filter((p) => (p.risk_score || 0) < 25).length;
-  const stableCount = allPatients.filter((p) => (p.risk_score || 0) >= 25 && (p.risk_score || 0) < 40).length;
-  const watchCount = allPatients.filter((p) => (p.risk_score || 0) >= 40 && (p.risk_score || 0) < 60).length;
-  const reassessCount = allPatients.filter((p) => p.action_badge === 'REASSESS' || ((p.risk_score || 0) >= 60 && (p.risk_score || 0) < 75)).length;
-  const escalateCount = allPatients.filter((p) => p.action_badge === 'ESCALATE' || p.action_badge === 'IMMEDIATE' || (p.risk_score || 0) >= 75).length;
+  const lowRiskCount = allPatients.filter(
+    (p) => (p.risk_score || 0) < 25,
+  ).length;
+  const stableCount = allPatients.filter(
+    (p) => (p.risk_score || 0) >= 25 && (p.risk_score || 0) < 40,
+  ).length;
+  const watchCount = allPatients.filter(
+    (p) => (p.risk_score || 0) >= 40 && (p.risk_score || 0) < 60,
+  ).length;
+  const reassessCount = allPatients.filter(
+    (p) =>
+      p.action_badge === "REASSESS" ||
+      ((p.risk_score || 0) >= 60 && (p.risk_score || 0) < 75),
+  ).length;
+  const escalateCount = allPatients.filter(
+    (p) =>
+      p.action_badge === "ESCALATE" ||
+      p.action_badge === "IMMEDIATE" ||
+      (p.risk_score || 0) >= 75,
+  ).length;
   const uncertainCount = allPatients.filter((p) => p.is_uncertain).length;
 
-  const attentionRequiredCount = Math.max(1, reassessCount + escalateCount + uncertainCount);
-  const shortestWindow = Math.min(...allPatients.map((p) => p.minutes_until_expiry ?? 13).filter((m) => m > 0), 13);
+  const attentionRequiredCount = Math.max(
+    1,
+    reassessCount + escalateCount + uncertainCount,
+  );
+  const shortestWindow = Math.min(
+    ...allPatients
+      .map((p) => p.minutes_until_expiry ?? 13)
+      .filter((m) => m > 0),
+    13,
+  );
 
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-5">
@@ -61,7 +84,8 @@ export const EDControlTowerHeader = () => {
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Continuous Attention-Gap Intelligence &bull; Deciding who needs attention, why, and what should happen next.
+            Continuous Attention-Gap Intelligence &bull; Deciding who needs
+            attention, why, and what should happen next.
           </p>
         </div>
 
@@ -71,12 +95,14 @@ export const EDControlTowerHeader = () => {
             onClick={handleToggleSurge}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors flex items-center space-x-1.5 ${
               surgeActive
-                ? 'bg-amber-600 text-white border-amber-600 hover:bg-amber-700 shadow-xs'
-                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                ? "bg-amber-600 text-white border-amber-600 hover:bg-amber-700 shadow-xs"
+                : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
             }`}
           >
             <Zap className="w-3.5 h-3.5" />
-            <span>{surgeActive ? 'Surge Active (60 ED)' : 'Toggle 3X Surge'}</span>
+            <span>
+              {surgeActive ? "Surge Active (60 ED)" : "Toggle 3X Surge"}
+            </span>
           </button>
 
           <button
@@ -87,6 +113,128 @@ export const EDControlTowerHeader = () => {
           </button>
         </div>
       </div>
+
+      {/* 108 EMS PRE-ARRIVAL BANNER */}
+      {incomingEmsList && incomingEmsList.length > 0 && (
+        <div className="bg-gradient-to-r from-red-950/95 via-slate-900 to-red-950/95 text-white border border-red-500/40 rounded-xl p-4 shadow-lg space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2.5">
+              <span className="flex h-3 w-3 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+              </span>
+              <span className="text-xs font-black uppercase tracking-wider text-red-300">
+                🚨 108 EMS Inbound Pre-Arrival Telemetry (
+                {incomingEmsList.length} Ambulances En Route)
+              </span>
+            </div>
+            <span className="text-[11px] text-slate-400 font-mono">
+              Pre-Arrival Acuity AI Active
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {incomingEmsList.map((ems) => (
+              <div
+                key={ems.id}
+                className="bg-slate-900/90 border border-red-500/30 rounded-xl p-3.5 space-y-2 flex flex-col justify-between"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-black bg-red-600 text-white uppercase">
+                        ETA: {ems.eta_mins} MINS
+                      </span>
+                      <span className="text-xs font-bold text-white">
+                        {ems.ambulance_unit}
+                      </span>
+                    </div>
+                    <div className="text-xs font-semibold text-slate-200 mt-1">
+                      {ems.patient_name} ({ems.age}y {ems.gender}) —{" "}
+                      <span className="text-red-300 font-bold">
+                        {ems.chief_complaint}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="text-right shrink-0">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-black bg-rose-950 text-rose-300 border border-rose-700">
+                      Level {ems.precomputed_triage_level} (
+                      {ems.precomputed_category})
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-slate-950/70 rounded-lg p-2 text-[11px] font-mono text-slate-300 flex items-center justify-between gap-2">
+                  <span>
+                    SpO₂:{" "}
+                    <strong
+                      className={
+                        ems.vitals.spo2 < 93 ? "text-red-400" : "text-slate-200"
+                      }
+                    >
+                      {ems.vitals.spo2}%
+                    </strong>
+                  </span>
+                  <span>
+                    HR:{" "}
+                    <strong
+                      className={
+                        ems.vitals.heart_rate > 100
+                          ? "text-red-400"
+                          : "text-slate-200"
+                      }
+                    >
+                      {ems.vitals.heart_rate} bpm
+                    </strong>
+                  </span>
+                  <span>
+                    BP:{" "}
+                    <strong>
+                      {ems.vitals.systolic_bp}/{ems.vitals.diastolic_bp}
+                    </strong>
+                  </span>
+                  <span>
+                    RR: <strong>{ems.vitals.resp_rate}</strong>
+                  </span>
+                </div>
+
+                <p className="text-[11px] text-slate-300 italic line-clamp-2">
+                  "{ems.paramedic_notes}"
+                </p>
+
+                <div className="pt-1 flex items-center justify-between border-t border-slate-800">
+                  <div className="text-xs text-amber-300 font-medium">
+                    {ems.pre_allocated_bay ? (
+                      <span className="text-emerald-400 font-bold">
+                        ✓ Reserved: {ems.pre_allocated_bay}
+                      </span>
+                    ) : (
+                      <span>Recommended: Resus Bay 1</span>
+                    )}
+                  </div>
+
+                  {!ems.pre_allocated_bay ? (
+                    <button
+                      onClick={() =>
+                        handlePreallocateBay(ems.id, "Resuscitation Bay 1")
+                      }
+                      className="px-3 py-1.5 rounded-lg text-xs font-black bg-red-600 hover:bg-red-700 text-white shadow-xs transition-colors flex items-center space-x-1"
+                    >
+                      <Zap className="w-3.5 h-3.5" />
+                      <span>Pre-Allocate Resus Bay</span>
+                    </button>
+                  ) : (
+                    <span className="text-[11px] font-bold text-slate-400 bg-slate-800 px-2.5 py-1 rounded-lg">
+                      Bay Locked
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* THREE GIANT HERO NUMBERS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -148,44 +296,136 @@ export const EDControlTowerHeader = () => {
         </div>
       </div>
 
-      {/* LIVE SAFETY BREAKDOWN RIBBON */}
-      <div className="bg-slate-900 text-white rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 shadow-xs">
-        <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5 px-2">
-          <Activity className="w-3.5 h-3.5 text-cyan-400" />
-          <span>Live Census State:</span>
-        </div>
+      {/* LIVE CENSUS RIBBON — 3 Actionable Groups */}
+      {(() => {
+        const actNowCount = escalateCount + reassessCount;
+        const recheckCount = watchCount + uncertainCount;
+        const stableTotal = lowRiskCount + stableCount;
+        const capacityPct = queueData?.capacity_pressure_percent ?? 0;
 
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-slate-800 text-emerald-400 border border-slate-700">
-            {lowRiskCount} LOW RISK
-          </span>
-          <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-slate-800 text-emerald-300 border border-slate-700">
-            {stableCount} STABLE
-          </span>
-          <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-slate-800 text-amber-300 border border-slate-700">
-            {watchCount} WATCH
-          </span>
-          <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-amber-950/80 text-amber-400 border border-amber-800">
-            {reassessCount} REASSESS
-          </span>
-          <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-rose-950/90 text-rose-300 border border-rose-700 animate-pulse">
-            {escalateCount} ESCALATE
-          </span>
-          <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-purple-950/80 text-purple-300 border border-purple-800">
-            {uncertainCount} UNCERTAIN
-          </span>
-        </div>
-      </div>
+        return (
+          <div className="space-y-2">
+            {/* Three action group pills */}
+            <div className="grid grid-cols-3 gap-2">
+              {/* 🔴 Act Now */}
+              <div
+                className={`rounded-xl p-3 border flex items-center justify-between ${
+                  actNowCount > 0
+                    ? "bg-rose-50 border-rose-200"
+                    : "bg-slate-50 border-slate-200"
+                }`}
+              >
+                <div>
+                  <div
+                    className={`text-2xl font-black tracking-tight ${
+                      actNowCount > 0 ? "text-rose-700" : "text-slate-400"
+                    }`}
+                  >
+                    {actNowCount}
+                  </div>
+                  <div
+                    className={`text-[10px] font-extrabold uppercase tracking-wide mt-0.5 ${
+                      actNowCount > 0 ? "text-rose-800" : "text-slate-500"
+                    }`}
+                  >
+                    🔴 Act Now
+                  </div>
+                  <div className="text-[10px] text-slate-500 mt-0.5">
+                    Escalate + Reassess
+                  </div>
+                </div>
+                {actNowCount > 0 && (
+                  <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping self-start mt-1" />
+                )}
+              </div>
+
+              {/* 🟡 Recheck Soon */}
+              <div
+                className={`rounded-xl p-3 border flex items-center justify-between ${
+                  recheckCount > 0
+                    ? "bg-amber-50 border-amber-200"
+                    : "bg-slate-50 border-slate-200"
+                }`}
+              >
+                <div>
+                  <div
+                    className={`text-2xl font-black tracking-tight ${
+                      recheckCount > 0 ? "text-amber-700" : "text-slate-400"
+                    }`}
+                  >
+                    {recheckCount}
+                  </div>
+                  <div
+                    className={`text-[10px] font-extrabold uppercase tracking-wide mt-0.5 ${
+                      recheckCount > 0 ? "text-amber-800" : "text-slate-500"
+                    }`}
+                  >
+                    🟡 Recheck Soon
+                  </div>
+                  <div className="text-[10px] text-slate-500 mt-0.5">
+                    Watch + Uncertain
+                  </div>
+                </div>
+              </div>
+
+              {/* 🟢 Stable */}
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between">
+                <div>
+                  <div className="text-2xl font-black text-emerald-700 tracking-tight">
+                    {stableTotal}
+                  </div>
+                  <div className="text-[10px] font-extrabold uppercase tracking-wide text-emerald-800 mt-0.5">
+                    🟢 Stable
+                  </div>
+                  <div className="text-[10px] text-slate-500 mt-0.5">
+                    Monitoring only
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ED Pressure Bar */}
+            <div className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 flex items-center gap-3">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 shrink-0">
+                ED Load
+              </span>
+              <div className="flex-1 bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${
+                    capacityPct >= 80
+                      ? "bg-rose-500"
+                      : capacityPct >= 55
+                        ? "bg-amber-400"
+                        : "bg-emerald-500"
+                  }`}
+                  style={{ width: `${Math.min(capacityPct, 100)}%` }}
+                />
+              </div>
+              <span
+                className={`text-[11px] font-black shrink-0 ${
+                  capacityPct >= 80
+                    ? "text-rose-600"
+                    : capacityPct >= 55
+                      ? "text-amber-600"
+                      : "text-emerald-600"
+                }`}
+              >
+                {capacityPct}%
+              </span>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* MULTI-VIEW WORKSPACE SWITCHER */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
         <div className="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200">
           <button
-            onClick={() => setControlViewMode('control-tower')}
+            onClick={() => setControlViewMode("control-tower")}
             className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 ${
-              controlViewMode === 'control-tower'
-                ? 'bg-white text-slate-900 shadow-xs border border-slate-200'
-                : 'text-slate-600 hover:text-slate-900'
+              controlViewMode === "control-tower"
+                ? "bg-white text-slate-900 shadow-xs border border-slate-200"
+                : "text-slate-600 hover:text-slate-900"
             }`}
           >
             <Compass className="w-4 h-4 text-cyan-700" />
@@ -193,11 +433,11 @@ export const EDControlTowerHeader = () => {
           </button>
 
           <button
-            onClick={() => setControlViewMode('nurse-view')}
+            onClick={() => setControlViewMode("nurse-view")}
             className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 ${
-              controlViewMode === 'nurse-view'
-                ? 'bg-white text-slate-900 shadow-xs border border-slate-200'
-                : 'text-slate-600 hover:text-slate-900'
+              controlViewMode === "nurse-view"
+                ? "bg-white text-slate-900 shadow-xs border border-slate-200"
+                : "text-slate-600 hover:text-slate-900"
             }`}
           >
             <Stethoscope className="w-4 h-4 text-blue-600" />
@@ -205,11 +445,11 @@ export const EDControlTowerHeader = () => {
           </button>
 
           <button
-            onClick={() => setControlViewMode('pressure-map')}
+            onClick={() => setControlViewMode("pressure-map")}
             className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 ${
-              controlViewMode === 'pressure-map'
-                ? 'bg-white text-slate-900 shadow-xs border border-slate-200'
-                : 'text-slate-600 hover:text-slate-900'
+              controlViewMode === "pressure-map"
+                ? "bg-white text-slate-900 shadow-xs border border-slate-200"
+                : "text-slate-600 hover:text-slate-900"
             }`}
           >
             <LayoutGrid className="w-4 h-4 text-purple-600" />
@@ -217,11 +457,11 @@ export const EDControlTowerHeader = () => {
           </button>
 
           <button
-            onClick={() => setControlViewMode('preorders')}
+            onClick={() => setControlViewMode("preorders")}
             className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 ${
-              controlViewMode === 'preorders'
-                ? 'bg-white text-slate-900 shadow-xs border border-slate-200'
-                : 'text-slate-600 hover:text-slate-900'
+              controlViewMode === "preorders"
+                ? "bg-white text-slate-900 shadow-xs border border-slate-200"
+                : "text-slate-600 hover:text-slate-900"
             }`}
           >
             <FileCheck2 className="w-4 h-4 text-emerald-600" />
@@ -231,7 +471,7 @@ export const EDControlTowerHeader = () => {
 
         {/* Quick Patient Companion Modal trigger */}
         <button
-          onClick={() => openPatientPortalCompanion('P-017')}
+          onClick={() => openPatientPortalCompanion("P-017")}
           className="px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-50 text-cyan-800 border border-cyan-200 hover:bg-cyan-100 transition-colors flex items-center space-x-1.5 shadow-xs"
         >
           <QrCode className="w-4 h-4 text-cyan-700" />

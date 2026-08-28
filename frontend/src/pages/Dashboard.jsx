@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import { useTriage } from '../context/TriageContext';
-import { EDControlTowerHeader } from '../components/EDControlTowerHeader';
-import { ReplaySimulationBar } from '../components/ReplaySimulationBar';
-import { ActionQueue } from '../components/ActionQueue';
-import { NurseNext5Minutes } from '../components/NurseNext5Minutes';
-import { EDPressureMap } from '../components/EDPressureMap';
-import { StandingPreOrdersHub } from '../components/StandingPreOrdersHub';
-import { LiveSafetyFeed } from '../components/LiveSafetyFeed';
-import { SafetySummaryPanel } from '../components/SafetySummaryPanel';
-import { CounterfactualWidget } from '../components/CounterfactualWidget';
-import { SafetyOutcomeModal } from '../components/SafetyOutcomeModal';
-import { WhyComparisonModal } from '../components/WhyComparisonModal';
-import { PatientTransparencyCompanion } from '../components/PatientTransparencyCompanion';
-import { OverrideModal } from '../components/OverrideModal';
-import { WhyExplanationModal } from '../components/WhyExplanationModal';
-import { VitalTrendModal } from '../components/VitalTrendModal';
-import { SafetyClock } from '../components/SafetyClock';
+import React, { useState } from "react";
+import { useTriage } from "../context/TriageContext";
+import { EDControlTowerHeader } from "../components/EDControlTowerHeader";
+import { ReplaySimulationBar } from "../components/ReplaySimulationBar";
+import { ActionQueue } from "../components/ActionQueue";
+import { NurseNext5Minutes } from "../components/NurseNext5Minutes";
+import { EDPressureMap } from "../components/EDPressureMap";
+import { StandingPreOrdersHub } from "../components/StandingPreOrdersHub";
+import { LiveSafetyFeed } from "../components/LiveSafetyFeed";
+import { SafetySummaryPanel } from "../components/SafetySummaryPanel";
+import { CounterfactualWidget } from "../components/CounterfactualWidget";
+import { SafetyOutcomeModal } from "../components/SafetyOutcomeModal";
+import { WhyComparisonModal } from "../components/WhyComparisonModal";
+import { PatientTransparencyCompanion } from "../components/PatientTransparencyCompanion";
+import { OverrideModal } from "../components/OverrideModal";
+import { WhyExplanationModal } from "../components/WhyExplanationModal";
+import { VitalTrendModal } from "../components/VitalTrendModal";
+import { SafetyClock } from "../components/SafetyClock";
 import {
   Search,
   RefreshCw,
@@ -31,8 +31,8 @@ import {
   PanelRightOpen,
   HelpCircle,
   Clock,
-  ShieldCheck
-} from 'lucide-react';
+  ShieldCheck,
+} from "lucide-react";
 
 export const Dashboard = () => {
   const {
@@ -55,13 +55,13 @@ export const Dashboard = () => {
     setPortalPatientId,
     handleSimulateDeterioration,
     handleClosedLoopReassess,
-    handleToggleAttending
+    handleToggleAttending,
   } = useTriage();
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [levelFilter, setLevelFilter] = useState('ALL');
-  const [failureCatFilter, setFailureCatFilter] = useState('ALL');
-  const [stationFilter, setStationFilter] = useState('ALL');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [levelFilter, setLevelFilter] = useState("ALL");
+  const [failureCatFilter, setFailureCatFilter] = useState("ALL");
+  const [stationFilter, setStationFilter] = useState("ALL");
   const [showRightPanel, setShowRightPanel] = useState(true);
 
   if (loading && !queueData) {
@@ -69,7 +69,9 @@ export const Dashboard = () => {
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="text-center space-y-2">
           <Activity className="w-8 h-8 text-cyan-700 animate-spin mx-auto" />
-          <p className="text-xs font-semibold text-slate-500">Loading live emergency command center...</p>
+          <p className="text-xs font-semibold text-slate-500">
+            Loading live emergency command center...
+          </p>
         </div>
       </div>
     );
@@ -78,12 +80,12 @@ export const Dashboard = () => {
   const allPatients = queueData?.all_patients || [];
 
   const failureCategories = [
-    { id: 'ALL', label: 'All Cases' },
-    { id: 'CAT_A', label: 'Cat A: Resuscitation' },
-    { id: 'CAT_B', label: 'Cat B: Hidden / Age' },
-    { id: 'CAT_C', label: 'Cat C: Unknown ≠ Safe' },
-    { id: 'CAT_D', label: 'Cat D: Deteriorating' },
-    { id: 'CAT_E', label: 'Cat E: Attention Gap' }
+    { id: "ALL", label: "All Cases" },
+    { id: "CAT_A", label: "Cat A: Resuscitation" },
+    { id: "CAT_B", label: "Cat B: Hidden / Age" },
+    { id: "CAT_C", label: "Cat C: Unknown ≠ Safe" },
+    { id: "CAT_D", label: "Cat D: Deteriorating" },
+    { id: "CAT_E", label: "Cat E: Attention Gap" },
   ];
 
   const filteredPatients = allPatients.filter((p) => {
@@ -93,16 +95,18 @@ export const Dashboard = () => {
       p.chief_complaint.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesLevel =
-      levelFilter === 'ALL' || p.display_triage_level.toString() === levelFilter;
+      levelFilter === "ALL" ||
+      p.display_triage_level.toString() === levelFilter;
 
     const matchesCategory =
-      failureCatFilter === 'ALL' || p.failure_mode_category?.code === failureCatFilter;
+      failureCatFilter === "ALL" ||
+      p.failure_mode_category?.code === failureCatFilter;
 
     let matchesStation = true;
-    if (stationFilter === 'UNATTENDED') matchesStation = !p.is_attended;
-    else if (stationFilter === 'ATTENDED') matchesStation = p.is_attended;
-    else if (stationFilter === 'PEDIATRIC') matchesStation = p.age < 16;
-    else if (stationFilter === 'GERIATRIC') matchesStation = p.age >= 65;
+    if (stationFilter === "UNATTENDED") matchesStation = !p.is_attended;
+    else if (stationFilter === "ATTENDED") matchesStation = p.is_attended;
+    else if (stationFilter === "PEDIATRIC") matchesStation = p.age < 16;
+    else if (stationFilter === "GERIATRIC") matchesStation = p.age >= 65;
 
     return matchesSearch && matchesLevel && matchesCategory && matchesStation;
   });
@@ -110,17 +114,17 @@ export const Dashboard = () => {
   const getTriageBadge = (level) => {
     switch (level) {
       case 1:
-        return 'bg-rose-50 text-rose-700 border-rose-200';
+        return "bg-rose-50 text-rose-700 border-rose-200";
       case 2:
-        return 'bg-orange-50 text-orange-700 border-orange-200';
+        return "bg-orange-50 text-orange-700 border-orange-200";
       case 3:
-        return 'bg-amber-50 text-amber-700 border-amber-200';
+        return "bg-amber-50 text-amber-700 border-amber-200";
       case 4:
-        return 'bg-blue-50 text-blue-700 border-blue-200';
+        return "bg-blue-50 text-blue-700 border-blue-200";
       case 5:
-        return 'bg-slate-100 text-slate-700 border-slate-200';
+        return "bg-slate-100 text-slate-700 border-slate-200";
       default:
-        return 'bg-slate-100 text-slate-700 border-slate-200';
+        return "bg-slate-100 text-slate-700 border-slate-200";
     }
   };
 
@@ -133,13 +137,13 @@ export const Dashboard = () => {
       <ReplaySimulationBar />
 
       {/* 3. Main Switchable Workspace */}
-      {controlViewMode === 'nurse-view' && <NurseNext5Minutes />}
+      {controlViewMode === "nurse-view" && <NurseNext5Minutes />}
 
-      {controlViewMode === 'pressure-map' && <EDPressureMap />}
+      {controlViewMode === "pressure-map" && <EDPressureMap />}
 
-      {controlViewMode === 'preorders' && <StandingPreOrdersHub />}
+      {controlViewMode === "preorders" && <StandingPreOrdersHub />}
 
-      {controlViewMode === 'control-tower' && (
+      {controlViewMode === "control-tower" && (
         <div className="flex flex-col lg:flex-row items-start gap-6">
           {/* Center Column: Live Action Priority Queue & Patient Census */}
           <div className="flex-1 w-full space-y-6 min-w-0">
@@ -152,14 +156,16 @@ export const Dashboard = () => {
                 <div>
                   <div className="flex items-center space-x-2">
                     <h2 className="text-sm font-bold text-slate-900 tracking-tight">
-                      Emergency Patient Census ({filteredPatients.length} of {allPatients.length})
+                      Emergency Patient Census ({filteredPatients.length} of{" "}
+                      {allPatients.length})
                     </h2>
                     <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                       Auto-Updated
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Continuous physiological tracking, staleness expiration countdowns, and attention gap metrics.
+                    Continuous physiological tracking, staleness expiration
+                    countdowns, and attention gap metrics.
                   </p>
                 </div>
 
@@ -187,17 +193,17 @@ export const Dashboard = () => {
 
                 {/* Level Filter */}
                 <div className="flex items-center space-x-1 overflow-x-auto pb-1 md:pb-0 text-xs">
-                  {['ALL', '1', '2', '3', '4', '5'].map((lvl) => (
+                  {["ALL", "1", "2", "3", "4", "5"].map((lvl) => (
                     <button
                       key={lvl}
                       onClick={() => setLevelFilter(lvl)}
                       className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors flex-shrink-0 ${
                         levelFilter === lvl
-                          ? 'bg-slate-900 text-white'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          ? "bg-slate-900 text-white"
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                       }`}
                     >
-                      {lvl === 'ALL' ? 'All ESI' : `L${lvl}`}
+                      {lvl === "ALL" ? "All ESI" : `L${lvl}`}
                     </button>
                   ))}
                 </div>
@@ -233,14 +239,17 @@ export const Dashboard = () => {
                   <tbody className="divide-y divide-slate-100 font-sans">
                     {filteredPatients.length === 0 ? (
                       <tr>
-                        <td colSpan="7" className="py-8 text-center text-slate-400">
+                        <td
+                          colSpan="7"
+                          className="py-8 text-center text-slate-400"
+                        >
                           No patients match your active filters.
                         </td>
                       </tr>
                     ) : (
                       filteredPatients.map((p) => {
                         const vitals = p.latest_vitals || {};
-                        const isExpired = p.safety_status === 'EXPIRED';
+                        const isExpired = p.safety_status === "EXPIRED";
                         return (
                           <tr
                             key={p.id}
@@ -260,12 +269,15 @@ export const Dashboard = () => {
                                 {p.name}
                               </div>
                               <div className="text-[11px] text-slate-500 truncate max-w-[200px]">
-                                {p.age}y &bull; {p.gender} &bull; {p.chief_complaint}
+                                {p.age}y &bull; {p.gender} &bull;{" "}
+                                {p.chief_complaint}
                               </div>
                             </td>
 
                             <td className="py-3 px-3">
-                              <span className={`px-2 py-0.5 rounded text-[11px] font-bold border ${getTriageBadge(p.display_triage_level)}`}>
+                              <span
+                                className={`px-2 py-0.5 rounded text-[11px] font-bold border ${getTriageBadge(p.display_triage_level)}`}
+                              >
                                 Level {p.display_triage_level}
                               </span>
                             </td>
@@ -273,7 +285,9 @@ export const Dashboard = () => {
                             <td className="py-3 px-3">
                               <SafetyClock
                                 elapsedMins={p.elapsed_since_vital || 0}
-                                minutesUntilExpiry={p.minutes_until_expiry ?? 15}
+                                minutesUntilExpiry={
+                                  p.minutes_until_expiry ?? 15
+                                }
                                 safetyStatus={p.safety_status}
                                 size="compact"
                               />
@@ -284,18 +298,22 @@ export const Dashboard = () => {
                                 <span className="font-bold text-slate-900 font-mono">
                                   {p.risk_score}
                                 </span>
-                                <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
-                                  p.trajectory_status === 'RAPID_DETERIORATION'
-                                    ? 'bg-rose-100 text-rose-800'
-                                    : p.trajectory_status === 'WORSENING'
-                                    ? 'bg-amber-100 text-amber-800'
-                                    : 'bg-slate-100 text-slate-600'
-                                }`}>
+                                <span
+                                  className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
+                                    p.trajectory_status ===
+                                    "RAPID_DETERIORATION"
+                                      ? "bg-rose-100 text-rose-800"
+                                      : p.trajectory_status === "WORSENING"
+                                        ? "bg-amber-100 text-amber-800"
+                                        : "bg-slate-100 text-slate-600"
+                                  }`}
+                                >
                                   {p.trajectory_status}
                                 </span>
                               </div>
                               <div className="text-[10px] font-mono text-slate-400 mt-0.5">
-                                SpO₂ {vitals.spo2 ?? 96}% &bull; HR {vitals.heart_rate ?? 85}
+                                SpO₂ {vitals.spo2 ?? 96}% &bull; HR{" "}
+                                {vitals.heart_rate ?? 85}
                               </div>
                             </td>
 
@@ -304,7 +322,9 @@ export const Dashboard = () => {
                                 {p.action_priority_score} pts
                               </div>
                               <div className="text-[10px] text-slate-500">
-                                {p.is_attended ? '👨⚕️ Attended' : '⚠️ Unattended'}
+                                {p.is_attended
+                                  ? "👨⚕️ Attended"
+                                  : "⚠️ Unattended"}
                               </div>
                             </td>
 

@@ -13,7 +13,7 @@ from ..models.schemas import PatientIntakeRequest, AddVitalsRequest, ClinicianOv
 from ..services.risk_engine import calculate_triage_assessment
 from ..services.deterioration_engine import analyze_vital_deterioration
 from ..services.safety_expiry_engine import calculate_safety_staleness_and_decay
-from ..services.attention_gap_engine import compute_patient_action_priority
+from ..services.attention_gap_engine import compute_patient_action_priority, compute_referral_eligibility
 from ..services.downgrade_guard import verify_downgrade_safety
 from ..services.audit_service import log_audit_event
 
@@ -47,13 +47,16 @@ def evaluate_patient_dynamic_state(patient_dict: dict, vital_history: list, prof
         "total_waiting_mins": patient_dict["total_waiting_mins"],
         "is_attended": bool(patient_dict["is_attended"]),
         "safety_status": safety_status,
-        "trajectory_status": traj_status
+        "trajectory_status": traj_status,
+        "pain_score": patient_dict.get("pain_score", 0)
     }
     action_info = compute_patient_action_priority(scoring_payload, profile_type=profile_type)
+    referral_info = compute_referral_eligibility(scoring_payload)
 
     return {
         **patient_dict,
         "is_attended": bool(patient_dict.get("is_attended", 0)),
+        "attendant_away": bool(patient_dict.get("attendant_away", 0)),
         "is_uncertain": bool(patient_dict.get("is_uncertain", 0)),
         "is_overridden": bool(patient_dict.get("is_overridden", 0)),
         "display_triage_level": triage_level,
@@ -70,7 +73,11 @@ def evaluate_patient_dynamic_state(patient_dict: dict, vital_history: list, prof
         "action_badge": action_info["action_badge"],
         "primary_action_reason": action_info["primary_action_reason"],
         "action_reasons": action_info["action_reasons"],
-        "failure_mode_category": action_info.get("failure_mode_category")
+        "failure_mode_category": action_info.get("failure_mode_category"),
+        "referral_eligible": referral_info["referral_eligible"],
+        "referral_eligibility_score": referral_info.get("referral_eligibility_score", 0.0),
+        "referral_facility": referral_info["referral_facility"],
+        "referral_reason": referral_info["referral_reason"]
     }
 
 @router.get("")
@@ -370,6 +377,45 @@ def toggle_attending_status(patient_id: str):
         "success": True,
         "is_attended": bool(new_attended),
         "attending_physician": new_physician
+    }
+
+@router.post("/{patient_id}/toggle-attendant")
+def toggle_attendant_status(patient_id: str):
+    """Toggles attendant_away flag indicating whether a companion/family member has stepped away."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT attendant_away FROM patients WHERE id = ?", (patient_id,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Patient not found")
+
+    curr_away = row["attendant_away"] or 0
+    new_away = 0 if curr_away else 1
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    cursor.execute("""
+    UPDATE patients
+    SET attendant_away = ?, updated_at = ?
+    WHERE id = ?
+    """, (new_away, now_iso, patient_id))
+
+    log_audit_event(
+        event_type="ATTENDANT_STATUS_CHANGE",
+        patient_id=patient_id,
+        clinician_decision=f"Attendant status set to {'AWAY (Unattended in Waiting Room)' if new_away else 'PRESENT'}",
+        clinician_role="Triage Staff",
+        outcome=f"Attendant flag: {'AWAY' if new_away else 'PRESENT'}",
+        conn=conn
+    )
+
+    conn.commit()
+    conn.close()
+
+    return {
+        "success": True,
+        "patient_id": patient_id,
+        "attendant_away": bool(new_away)
     }
 
 @router.post("/{patient_id}/simulate-deterioration")

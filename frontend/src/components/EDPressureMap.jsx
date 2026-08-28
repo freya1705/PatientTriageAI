@@ -1,5 +1,5 @@
-import React from 'react';
-import { useTriage } from '../context/TriageContext';
+import React from "react";
+import { useTriage } from "../context/TriageContext";
 import {
   LayoutGrid,
   Users,
@@ -8,11 +8,19 @@ import {
   Zap,
   Activity,
   Bed,
-  MapPin
-} from 'lucide-react';
+  MapPin,
+  UserX,
+  UserCheck,
+} from "lucide-react";
 
 export const EDPressureMap = () => {
-  const { queueData, viewPatientDetail, openCounterfactualModal, handleClosedLoopReassess } = useTriage();
+  const {
+    queueData,
+    viewPatientDetail,
+    openCounterfactualModal,
+    handleClosedLoopReassess,
+    handleToggleAttendant,
+  } = useTriage();
 
   if (!queueData) return null;
 
@@ -22,35 +30,39 @@ export const EDPressureMap = () => {
   const treatmentBayPatients = allPatients.filter((p) => p.is_attended);
 
   const getNodeColor = (p) => {
-    if (p.action_badge === 'ESCALATE' || p.action_badge === 'IMMEDIATE' || (p.risk_score || 0) >= 75) {
+    if (
+      p.action_badge === "ESCALATE" ||
+      p.action_badge === "IMMEDIATE" ||
+      (p.risk_score || 0) >= 75
+    ) {
       return {
-        bg: 'bg-rose-500 text-white ring-4 ring-rose-400/50 animate-pulse',
-        border: 'border-rose-600',
-        label: '🔴 Escalation'
+        bg: "bg-rose-500 text-white ring-4 ring-rose-400/50 animate-pulse",
+        border: "border-rose-600",
+        label: "🔴 Escalation",
       };
-    } else if (p.action_badge === 'REASSESS' || p.safety_status === 'EXPIRED') {
+    } else if (p.action_badge === "REASSESS" || p.safety_status === "EXPIRED") {
       return {
-        bg: 'bg-amber-500 text-white ring-2 ring-amber-300',
-        border: 'border-amber-600',
-        label: '🟠 Reassess'
+        bg: "bg-amber-500 text-white ring-2 ring-amber-300",
+        border: "border-amber-600",
+        label: "🟠 Reassess",
       };
     } else if (p.is_uncertain) {
       return {
-        bg: 'bg-purple-500 text-white',
-        border: 'border-purple-600',
-        label: '🟣 Uncertain'
+        bg: "bg-purple-500 text-white",
+        border: "border-purple-600",
+        label: "🟣 Uncertain",
       };
     } else if ((p.risk_score || 0) >= 40) {
       return {
-        bg: 'bg-yellow-400 text-slate-900',
-        border: 'border-yellow-500',
-        label: '🟡 Watch'
+        bg: "bg-yellow-400 text-slate-900",
+        border: "border-yellow-500",
+        label: "🟡 Watch",
       };
     } else {
       return {
-        bg: 'bg-emerald-500 text-white',
-        border: 'border-emerald-600',
-        label: '🟢 Stable'
+        bg: "bg-emerald-500 text-white",
+        border: "border-emerald-600",
+        label: "🟢 Stable",
       };
     }
   };
@@ -67,7 +79,8 @@ export const EDPressureMap = () => {
             </h2>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Real-time spatial visualization &bull; Pinpoints deteriorating patients waiting without direct physician eye-contact.
+            Real-time spatial visualization &bull; Pinpoints deteriorating
+            patients and unattended patients whose family stepped away.
           </p>
         </div>
 
@@ -89,6 +102,10 @@ export const EDPressureMap = () => {
             <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
             <span>Critical Unattended</span>
           </span>
+          <span className="flex items-center space-x-1 px-2 py-0.5 rounded bg-orange-50 text-orange-800 border border-orange-200">
+            <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+            <span>Attendant Away</span>
+          </span>
         </div>
       </div>
 
@@ -100,7 +117,8 @@ export const EDPressureMap = () => {
             <div className="flex items-center space-x-2">
               <Users className="w-4 h-4 text-slate-600" />
               <h3 className="text-xs font-black uppercase tracking-wider text-slate-800">
-                WAITING ROOM & AMBIENT BAY ({waitingBayPatients.length} Patients)
+                WAITING ROOM & AMBIENT BAY ({waitingBayPatients.length}{" "}
+                Patients)
               </h3>
             </div>
             <span className="text-[10px] font-bold text-slate-500">
@@ -116,13 +134,19 @@ export const EDPressureMap = () => {
                 <div
                   key={p.id}
                   onClick={() => viewPatientDetail(p.id)}
-                  className="bg-white border border-slate-200 rounded-xl p-3 shadow-2xs hover:border-slate-400 hover:shadow-xs transition-all cursor-pointer flex flex-col justify-between space-y-2 group"
+                  className={`bg-white border rounded-xl p-3 shadow-2xs hover:shadow-xs transition-all cursor-pointer flex flex-col justify-between space-y-2 group ${
+                    p.attendant_away
+                      ? "border-orange-300 ring-2 ring-orange-100"
+                      : "border-slate-200 hover:border-slate-400"
+                  }`}
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-mono font-bold text-slate-500">
                       Chair #{idx + 1}
                     </span>
-                    <span className={`w-3 h-3 rounded-full flex-shrink-0 ${node.bg}`} />
+                    <span
+                      className={`w-3 h-3 rounded-full flex-shrink-0 ${node.bg}`}
+                    />
                   </div>
 
                   <div>
@@ -134,9 +158,46 @@ export const EDPressureMap = () => {
                     </div>
                   </div>
 
+                  {/* Attendant Away Alert / Toggle Badge */}
+                  <div className="pt-1">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleAttendant(p.id);
+                      }}
+                      className={`w-full py-1 px-1.5 rounded text-[9px] font-bold flex items-center justify-center space-x-1 border transition-colors ${
+                        p.attendant_away
+                          ? "bg-orange-100 text-orange-900 border-orange-300 hover:bg-orange-200"
+                          : "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200"
+                      }`}
+                      title={
+                        p.attendant_away
+                          ? "Companion is away (click to mark present)"
+                          : "Companion present (click to mark away)"
+                      }
+                    >
+                      {p.attendant_away ? (
+                        <>
+                          <span className="w-1.5 h-1.5 rounded-full bg-orange-600 animate-ping"></span>
+                          <span>Attendant Away</span>
+                        </>
+                      ) : (
+                        <span>Attendant Present</span>
+                      )}
+                    </button>
+                  </div>
+
                   <div className="flex items-center justify-between text-[10px] font-mono text-slate-600 pt-1 border-t border-slate-100">
-                    <span>Risk: <strong>{p.risk_score}</strong></span>
-                    <span className={p.safety_status === 'EXPIRED' ? 'text-rose-600 font-bold' : 'text-slate-500'}>
+                    <span>
+                      Risk: <strong>{p.risk_score}</strong>
+                    </span>
+                    <span
+                      className={
+                        p.safety_status === "EXPIRED"
+                          ? "text-rose-600 font-bold"
+                          : "text-slate-500"
+                      }
+                    >
                       {p.total_waiting_mins}m wait
                     </span>
                   </div>
@@ -181,7 +242,7 @@ export const EDPressureMap = () => {
                         {p.name}
                       </div>
                       <div className="text-[10px] text-slate-500">
-                        {p.attending_physician || 'Dr. Marcus Vance'}
+                        {p.attending_physician || "Dr. Marcus Vance"}
                       </div>
                     </div>
                   </div>

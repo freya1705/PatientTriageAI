@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useTriage } from '../context/TriageContext';
-import { api } from '../services/api';
-import { SafetyClock } from '../components/SafetyClock';
+import React, { useState, useEffect } from "react";
+import { useTriage } from "../context/TriageContext";
+import { api } from "../services/api";
+import { SafetyClock } from "../components/SafetyClock";
 import {
   ArrowLeft,
   Activity,
@@ -15,8 +15,8 @@ import {
   HelpCircle,
   FileCheck2,
   Lock,
-  ChevronRight
-} from 'lucide-react';
+  ChevronRight,
+} from "lucide-react";
 
 export const PatientDetailPage = () => {
   const {
@@ -26,7 +26,7 @@ export const PatientDetailPage = () => {
     openWhatIfModal,
     setWhyModalPatient,
     handleToggleAttending,
-    setOverrideModalPatient
+    setOverrideModalPatient,
   } = useTriage();
 
   const [patient, setPatient] = useState(null);
@@ -40,7 +40,7 @@ export const PatientDetailPage = () => {
         const data = await api.getPatientDetail(selectedPatientId);
         setPatient(data);
       } catch (err) {
-        console.error('Failed to load patient detail:', err);
+        console.error("Failed to load patient detail:", err);
       } finally {
         setLoading(false);
       }
@@ -53,21 +53,24 @@ export const PatientDetailPage = () => {
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="text-center space-y-2">
           <Activity className="w-8 h-8 text-cyan-700 animate-spin mx-auto" />
-          <p className="text-xs font-semibold text-slate-500">Loading patient action dossier...</p>
+          <p className="text-xs font-semibold text-slate-500">
+            Loading patient action dossier...
+          </p>
         </div>
       </div>
     );
   }
 
   const vitals = patient.latest_vitals || {};
-  const isDeteriorating = patient.trajectory_status in { RAPID_DETERIORATION: true, WORSENING: true };
-  const isExpired = patient.safety_status === 'EXPIRED';
+  const isDeteriorating =
+    patient.trajectory_status in { RAPID_DETERIORATION: true, WORSENING: true };
+  const isExpired = patient.safety_status === "EXPIRED";
 
   return (
     <div className="space-y-6 pb-12 max-w-4xl mx-auto">
       {/* Top Back Navigation */}
       <button
-        onClick={() => setActiveTab('worklist')}
+        onClick={() => setActiveTab("worklist")}
         className="text-xs font-bold text-slate-600 hover:text-slate-900 flex items-center space-x-1.5 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
@@ -94,12 +97,24 @@ export const PatientDetailPage = () => {
           </div>
 
           <div className="text-xs text-slate-500 mt-1 flex items-center space-x-3">
-            <span>Waiting: <strong>{patient.total_waiting_mins} min</strong></span>
+            <span>
+              Waiting: <strong>{patient.total_waiting_mins} min</strong>
+            </span>
             <span>&bull;</span>
-            <span>Triage: <strong>Level {patient.display_triage_level}</strong></span>
+            <span>
+              Triage: <strong>Level {patient.display_triage_level}</strong>
+            </span>
             <span>&bull;</span>
-            <span className={patient.is_attended ? 'text-emerald-700 font-bold' : 'text-amber-700 font-bold'}>
-              {patient.is_attended ? '👨⚕️ Attended' : '⚠️ Unattended Waiting Room'}
+            <span
+              className={
+                patient.is_attended
+                  ? "text-emerald-700 font-bold"
+                  : "text-amber-700 font-bold"
+              }
+            >
+              {patient.is_attended
+                ? "👨⚕️ Attended"
+                : "⚠️ Unattended Waiting Room"}
             </span>
           </div>
         </div>
@@ -118,11 +133,11 @@ export const PatientDetailPage = () => {
             onClick={() => handleToggleAttending(patient.id)}
             className={`px-3 py-2.5 rounded-xl text-xs font-bold border transition-colors ${
               patient.is_attended
-                ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
-                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                ? "bg-emerald-50 text-emerald-800 border-emerald-300"
+                : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
             }`}
           >
-            {patient.is_attended ? 'Doctor Assigned' : 'Assign Doctor'}
+            {patient.is_attended ? "Doctor Assigned" : "Assign Doctor"}
           </button>
         </div>
       </div>
@@ -139,28 +154,38 @@ export const PatientDetailPage = () => {
 
             <div className="bg-slate-50 border border-slate-200 rounded-lg p-3.5 space-y-2 text-xs">
               <div className="flex items-center justify-between">
-                <span className="text-slate-600 font-medium">Oxygen Saturation:</span>
+                <span className="text-slate-600 font-medium">
+                  Oxygen Saturation:
+                </span>
                 <span className="font-bold font-mono text-slate-900">
-                  {isDeteriorating ? `96% → ${vitals.spo2 ?? 91}% (↓ 5%)` : `${vitals.spo2 ?? 96}% (Stable)`}
+                  {isDeteriorating
+                    ? `96% → ${vitals.spo2 ?? 91}% (↓ 5%)`
+                    : `${vitals.spo2 ?? 96}% (Stable)`}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
                 <span className="text-slate-600 font-medium">Heart Rate:</span>
                 <span className="font-bold font-mono text-slate-900">
-                  {isDeteriorating ? `92 → ${vitals.heart_rate ?? 117} bpm (↑ 25 bpm)` : `${vitals.heart_rate ?? 85} bpm`}
+                  {isDeteriorating
+                    ? `92 → ${vitals.heart_rate ?? 117} bpm (↑ 25 bpm)`
+                    : `${vitals.heart_rate ?? 85} bpm`}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-slate-600 font-medium">Blood Pressure:</span>
+                <span className="text-slate-600 font-medium">
+                  Blood Pressure:
+                </span>
                 <span className="font-bold font-mono text-slate-900">
                   {vitals.systolic_bp ?? 120} / {vitals.diastolic_bp ?? 80} mmHg
                 </span>
               </div>
 
               <div className="flex items-center justify-between pt-1 border-t border-slate-200">
-                <span className="text-slate-600 font-medium">Evidence Age:</span>
+                <span className="text-slate-600 font-medium">
+                  Evidence Age:
+                </span>
                 <span className="font-mono text-slate-700">
                   {patient.elapsed_since_vital || 8} min old
                 </span>
@@ -168,13 +193,15 @@ export const PatientDetailPage = () => {
             </div>
 
             <div className="space-y-1">
-              <div className="text-xs font-bold text-slate-800">Why You're Seeing This:</div>
+              <div className="text-xs font-bold text-slate-800">
+                Why You're Seeing This:
+              </div>
               <p className="text-xs text-slate-600 leading-relaxed">
                 {isDeteriorating
-                  ? 'Continuous physiological tracking detected vital velocity degradation. Patient requires bedside verification before potential decompensation.'
+                  ? "Continuous physiological tracking detected vital velocity degradation. Patient requires bedside verification before potential decompensation."
                   : isExpired
-                  ? 'Observation validity shelf-life has expired. Fresh repeat vitals are recommended to maintain reliable safety coverage.'
-                  : 'Patient is waiting in ED lounge under routine continuous surveillance.'}
+                    ? "Observation validity shelf-life has expired. Fresh repeat vitals are recommended to maintain reliable safety coverage."
+                    : "Patient is waiting in ED lounge under routine continuous surveillance."}
               </p>
             </div>
           </div>
@@ -264,14 +291,18 @@ export const PatientDetailPage = () => {
               <div className="flex items-start space-x-2.5">
                 <div className="w-2 h-2 rounded-full bg-slate-400 mt-1 flex-shrink-0" />
                 <div>
-                  <span className="font-mono text-slate-400">10:05 AM</span> &bull; <strong>Initial Triage:</strong> Admitted as ESI Level {patient.display_triage_level}
+                  <span className="font-mono text-slate-400">10:05 AM</span>{" "}
+                  &bull; <strong>Initial Triage:</strong> Admitted as ESI Level{" "}
+                  {patient.display_triage_level}
                 </div>
               </div>
 
               <div className="flex items-start space-x-2.5">
                 <div className="w-2 h-2 rounded-full bg-slate-400 mt-1 flex-shrink-0" />
                 <div>
-                  <span className="font-mono text-slate-400">10:28 AM</span> &bull; <strong>Intake Vitals:</strong> Baseline parameters recorded
+                  <span className="font-mono text-slate-400">10:28 AM</span>{" "}
+                  &bull; <strong>Intake Vitals:</strong> Baseline parameters
+                  recorded
                 </div>
               </div>
 
@@ -279,7 +310,11 @@ export const PatientDetailPage = () => {
                 <div className="flex items-start space-x-2.5">
                   <div className="w-2 h-2 rounded-full bg-rose-600 mt-1 flex-shrink-0 animate-ping" />
                   <div className="text-rose-900">
-                    <span className="font-mono font-bold text-rose-700">11:21 AM</span> &bull; <strong>Vital Velocity Shift:</strong> SpO₂ dropped from 96% to 91%
+                    <span className="font-mono font-bold text-rose-700">
+                      11:21 AM
+                    </span>{" "}
+                    &bull; <strong>Vital Velocity Shift:</strong> SpO₂ dropped
+                    from 96% to 91%
                   </div>
                 </div>
               )}

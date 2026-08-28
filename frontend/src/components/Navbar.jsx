@@ -2,8 +2,6 @@ import React from 'react';
 import { useTriage } from '../context/TriageContext';
 import {
   Activity,
-  Flame,
-  RotateCcw,
   UserPlus,
   ListOrdered,
   FileText,
@@ -13,14 +11,7 @@ import {
 } from 'lucide-react';
 
 export const Navbar = () => {
-  const {
-    activeTab,
-    setActiveTab,
-    surgeActive,
-    handleToggleSurge,
-    handleResetData,
-    loading
-  } = useTriage();
+  const { activeTab, setActiveTab } = useTriage();
 
   const navItems = [
     { id: 'dashboard', label: 'Live Command Center', icon: ListOrdered },
@@ -52,7 +43,7 @@ export const Navbar = () => {
                 </span>
               </div>
               <p className="text-[11px] font-semibold text-slate-400 hidden sm:block">
-                “Triage is a snapshot. <span className="text-cyan-400">Risk isn't.</span>”
+                "Triage is a snapshot. <span className="text-cyan-400">Risk isn't.</span>"
               </p>
             </div>
           </div>
@@ -79,38 +70,12 @@ export const Navbar = () => {
             })}
           </nav>
 
-          {/* Action Controls: Surge Mode & Reset */}
+          {/* Live Indicator — right side */}
           <div className="flex items-center space-x-2">
-            {/* Live Indicator */}
             <div className="hidden sm:flex items-center space-x-1.5 px-2 py-1 rounded-md bg-emerald-950/60 border border-emerald-800/50 text-[11px] font-semibold text-emerald-400">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
               <span>LIVE ED</span>
             </div>
-
-            {/* 3x Surge Button */}
-            <button
-              onClick={handleToggleSurge}
-              disabled={loading}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 shadow-md ${
-                surgeActive
-                  ? 'bg-red-600 text-white hover:bg-red-500 ring-2 ring-red-400/50 animate-pulse'
-                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700 hover:text-white'
-              }`}
-              title="Simulates 3x sudden mass casualty influx (20 -> 60 patients)"
-            >
-              <Flame className={`w-3.5 h-3.5 ${surgeActive ? 'text-yellow-300' : 'text-orange-400'}`} />
-              <span>{surgeActive ? '🚨 Surge Active (60)' : 'Simulate 3× Surge'}</span>
-            </button>
-
-            {/* Reset Button */}
-            <button
-              onClick={handleResetData}
-              disabled={loading}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 border border-slate-800 transition-colors"
-              title="Reset to 20 baseline benchmark patients"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
           </div>
         </div>
 

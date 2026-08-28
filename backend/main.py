@@ -17,6 +17,7 @@ from .routes.simulation_routes import router as simulation_router
 from .routes.action_routes import router as action_router
 from .routes.preorder_routes import router as preorder_router
 from .routes.portal_routes import router as portal_router
+from .routes.ems_routes import router as ems_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -51,6 +52,7 @@ app.include_router(simulation_router)
 app.include_router(action_router)
 app.include_router(preorder_router)
 app.include_router(portal_router)
+app.include_router(ems_router)
 
 @app.get("/api/health")
 def health_check():
