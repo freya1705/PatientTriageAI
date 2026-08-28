@@ -47,6 +47,8 @@ export const Dashboard = () => {
     counterfactualPatient,
     setCounterfactualPatient,
     openCounterfactualModal,
+    safetyOutcomeData,
+    setSafetyOutcomeData,
     whyComparisonPair,
     setWhyComparisonPair,
     portalPatientId,
