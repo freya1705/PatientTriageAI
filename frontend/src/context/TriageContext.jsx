@@ -4,8 +4,8 @@ import { api } from '../services/api';
 const TriageContext = createContext(null);
 
 export const TriageProvider = ({ children }) => {
-  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard', 'intake', 'patient-detail', 'audit', 'privacy', 'evaluation', 'about-scoring'
-  const [controlViewMode, setControlViewMode] = useState('control-tower'); // 'control-tower', 'nurse-view', 'patient-companion'
+  // Navigation & View Roles
+  const [activeTab, setActiveTab] = useState('worklist'); // 'worklist', 'my-patients', 'all-waiting', 'command-center', 'replay-simulation', 'patient-detail', 'audit', 'privacy', 'about-scoring'
   const [selectedPatientId, setSelectedPatientId] = useState(null);
   const [queueData, setQueueData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,14 +13,20 @@ export const TriageProvider = ({ children }) => {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [toastMessage, setToastMessage] = useState(null);
 
+  // Nurse Identity & Staff Handling State
+  const [activeNurseName, setActiveNurseName] = useState('RN Sarah Chen');
+  const [assignedPatientIds, setAssignedPatientIds] = useState(new Set(['P-017', 'P-001', 'P-008', 'P-014']));
+  const [handlingMap, setHandlingMap] = useState({}); // { [patientId]: { nurseName: string, time: string } }
+
   // Active Modals & Overlays
-  const [overrideModalPatient, setOverrideModalPatient] = useState(null);
+  const [reassessmentTargetPatient, setReassessmentTargetPatient] = useState(null);
   const [whyModalPatient, setWhyModalPatient] = useState(null);
   const [whyComparisonPair, setWhyComparisonPair] = useState(null); // [p1Id, p2Id]
-  const [trendModalPatient, setTrendModalPatient] = useState(null);
-  const [counterfactualPatient, setCounterfactualPatient] = useState(null);
+  const [whatIfPatient, setWhatIfPatient] = useState(null);
   const [safetyOutcomeData, setSafetyOutcomeData] = useState(null);
   const [portalPatientId, setPortalPatientId] = useState(null);
+  const [overrideModalPatient, setOverrideModalPatient] = useState(null);
+  const [trendModalPatient, setTrendModalPatient] = useState(null);
 
   // Pre-Orders Hub & Live Safety Feed
   const [preordersList, setPreordersList] = useState([]);
@@ -96,6 +102,24 @@ export const TriageProvider = ({ children }) => {
     };
   }, [fetchQueue, fetchPreorders, fetchLiveFeed, fetchTimeline, autoRefresh, replayPlaying]);
 
+  // "I'm On It" Handling Workflow
+  const handleImOnIt = (patientId) => {
+    setHandlingMap((prev) => {
+      const isAlreadyHandling = prev[patientId]?.nurseName === activeNurseName;
+      if (isAlreadyHandling) {
+        const next = { ...prev };
+        delete next[patientId];
+        showToast(`Released handling on ${patientId}`, 'info');
+        return next;
+      }
+      showToast(`🟡 Marked ${patientId} as being handled by ${activeNurseName}`, 'info');
+      return {
+        ...prev,
+        [patientId]: { nurseName: activeNurseName, time: 'Just Now' }
+      };
+    });
+  };
+
   // Replay Mode Step Execution
   const applyStep = async (stepIdx) => {
     try {
@@ -148,20 +172,28 @@ export const TriageProvider = ({ children }) => {
   }, [replayPlaying, replayStepIndex, replayTimeline, replaySpeed]);
 
   // Closed-Loop Clinical Action Handlers
-  const handleClosedLoopReassess = async (patientId, newSpo2 = null, newHr = null) => {
+  const handleClosedLoopReassess = async (patientId, newSpo2 = null, newHr = null, newSbp = null) => {
     try {
       setLoading(true);
       const res = await api.reassessAction({
         patient_id: patientId,
         new_spo2: newSpo2,
         new_hr: newHr,
-        nurse_name: 'RN Sarah Chen',
-        notes: 'Bedside reassessment completed. Supplemental oxygen and monitoring refreshed.'
+        new_sbp: newSbp,
+        nurse_name: activeNurseName,
+        notes: 'Bedside reassessment completed. Supplemental oxygen and surveillance refreshed.'
+      });
+      // Clear handling status
+      setHandlingMap((prev) => {
+        const next = { ...prev };
+        delete next[patientId];
+        return next;
       });
       await fetchQueue();
       await fetchLiveFeed();
+      setReassessmentTargetPatient(null);
       setSafetyOutcomeData(res.safety_outcome);
-      showToast(res.safety_outcome.message, 'success');
+      showToast(`✓ Reassessment complete for ${patientId}. Risk recalculated.`, 'success');
     } catch (err) {
       showToast('Reassessment failed', 'error');
     } finally {
@@ -169,12 +201,20 @@ export const TriageProvider = ({ children }) => {
     }
   };
 
+  const openReassessmentModal = (patient) => {
+    setReassessmentTargetPatient(patient);
+  };
+
+  const closeReassessmentModal = () => {
+    setReassessmentTargetPatient(null);
+  };
+
   const handleApprovePreorder = async (orderId) => {
     try {
-      await api.approvePreorder(orderId, { action: 'APPROVE', clinician_name: 'RN Sarah Chen' });
+      await api.approvePreorder(orderId, { action: 'APPROVE', clinician_name: activeNurseName });
       await fetchPreorders();
       await fetchLiveFeed();
-      showToast(`🧪 Pre-Order ${orderId} approved and auto-routed to auxiliary tech!`, 'success');
+      showToast(`🧪 Pre-Order ${orderId} approved and auto-routed to tech!`, 'success');
     } catch (err) {
       showToast('Failed to approve pre-order', 'error');
     }
@@ -216,6 +256,7 @@ export const TriageProvider = ({ children }) => {
     try {
       setLoading(true);
       await api.resetBenchmark();
+      setHandlingMap({});
       await fetchQueue();
       await fetchPreorders();
       await fetchLiveFeed();
@@ -246,8 +287,8 @@ export const TriageProvider = ({ children }) => {
       await fetchLiveFeed();
       showToast(
         res.is_attended
-          ? `👩⚕️ Attending physician assigned to ${patientId} (Attention Gap discounted)`
-          : `Patient ${patientId} marked unattended (Returned to central action queue)`,
+          ? `👩⚕️ Attending physician assigned to ${patientId}`
+          : `Patient ${patientId} marked unattended`,
         'info'
       );
     } catch (err) {
@@ -260,8 +301,8 @@ export const TriageProvider = ({ children }) => {
     setActiveTab('patient-detail');
   };
 
-  const openCounterfactualModal = (patient) => {
-    setCounterfactualPatient(patient);
+  const openWhatIfModal = (patient) => {
+    setWhatIfPatient(patient);
   };
 
   const openWhyComparison = (p1Id, p2Id) => {
@@ -277,8 +318,6 @@ export const TriageProvider = ({ children }) => {
       value={{
         activeTab,
         setActiveTab,
-        controlViewMode,
-        setControlViewMode,
         selectedPatientId,
         setSelectedPatientId,
         queueData,
@@ -287,24 +326,34 @@ export const TriageProvider = ({ children }) => {
         autoRefresh,
         setAutoRefresh,
         fetchQueue,
+        activeNurseName,
+        setActiveNurseName,
+        assignedPatientIds,
+        setAssignedPatientIds,
+        handlingMap,
+        handleImOnIt,
         handleToggleSurge,
         handleResetData,
         handleSimulateDeterioration,
         handleToggleAttending,
         handleClosedLoopReassess,
         viewPatientDetail,
-        overrideModalPatient,
-        setOverrideModalPatient,
+        // Modal state
+        reassessmentTargetPatient,
+        openReassessmentModal,
+        closeReassessmentModal,
         whyModalPatient,
         setWhyModalPatient,
         whyComparisonPair,
         setWhyComparisonPair,
         openWhyComparison,
+        whatIfPatient,
+        setWhatIfPatient,
+        openWhatIfModal,
         trendModalPatient,
         setTrendModalPatient,
-        counterfactualPatient,
-        setCounterfactualPatient,
-        openCounterfactualModal,
+        overrideModalPatient,
+        setOverrideModalPatient,
         safetyOutcomeData,
         setSafetyOutcomeData,
         portalPatientId,

@@ -1,84 +1,110 @@
 import React, { useState, useEffect } from 'react';
 import { useTriage } from '../context/TriageContext';
 import {
-  Activity,
-  Flame,
-  RotateCcw,
+  ShieldCheck,
+  Search,
   Clock,
-  Building2,
-  Bell,
-  Sparkles,
-  ShieldCheck
+  QrCode,
+  Users,
+  RotateCcw,
+  Zap
 } from 'lucide-react';
 
 export const Header = () => {
   const {
     queueData,
-    surgeActive,
-    handleToggleSurge,
-    handleResetData,
-    loading
+    activeNurseName,
+    setActiveTab,
+    viewPatientDetail,
+    openPatientPortalCompanion,
+    handleResetData
   } = useTriage();
 
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [searchInput, setSearchInput] = useState('');
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const totalPatients = queueData?.kpis?.total_patients || 20;
-  const hospitalName = queueData?.hospital_name || 'Metro Academic Emergency Center';
-  const profileName = queueData?.profile_details?.name || 'Level-1 Trauma Center';
+  const allPatients = queueData?.all_patients || [];
+  const totalWaiting = allPatients.length;
+
+  const urgentCount = allPatients.filter(
+    (p) => p.action_badge === 'ESCALATE' || p.action_badge === 'IMMEDIATE' || (p.risk_score || 0) >= 70
+  ).length;
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (!searchInput.trim()) return;
+    const term = searchInput.toLowerCase();
+    const found = allPatients.find(
+      (p) => p.id.toLowerCase().includes(term) || p.name.toLowerCase().includes(term)
+    );
+    if (found) {
+      viewPatientDetail(found.id);
+      setSearchInput('');
+    } else {
+      setActiveTab('all-waiting');
+    }
+  };
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between shrink-0 select-none">
-      {/* Left Title & Live Pulse */}
+      {/* Left: Brand / Mode Indicator */}
       <div className="flex items-center space-x-3">
-        <div>
-          <div className="flex items-center space-x-2">
-            <h1 className="text-base font-bold text-slate-900 tracking-tight">
-              Live Emergency Command Center
-            </h1>
-            <div className="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Monitoring {totalPatients} patients</span>
-            </div>
-          </div>
-          <p className="text-xs text-slate-500 font-medium hidden sm:block">
-            “Triage is a snapshot. <span className="text-slate-800 font-semibold">Risk isn't.</span>” &bull; {profileName}
-          </p>
+        <div className="flex items-center space-x-2">
+          <span className="flex h-2.5 w-2.5 relative">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+          </span>
+          <span className="font-extrabold text-xs tracking-wider text-slate-900 uppercase">
+            LIVE SURVEILLANCE ACTIVE
+          </span>
         </div>
+
+        <span className="hidden sm:inline-block text-slate-300">|</span>
+
+        <span className="hidden sm:inline-block text-xs text-slate-500 font-medium">
+          {totalWaiting} Waiting &bull; <strong className="text-rose-600">{urgentCount} Action Required</strong>
+        </span>
       </div>
 
-      {/* Right Controls */}
+      {/* Center: Global Quick Patient Search */}
+      <form onSubmit={handleSearchSubmit} className="hidden md:flex items-center relative w-72">
+        <Search className="w-4 h-4 absolute left-3 text-slate-400 pointer-events-none" />
+        <input
+          type="text"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          placeholder="Jump to Patient ID or Name..."
+          className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-900 focus:bg-white text-slate-900 placeholder:text-slate-400 font-medium"
+        />
+      </form>
+
+      {/* Right: Clock & Patient Companion QR button */}
       <div className="flex items-center space-x-3 text-xs">
         {/* Real-time Clock */}
-        <div className="hidden md:flex items-center space-x-1 text-slate-600 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-lg font-mono text-xs">
+        <div className="hidden lg:flex items-center space-x-1.5 text-slate-600 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-lg font-mono text-xs">
           <Clock className="w-3.5 h-3.5 text-slate-400" />
           <span>{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
         </div>
 
-        {/* 3x Surge Simulator Toggle */}
+        {/* Patient Transparency Portal Modal Trigger */}
         <button
-          onClick={handleToggleSurge}
-          disabled={loading}
-          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
-            surgeActive
-              ? 'bg-rose-50 border-rose-300 text-rose-700 hover:bg-rose-100 shadow-xs'
-              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 shadow-xs'
-          }`}
-          title="Simulate 3x mass influx (20 -> 60 patients)"
+          onClick={() => openPatientPortalCompanion('P-017')}
+          className="px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-50 text-cyan-800 border border-cyan-200 hover:bg-cyan-100 transition-colors flex items-center space-x-1.5 shadow-2xs"
+          title="Patient Mobile QR Companion"
         >
-          <Flame className={`w-3.5 h-3.5 ${surgeActive ? 'text-rose-600' : 'text-slate-400'}`} />
-          <span>{surgeActive ? 'Surge Active (60 pts)' : 'Simulate 3× Surge'}</span>
+          <QrCode className="w-3.5 h-3.5 text-cyan-700" />
+          <span className="hidden sm:inline">Patient QR Companion</span>
         </button>
 
-        {/* Reset Benchmark */}
+        {/* Reset Dataset */}
         <button
           onClick={handleResetData}
-          disabled={loading}
-          className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors"
+          className="p-1.5 rounded-lg border border-slate-200 text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors"
           title="Reset to 20 baseline benchmark cases"
         >
           <RotateCcw className="w-3.5 h-3.5" />

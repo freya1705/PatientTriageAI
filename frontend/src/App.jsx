@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import { TriageProvider, useTriage } from './context/TriageContext';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
-import { Dashboard } from './pages/Dashboard';
+import { NurseWorklist } from './pages/NurseWorklist';
+import { SearchAllWaitingPage } from './pages/SearchAllWaitingPage';
+import { CommandCenterPage } from './pages/CommandCenterPage';
+import { ReplaySimulationPage } from './pages/ReplaySimulationPage';
 import { IntakePage } from './pages/IntakePage';
 import { AboutScoringPage } from './pages/AboutScoringPage';
 import { EvaluationPage } from './pages/EvaluationPage';
@@ -19,13 +22,13 @@ const AppContent = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex font-sans overflow-x-hidden">
-      {/* 1. Left Zone: Navigation Rail */}
+      {/* 1. Left Navigation Rail */}
       <Sidebar
         isCollapsed={isSidebarCollapsed}
         onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
       />
 
-      {/* 2. Main Workspace (Center + Header + Modals) */}
+      {/* 2. Main Workspace Viewport */}
       <div className="flex-1 flex flex-col min-w-0 min-h-screen">
         {/* Workspace Top Header */}
         <Header />
@@ -34,7 +37,7 @@ const AppContent = () => {
         {toastMessage && (
           <div className="fixed bottom-5 right-5 z-50 animate-bounce">
             <div
-              className={`px-4 py-3 rounded-xl shadow-lg border text-xs font-semibold flex items-center space-x-2 ${
+              className={`px-4 py-3 rounded-xl shadow-lg border text-xs font-bold flex items-center space-x-2 ${
                 toastMessage.type === 'error'
                   ? 'bg-rose-50 text-rose-800 border-rose-200'
                   : toastMessage.type === 'warning'
@@ -47,26 +50,30 @@ const AppContent = () => {
           </div>
         )}
 
-        {/* Main Content Viewport */}
+        {/* Primary Page Router */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-          {activeTab === 'dashboard' && <Dashboard />}
+          {(activeTab === 'worklist' || activeTab === 'dashboard') && <NurseWorklist initialFilter="ALL" />}
+          {activeTab === 'my-patients' && <NurseWorklist initialFilter="MY_PATIENTS" />}
+          {activeTab === 'all-waiting' && <SearchAllWaitingPage />}
+          {activeTab === 'command-center' && <CommandCenterPage />}
+          {activeTab === 'replay-simulation' && <ReplaySimulationPage />}
           {activeTab === 'intake' && <IntakePage />}
-          {activeTab === 'about-scoring' && <AboutScoringPage />}
-          {activeTab === 'evaluation' && <EvaluationPage />}
           {activeTab === 'patient-detail' && <PatientDetailPage />}
+          {activeTab === 'evaluation' && <EvaluationPage />}
           {activeTab === 'audit' && <AuditPage />}
+          {activeTab === 'about-scoring' && <AboutScoringPage />}
           {activeTab === 'privacy' && <PrivacyPage />}
         </main>
 
         {/* Minimalist Clinical Footer */}
         <footer className="border-t border-slate-200 bg-white py-3 px-6 text-center text-xs text-slate-400">
           <p>
-            PatientTriage.ai &bull; Continuous Safety Layer for Emergency Departments &bull; Accenture Innovation Challenge 2026
+            PatientTriage.ai &bull; Continuous Safety Copilot for Emergency Waiting Rooms &bull; Accenture Innovation Challenge 2026
           </p>
         </footer>
       </div>
 
-      {/* Global Modals */}
+      {/* Global Clinical Governance Modals */}
       <OverrideModal />
       <WhyExplanationModal />
       <VitalTrendModal />
