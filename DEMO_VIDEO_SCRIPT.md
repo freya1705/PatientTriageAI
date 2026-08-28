@@ -1,122 +1,121 @@
 # 🎬 PatientTriage.ai — Official Prototype Demonstration Video Script
 **Accenture Innovation Challenge 2026 — Round 2 Video Submission**  
-**Target Duration:** 2 Minutes 45 Seconds (165 Seconds)  
-**Target Output Format:** MP4 / MOV (H.264 / AAC, 1080p/720p, < 20 MB)  
-**Participant:** Freya Jadhav (`freya1705`)
+**Target Duration:** 2 Minutes 40 Seconds (160 Seconds)  
+**Target Output Format:** MP4 / MOV (H.264 / AAC, 1080p, < 20 MB)  
+**Presenter & Participant:** **Freya Jadhav** (`freya1705`)  
+**Repository:** [https://github.com/freya1705/PatientTriageAI](https://github.com/freya1705/PatientTriageAI)
 
 ---
 
 ## ⏱️ Video Structure & Scene-by-Scene Rundown
 
 | Scene | Time | Focus Area | Key Visual / Action on Screen |
-|---|---|---|---|
-| **Scene 1** | `0:00 – 0:20` | **The Hook & ED Control Tower** | 3 Giant Hero Numbers (47 Waiting, 6 Attention, 13m Window) + Status Ribbon |
-| **Scene 2** | `0:20 – 0:50` | **The Replay Demo: Dynamic Risk & Surge to #1** | Press `▶ START SIMULATION` → P-017 drops SpO₂ 96%→91% and surges #17 → #1 |
-| **Scene 3** | `0:50 – 1:20` | **Explainability & Counterfactual Safety** | "Why #1?" Breakdown + "What If We Do Nothing?" Trajectory Modal |
-| **Scene 4** | `1:20 – 1:50` | **Closed-Loop Action & Safety Outcome** | Click `[ REASSESS ]` → Risk drops 67→38 → Safety Outcome Screen (Time to Intervention 3m 42s) |
-| **Scene 5** | `1:50 – 2:20` | **Multi-Views: Nurse View & Floor Map** | Nurse Action View ("Next 5 Mins") & ED Pressure Map with Chairs/Bays |
-| **Scene 6** | `2:20 – 2:45` | **Patient Companion & Executive Outro** | Mobile QR Smart Transparency Portal + ROI ($3.82M Annual Net Impact) |
+|:---|:---|:---|:---|
+| **Scene 1** | `0:00 – 0:25` | **The Hook & Clinical Problem** | Open **My Worklist** (`http://localhost:5173`) & highlight the compact status ribbon. |
+| **Scene 2** | `0:25 – 0:55` | **"What Changed?" & "I'm On It"** | Point to `P-017` in `🔴 ACTION NOW`, click `[ I'M ON IT ]` (shows "Being handled by RN Sarah"). |
+| **Scene 3** | `0:55 – 1:30` | **The Closed-Loop Reassessment** | Click `[ REASSESS NOW ]` → enter vitals → `[ SAVE ]` → P-017 stabilizes and leaves urgent queue! |
+| **Scene 4** | `1:30 – 1:55` | **Human-Readable Explainability** | Click `[ Why? ]` (4 plain-English bullets) + `[ 🔮 What If Waiting Continues? ]`. |
+| **Scene 5** | `1:55 – 2:20` | **Charge Nurse Command Center & QR** | Switch to **Command Center** (Floor Pressure Map) & flash **Patient QR Companion**. |
+| **Scene 6** | `2:20 – 2:40` | **Hospital ROI & Executive Outro** | $3.82M Net Annual Value breakdown & GitHub repository outro. |
 
 ---
 
-## 🎙️ Complete Word-for-Word Video Script
+## 🎙️ Complete Word-for-Word Video Script & Director Notes
 
 ---
 
-### 📍 Scene 1: The Problem & The ED Control Tower (`0:00 – 0:20`)
-- **Visual on Screen:**  
-  Start on the **ED Safety Control Tower** (`http://localhost:5173`). Highlight the **3 Giant Hero Metrics**: `47 Patients Waiting`, `6 Requiring Attention`, `13 min Shortest Safety Window`, and the live state ribbon.
-- **Presenter Action:**  
-  Cursor hovers over the 3 numbers and the live status ribbon showing `12 LOW RISK | 21 STABLE | 7 WATCH | 4 REASSESS | 2 ESCALATE | 1 UNCERTAIN`.
-- **Voiceover (Audio Track):**  
-  > *"Welcome to PatientTriage.ai. In emergency medicine today, triage is treated as a one-time snapshot at the front door. But patients wait for hours, and risk continuously changes.*  
+### 📍 Scene 1: The Problem & "My Worklist" (`0:00 – 0:25`)
+
+- **Screen View:** Full-screen browser on **`http://localhost:5173`** (Default page: **MY WORKLIST**).
+- **Director Action:** Mouse slowly highlights the status ribbon: `WAITING 20 | ACTION NEEDED 4 | EXPIRING 3 | ESCALATE 1`.
+- **Voiceover (Audio Track):**
+  > *"Welcome to PatientTriage.ai. In emergency departments today, triage is treated as a one-time snapshot at the front door. But patients wait for hours, and risk continuously changes.*  
   >  
-  > *Traditional EHRs leave the waiting room as a dangerous blind spot. PatientTriage.ai transforms the emergency department into an **Active Autonomous Safety Control Tower** that continuously decides: who needs attention, why, and what action should happen next."*
+  > *Most AI dashboards overwhelm clinicians with raw risk scores and complex formulas. PatientTriage.ai does the exact opposite: **we don't make the nurse find the signal — we bring the signal to the nurse.**"*
 
 ---
 
-### 📍 Scene 2: 🎬 ED Replay Mode — Dynamic Risk in Action (`0:20 – 0:50`)
-- **Visual on Screen:**  
-  Point to Patient **`P-017`** sitting at position **#17** in the morning census (`🟢 Stable, ESI 3, Risk 18`).
-- **Presenter Action (KEY DEMO SEQUENCE):**  
-  👉 Click the **`▶ START SIMULATION`** button on the Replay Simulation Bar.  
-  👉 Watch the clock advance from `10:00 AM → 11:21 AM`.  
-  👉 The Safety Clock for `P-017` counts down to `EXPIRED`.  
-  👉 Vital drop occurs: SpO₂ falls from $96\% \rightarrow 91\%$, Heart Rate jumps $92 \rightarrow 117\text{ bpm}$.  
-  👉 Watch `P-017` dynamically surge in real time from **#17 → #9 → #4 → #1** in the Live Action Queue!  
-  👉 Screen flashes `🔴 REASSESS NOW`.
-- **Voiceover (Audio Track):**  
-  > *"Here is the platform in live action. At 10:00 AM, Patient P-017 arrives with mild viral symptoms, triaged at Level 3, sitting at position #17.*  
+### 📍 Scene 2: "What Changed?" & Staff Coordination (`0:25 – 0:55`)
+
+- **Screen View:** Focus on the top card under **`🔴 ACTION REQUIRED NOW`** (Patient `P-017 — Harold Jenkins`).
+- **Director Action:**
+  1. 👉 Point to **`WHAT CHANGED`**: `SpO₂ 96% → 91% (↓ 5%) • HR 92 → 117 bpm (↑ 25 bpm)`.
+  2. 👉 Point to **`SAFETY WINDOW`**: `12 min remaining`.
+  3. 👉 Click the **`[ I'M ON IT ]`** button.
+  4. 👉 Watch the card badge instantly update to `🟡 Being handled by RN Sarah Chen`.
+- **Voiceover (Audio Track):**
+  > *"On the nurse's screen, the information hierarchy is crystal clear.  
+  > In 3 seconds, Nurse Sarah sees:  
+  > **Who needs her:** Patient P-017.  
+  > **What changed:** Oxygen saturation dropped from 96% down to 91%, with a 25 bpm heart rate spike.  
   >  
-  > *Watch what happens as we run our live ED Replay. As waiting time accumulates, the patient's Safety Clock expires. Suddenly, ambient sensors detect an acute drop in oxygen saturation from 96% down to 91%.*  
-  >  
-  > *Instead of remaining buried at #17, our Attention Gap engine instantly re-ranks P-017 straight to **Rank #1** — outranking attended trauma cases who already have doctors at their bedside."*
+  > With one click on **[ I'M ON IT ]**, Sarah claims the patient — instantly notifying other nurses to prevent duplicate work."*
 
 ---
 
-### 📍 Scene 3: Explainability & "Counterfactual Safety" (`0:50 – 1:20`)
-- **Visual on Screen:**  
-  Click **`Why #1 vs #2?`** button, then click **`🔮 Forecast`** on Patient `P-017`.
-- **Presenter Action:**  
-  Show the **Score Decomposition Matrix** (Deterioration $+32$, Staleness $+18$, Waiting Hazard $+12$, Uncertainty $+8$, Coverage $+0 \rightarrow 70\text{ pts}$).  
-  Open the **Counterfactual Safety Modal** showing Path A (Inaction $\rightarrow$ risk climbing to 81, potential septic crash in 40 mins) vs Path B (Immediate Intervention $\rightarrow$ risk dropping to 38).
-- **Voiceover (Audio Track):**  
-  > *"Why did the system escalate P-017? With one click, clinicians see the exact mathematical waterfall.*  
+### 📍 Scene 3: The Killer Feature — Closed-Loop Reassessment (`0:55 – 1:30`)
+
+- **Screen View:** Reassessment Modal & Post-Reassessment summary.
+- **Director Action:**
+  1. 👉 Click the red **`[ REASSESS NOW ]`** button on `P-017`.
+  2. 👉 Show the clean bedside form populated with verified recovery vitals (`SpO₂: 95%`, `HR: 101 bpm`, `BP: 124/78 mmHg`).
+  3. 👉 Click **`[ SAVE REASSESSMENT ]`**.
+  4. 👉 The **Safety Outcome Screen** appears: `✓ Reassessment Complete | Time to Intervention: 3m 42s | Risk dropped 84 → 38`.
+  5. 👉 Click **`[ Acknowledge & Continue ]`**.
+  6. 👉 Watch `P-017` **automatically disappear from the urgent queue**, and the status ribbon update to `ACTION NEEDED 3`.
+- **Voiceover (Audio Track):**
+  > *"When Sarah clicks **[ REASSESS NOW ]**, she enters verified vitals after administering oxygen.  
   >  
-  > *Even more powerful is our **Counterfactual Safety Engine**. PatientTriage doesn't just ask 'Who is risky?' — it asks: **'Who becomes unsafe if we keep waiting?'**  
-  > If unattended for 20 more minutes, P-017 faces a projected risk score of 81 with imminent respiratory failure. But with immediate intervention, uncertainty collapses and risk drops to 38."*
+  > Once saved, the system recalculates in real-time: risk drops from 84 down to 38. The patient stabilizes into **WATCH** state and automatically moves out of the urgent action queue.  
+  >  
+  > This is a complete **closed-loop clinical workflow**: Detection $\rightarrow$ Recommendation $\rightarrow$ Human Action $\rightarrow$ Verification $\rightarrow$ Recalculation."*
 
 ---
 
-### 📍 Scene 4: Closed-Loop Action & Safety Outcome (`1:20 – 1:50`)
-- **Visual on Screen:**  
-  Click the **`[ REASSESS ]`** button on Patient `P-017`.
-- **Presenter Action:**  
-  Show the in-flight reassessment apply: SpO₂ recovers to $97\%$, Heart Rate normalizes to $78\text{ bpm}$, Risk drops from $84 \rightarrow 38$, and the patient smoothly exits the emergency intervention queue.  
-  The **Safety Outcome Modal** appears, displaying:  
-  `✓ Action Completed | Time to Intervention: 3m 42s | Risk Reduction: -46 pts | Audit Ledger Updated`.
-- **Voiceover (Audio Track):**  
-  > *"When the triage nurse clicks **[ REASSESS ]**, the system closes the clinical loop. Supplemental oxygen is administered, repeat vitals are verified, and risk is immediately recalculated from 84 down to 38.*  
+### 📍 Scene 4: Plain-English "Why?" & Decision Support (`1:30 – 1:55`)
+
+- **Screen View:** Next card `P-014` (`🟠 REASSESS SOON`).
+- **Director Action:**
+  1. 👉 Click the **`[ Why? ]`** button on `P-014`. Show the 4 human-readable bullet points.
+  2. 👉 Click **`[ 🔮 What If Waiting Continues? ]`** to open the decision support trajectory modal.
+- **Voiceover (Audio Track):**
+  > *"Nurses never have to guess why a patient was prioritized. Clicking **[ Why? ]** reveals plain-English reasons: expired evidence, no recent clinician check-in, and prolonged wait time.  
   >  
-  > *The Safety Outcome is recorded in our tamper-evident audit ledger, documenting a **3-minute 42-second Time to Intervention**."*
+  > And through **'What If Waiting Continues?'**, the system provides causal decision support — projecting how evidence staleness will decay if reassessment is delayed."*
 
 ---
 
-### 📍 Scene 5: Nurse View ("Next 5 Minutes") & ED Pressure Map (`1:50 – 2:20`)
-- **Visual on Screen:**  
-  Toggle to **`🩺 Nurse View (Next 5 Mins)`**, then toggle to **`🗺️ ED Floor Pressure Map`**, then **`🧪 Pre-Orders Hub`**.
-- **Presenter Action:**  
-  Show the time-budgeted micro-tasks (`P-017 — 90s`, `P-001 — 60s`, `P-007 — 45s`).  
-  Switch to the Pressure Map showing Waiting Room Chairs 1–20 vs Treatment Bays with live color-coded status halos (🟢, 🟡, 🟠, 🔴).  
-  Show the **Autonomous Pre-Orders Hub** auto-drafting Troponin/ECG and Lactate orders with 1-click approval.
-- **Voiceover (Audio Track):**  
-  > *"PatientTriage is built for hospital realities. In **Nurse View**, AI converts abstract numbers into an actionable 5-minute task schedule.*  
+### 📍 Scene 5: Charge Nurse Command Center & Patient QR Portal (`1:55 – 2:20`)
+
+- **Screen View:** Click **`Command Center`** on left rail, then click **`Patient QR Companion`** topbar button.
+- **Director Action:**
+  1. 👉 Show the **ED Floor Pressure Map** with live color-coded status halos for Waiting Room Chairs 1–20 vs Treatment Bays.
+  2. 👉 Show the **Autonomous Pre-Orders Hub** (Auto-drafted Troponin/ECG and Lactate orders).
+  3. 👉 Click **`Patient QR Companion`** to open the mobile phone care tracker (`Triage` $\rightarrow$ `Pre-Labs` $\rightarrow$ `Surveillance` $\rightarrow$ `Care Bay`).
+- **Voiceover (Audio Track):**
+  > *"For ED managers and charge nurses, the **Command Center** visualizes floor-wide pressure across every waiting chair and treatment bay in real time, with auto-drafted standing diagnostic pre-orders.  
   >  
-  > *In the **ED Pressure Map**, charge nurses visualize every waiting room chair and treatment bay in real time.*  
-  >  
-  > *And through our **Standing Pre-Order Hub**, diagnostic orders like Troponin and Lactate are auto-drafted before physician assignment, cutting diagnostic turnaround by 18 minutes."*
+  > Meanwhile, our **Patient Transparency Companion** lets waiting patients track their care progress directly on their mobile phones via triage QR code — drastically reducing anxiety."*
 
 ---
 
-### 📍 Scene 6: Patient Transparency Companion & ROI Closing (`2:20 – 2:45`)
-- **Visual on Screen:**  
-  Open the **Patient Transparency Companion** mobile simulator (QR / SMS view).  
-  Show the transparent care progress tracker (`Triage` $\rightarrow$ `Pre-Labs` $\rightarrow$ `Surveillance` $\rightarrow$ `Care Bay`), contextual safety messaging, and the **$3.82M Annual Net ROI** summary.
-- **Presenter Action:**  
-  Close on the master landing page with Freya Jadhav contributor badge and GitHub link.
-- **Voiceover (Audio Track):**  
-  > *"Finally, our **Patient Transparency Companion** gives waiting patients live status updates directly on their phones via triage QR code — eliminating anxiety and recovering $1.12M in lost walkout revenue.*  
+### 📍 Scene 6: Measurable Hospital ROI & Outro (`2:20 – 2:40`)
+
+- **Screen View:** Navigate back to **My Worklist** or the main landing page with GitHub link and author badge.
+- **Director Action:** Cursor rests on the Freya Jadhav contributor badge.
+- **Voiceover (Audio Track):**
+  > *"By eliminating silent waiting room deterioration and recovering lost walkout revenue, PatientTriage.ai delivers **$3.82M in annual net value** for a standard 50,000-visit emergency department.  
   >  
-  > *Together with avoided ICU transfers and diagnostic fast-tracking, PatientTriage delivers **$3.82M in annual net value** for a 50,000-visit emergency department.*  
+  > Compliant with FDA Non-Device CDS standards, the system keeps clinicians in 100% control.  
   >  
-  > *Triage is a snapshot. Risk isn't.  
-  > Thank you — explore our open-source prototype on GitHub."*
+  > Triage is a snapshot. Risk isn't.  
+  > I'm Freya Jadhav — thank you for exploring PatientTriage.ai."*
 
 ---
 
-## 🎯 Recording Checklist for Freya:
-1. **Screen Resolution:** 1920x1080 (16:9).
-2. **Browser:** Chrome full-screen (`F11`) at `http://localhost:5173`.
-3. **Cursor Movement:** Smooth, deliberate cursor pacing with 1–2 second pauses during key simulation transitions.
-4. **Audio:** Clear microphone recording matching the voiceover lines above.
-5. **Output:** MP4 under 20 MB (compressed with HandBrake or ffmpeg if necessary).
+## 🎬 5 Tips for a Smooth Recording:
+1. **Screen Setup:** Full screen in Google Chrome (`F11` or Hide Bookmarks bar), 1080p resolution.
+2. **Audio:** Use a clean, quiet environment or headset microphone.
+3. **Cursor Pacing:** Move the cursor deliberately and pause for 1 second on buttons before clicking.
+4. **Recording Tools:** OBS Studio, Windows Game Bar (`Win + Alt + R`), or Loom.
+5. **File Size:** Target MP4 H.264 under 20 MB (a 2m 40s recording at 1080p typically exports at ~10–14 MB).
