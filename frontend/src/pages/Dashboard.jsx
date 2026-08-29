@@ -9,6 +9,7 @@ import { StandingPreOrdersHub } from "../components/StandingPreOrdersHub";
 import { LiveSafetyFeed } from "../components/LiveSafetyFeed";
 import { SafetySummaryPanel } from "../components/SafetySummaryPanel";
 import { CounterfactualWidget } from "../components/CounterfactualWidget";
+import { PatientDrawer } from "../components/PatientDrawer";
 import { SafetyOutcomeModal } from "../components/SafetyOutcomeModal";
 import { PatientTransparencyCompanion } from "../components/PatientTransparencyCompanion";
 import { OverrideModal } from "../components/OverrideModal";
@@ -39,12 +40,11 @@ export const Dashboard = () => {
     controlViewMode,
     fetchQueue,
     viewPatientDetail,
-    setWhyModalPatient,
+    openPatientDrawer,
     setTrendModalPatient,
     setOverrideModalPatient,
     counterfactualPatient,
     setCounterfactualPatient,
-    openCounterfactualModal,
     safetyOutcomeData,
     setSafetyOutcomeData,
     portalPatientId,
@@ -334,15 +334,15 @@ export const Dashboard = () => {
                                 </button>
 
                                 <button
-                                  onClick={() => openCounterfactualModal(p)}
+                                  onClick={() => openPatientDrawer(p)}
                                   className="p-1.5 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors"
-                                  title="What-If Forecast"
+                                  title="What-If Forecast & Why"
                                 >
                                   🔮
                                 </button>
 
                                 <button
-                                  onClick={() => setWhyModalPatient(p)}
+                                  onClick={() => openPatientDrawer(p)}
                                   className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
                                   title="Why this score?"
                                 >
@@ -376,12 +376,7 @@ export const Dashboard = () => {
       )}
 
       {/* Global Modals & Overlays */}
-      {counterfactualPatient && (
-        <CounterfactualWidget
-          patient={counterfactualPatient}
-          onClose={() => setCounterfactualPatient(null)}
-        />
-      )}
+      <PatientDrawer />
 
       {safetyOutcomeData && <SafetyOutcomeModal />}
 

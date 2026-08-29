@@ -13,6 +13,7 @@ const TriageContext = createContext(null);
 export const TriageProvider = ({ children }) => {
   // Navigation & View Roles
   const [activeTab, setActiveTab] = useState("worklist"); // 'worklist', 'my-patients', 'all-waiting', 'command-center', 'replay-simulation', 'patient-detail', 'audit', 'privacy', 'about-scoring'
+  const [controlViewMode, setControlViewMode] = useState("control-tower"); // 'control-tower', 'nurse-view', 'pressure-map', 'preorders'
   const [selectedPatientId, setSelectedPatientId] = useState(null);
   const [queueData, setQueueData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -401,6 +402,8 @@ export const TriageProvider = ({ children }) => {
       value={{
         activeTab,
         setActiveTab,
+        controlViewMode,
+        setControlViewMode,
         selectedPatientId,
         setSelectedPatientId,
         queueData,

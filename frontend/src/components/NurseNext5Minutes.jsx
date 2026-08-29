@@ -181,9 +181,9 @@ export const NurseNext5Minutes = () => {
                 </button>
 
                 <button
-                  onClick={() => openCounterfactualModal(p)}
+                  onClick={() => openPatientDrawer(p)}
                   className="px-3 py-2 rounded-lg text-xs font-semibold bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 transition-colors"
-                  title="View Counterfactual 'What If?'"
+                  title="View What-If Forecast & Details"
                 >
                   What-If
                 </button>
