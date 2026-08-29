@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { TriageProvider, useTriage } from "./context/TriageContext";
 import { Sidebar } from "./components/Sidebar";
 import { Header } from "./components/Header";
+import { Dashboard } from "./pages/Dashboard";
 import { NurseWorklist } from "./pages/NurseWorklist";
 import { SearchAllWaitingPage } from "./pages/SearchAllWaitingPage";
 import { CommandCenterPage } from "./pages/CommandCenterPage";
@@ -52,9 +53,9 @@ const AppContent = () => {
 
         {/* Primary Page Router */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-          {(activeTab === "worklist" || activeTab === "dashboard") && (
-            <NurseWorklist initialFilter="ALL" />
-          )}
+          {(activeTab === "worklist" ||
+            activeTab === "dashboard" ||
+            activeTab === "control-tower") && <Dashboard />}
           {activeTab === "my-patients" && (
             <NurseWorklist initialFilter="MY_PATIENTS" />
           )}
@@ -72,8 +73,7 @@ const AppContent = () => {
         {/* Minimalist Clinical Footer */}
         <footer className="border-t border-slate-200 bg-white py-3 px-6 text-center text-xs text-slate-400">
           <p>
-            PatientTriage.ai &bull; Continuous Safety Copilot for Emergency
-            Waiting Rooms &bull; Accenture Innovation Challenge 2026
+            PatientTriage.ai &bull; Emergency Waiting Room Safety &bull; Accenture Innovation Challenge 2026
           </p>
         </footer>
       </div>

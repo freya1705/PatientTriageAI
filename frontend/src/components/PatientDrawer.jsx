@@ -48,9 +48,9 @@ export const PatientDrawer = () => {
   };
 
   const tabs = [
-    { id: "summary", label: "Clinical Summary" },
+    { id: "summary", label: "Summary" },
     { id: "why", label: "Why This Rank" },
-    { id: "next", label: "What Happens Next" },
+    { id: "next", label: "Next Steps" },
   ];
 
   return (
@@ -112,7 +112,7 @@ export const PatientDrawer = () => {
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
-          {/* ── TAB 1: CLINICAL SUMMARY ── */}
+          {/* ── TAB 1: SUMMARY ── */}
           {activeTab === "summary" && (
             <div className="space-y-4">
               {/* Triage Level + Action Badge */}
@@ -270,7 +270,7 @@ export const PatientDrawer = () => {
                       <span>🏥 Referral Candidate</span>
                     </span>
                     <span className="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-200 text-emerald-900">
-                      RES: {p.referral_eligibility_score || 88}%
+                      Referral Match: {p.referral_eligibility_score || 88}%
                     </span>
                   </div>
                   <p className="text-emerald-800 text-[11px]">
@@ -401,7 +401,7 @@ export const PatientDrawer = () => {
                   className="text-[11px] font-semibold text-slate-400 hover:text-slate-700 flex items-center space-x-1 transition-colors"
                 >
                   <span>
-                    {showScores ? "Hide" : "Show"} technical score breakdown
+                    {showScores ? "Hide" : "Show"} score details
                   </span>
                   {showScores ? (
                     <ChevronUp className="w-3.5 h-3.5" />
@@ -413,29 +413,29 @@ export const PatientDrawer = () => {
                 {showScores && (
                   <div className="mt-2 bg-slate-50 border border-slate-200 rounded-xl p-3.5 font-mono text-[11px] text-slate-700 space-y-1.5">
                     <div className="flex justify-between">
-                      <span>Base Risk (w_r):</span>
+                      <span>Base Risk:</span>
                       <span>{p.risk_score} pts</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Deterioration (w_d):</span>
+                      <span>Vital Drop:</span>
                       <span className="text-rose-600">
                         +{isDeteriorating ? 32 : 0} pts
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Staleness (w_s):</span>
+                      <span>Time Since Check:</span>
                       <span className="text-amber-600">
                         +{isExpired ? 22 : 6} pts
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Uncertainty (w_u):</span>
+                      <span>Missing Data:</span>
                       <span className="text-purple-600">
                         +{p.uncertainty_score || 0} pts
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Physician Coverage (w_c):</span>
+                      <span>Doctor Assigned:</span>
                       <span className="text-emerald-600">
                         {p.is_attended ? "-35 pts" : "+0 pts"}
                       </span>
@@ -450,7 +450,7 @@ export const PatientDrawer = () => {
             </div>
           )}
 
-          {/* ── TAB 3: WHAT HAPPENS NEXT ── */}
+          {/* ── TAB 3: NEXT STEPS ── */}
           {activeTab === "next" && (
             <div className="space-y-4">
               {/* Recommended Action */}

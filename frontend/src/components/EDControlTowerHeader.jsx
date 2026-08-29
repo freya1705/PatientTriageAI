@@ -77,15 +77,14 @@ export const EDControlTowerHeader = () => {
               <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
             </span>
             <h1 className="text-xl font-black text-slate-900 tracking-tight">
-              ED SAFETY CONTROL TOWER
+              ED CONTROL TOWER
             </h1>
             <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-cyan-50 text-cyan-800 border border-cyan-200">
-              Autonomous Surveillance Active
+              Live Monitoring
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Continuous Attention-Gap Intelligence &bull; Deciding who needs
-            attention, why, and what should happen next.
+            Who needs attention, why, and what to do next.
           </p>
         </div>
 
@@ -101,7 +100,7 @@ export const EDControlTowerHeader = () => {
           >
             <Zap className="w-3.5 h-3.5" />
             <span>
-              {surgeActive ? "Surge Active (60 ED)" : "Toggle 3X Surge"}
+              {surgeActive ? "Surge On (60 pts)" : "Surge Mode"}
             </span>
           </button>
 
@@ -109,7 +108,7 @@ export const EDControlTowerHeader = () => {
             onClick={handleResetData}
             className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition-colors"
           >
-            Reset Dataset
+            Reset Data
           </button>
         </div>
       </div>
@@ -124,12 +123,11 @@ export const EDControlTowerHeader = () => {
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
               </span>
               <span className="text-xs font-black uppercase tracking-wider text-red-300">
-                🚨 108 EMS Inbound Pre-Arrival Telemetry (
-                {incomingEmsList.length} Ambulances En Route)
+                🚨 Incoming Ambulance ({incomingEmsList.length} en route)
               </span>
             </div>
             <span className="text-[11px] text-slate-400 font-mono">
-              Pre-Arrival Acuity AI Active
+              Auto-Triage Active
             </span>
           </div>
 
@@ -222,7 +220,7 @@ export const EDControlTowerHeader = () => {
                       className="px-3 py-1.5 rounded-lg text-xs font-black bg-red-600 hover:bg-red-700 text-white shadow-xs transition-colors flex items-center space-x-1"
                     >
                       <Zap className="w-3.5 h-3.5" />
-                      <span>Pre-Allocate Resus Bay</span>
+                      <span>Reserve Bay</span>
                     </button>
                   ) : (
                     <span className="text-[11px] font-bold text-slate-400 bg-slate-800 px-2.5 py-1 rounded-lg">
@@ -245,11 +243,11 @@ export const EDControlTowerHeader = () => {
               {total}
             </div>
             <div className="text-xs font-bold uppercase tracking-wider text-slate-600 mt-0.5">
-              Patients Waiting in ED
+              Patients Waiting
             </div>
             <div className="text-[11px] text-slate-500 mt-1 flex items-center space-x-1">
               <Users className="w-3 h-3 text-slate-400" />
-              <span>4 Active Physicians &bull; 6 Triage RNs</span>
+              <span>4 Doctors &bull; 6 Nurses</span>
             </div>
           </div>
           <div className="w-12 h-12 rounded-xl bg-slate-200/60 flex items-center justify-center text-slate-700">
@@ -264,11 +262,11 @@ export const EDControlTowerHeader = () => {
               {attentionRequiredCount}
             </div>
             <div className="text-xs font-bold uppercase tracking-wider text-rose-800 mt-0.5">
-              Patients Requiring Attention
+              Need Attention
             </div>
             <div className="text-[11px] text-rose-600 mt-1 flex items-center space-x-1 font-medium">
               <AlertOctagon className="w-3 h-3 text-rose-500" />
-              <span>Deteriorating or Expired Validity</span>
+              <span>Vitals dropping or overdue</span>
             </div>
           </div>
           <div className="w-12 h-12 rounded-xl bg-rose-100 flex items-center justify-center text-rose-700">
@@ -283,11 +281,11 @@ export const EDControlTowerHeader = () => {
               {shortestWindow} min
             </div>
             <div className="text-xs font-bold uppercase tracking-wider text-amber-900 mt-0.5">
-              Shortest Safety Window
+              Next Recheck Due
             </div>
             <div className="text-[11px] text-amber-700 mt-1 flex items-center space-x-1 font-medium">
               <Clock className="w-3 h-3 text-amber-600" />
-              <span>Safety Clock Expiring Soon</span>
+              <span>Soonest recheck timer</span>
             </div>
           </div>
           <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-amber-800">
@@ -331,7 +329,7 @@ export const EDControlTowerHeader = () => {
                     🔴 Act Now
                   </div>
                   <div className="text-[10px] text-slate-500 mt-0.5">
-                    Escalate + Reassess
+                    Urgent + Recheck
                   </div>
                 </div>
                 {actNowCount > 0 && (
@@ -363,7 +361,7 @@ export const EDControlTowerHeader = () => {
                     🟡 Recheck Soon
                   </div>
                   <div className="text-[10px] text-slate-500 mt-0.5">
-                    Watch + Uncertain
+                    Watch + Incomplete
                   </div>
                 </div>
               </div>
@@ -429,7 +427,7 @@ export const EDControlTowerHeader = () => {
             }`}
           >
             <Compass className="w-4 h-4 text-cyan-700" />
-            <span>Control Tower & Stream</span>
+            <span>Overview</span>
           </button>
 
           <button
@@ -441,7 +439,7 @@ export const EDControlTowerHeader = () => {
             }`}
           >
             <Stethoscope className="w-4 h-4 text-blue-600" />
-            <span>Nurse View (Next 5 Mins)</span>
+            <span>Nurse Tasks</span>
           </button>
 
           <button
@@ -453,7 +451,7 @@ export const EDControlTowerHeader = () => {
             }`}
           >
             <LayoutGrid className="w-4 h-4 text-purple-600" />
-            <span>ED Floor Pressure Map</span>
+            <span>Floor Map</span>
           </button>
 
           <button
@@ -465,7 +463,7 @@ export const EDControlTowerHeader = () => {
             }`}
           >
             <FileCheck2 className="w-4 h-4 text-emerald-600" />
-            <span>Pre-Orders Hub</span>
+            <span>Lab Orders</span>
           </button>
         </div>
 
@@ -475,7 +473,7 @@ export const EDControlTowerHeader = () => {
           className="px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-50 text-cyan-800 border border-cyan-200 hover:bg-cyan-100 transition-colors flex items-center space-x-1.5 shadow-xs"
         >
           <QrCode className="w-4 h-4 text-cyan-700" />
-          <span>Patient Transparency Companion (Mobile QR)</span>
+          <span>Patient QR Portal</span>
         </button>
       </div>
     </div>

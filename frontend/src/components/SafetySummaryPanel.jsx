@@ -294,7 +294,7 @@ export const SafetySummaryPanel = ({ onSelectFilter, activeFilter = 'ALL' }) => 
         {/* 1-Click Presentation Quick Tool */}
         <div className="pt-2 border-t border-slate-100 space-y-1.5">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-            Judge Demo Triggers
+            Demo Actions
           </span>
 
           <button

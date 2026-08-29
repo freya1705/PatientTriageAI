@@ -47,7 +47,7 @@ export const VitalTrendModal = () => {
             <div>
               <div className="flex items-center space-x-2">
                 <h2 className="text-base font-bold text-slate-900">
-                  Vital Trajectory &amp; Rate-of-Change
+                  Vital Trends
                 </h2>
                 {isDeteriorating && (
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 animate-pulse">

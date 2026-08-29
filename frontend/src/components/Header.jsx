@@ -60,14 +60,14 @@ export const Header = () => {
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
           </span>
           <span className="font-extrabold text-xs tracking-wider text-slate-900 uppercase">
-            LIVE SURVEILLANCE ACTIVE
+            LIVE MONITORING
           </span>
         </div>
 
         <span className="hidden sm:inline-block text-slate-300">|</span>
 
         <span className="hidden sm:inline-block text-xs text-slate-500 font-medium">
-          {totalWaiting} Waiting &bull; <strong className="text-rose-600">{urgentCount} Action Required</strong>
+          {totalWaiting} Waiting &bull; <strong className="text-rose-600">{urgentCount} Need Action</strong>
         </span>
       </div>
 
@@ -78,7 +78,7 @@ export const Header = () => {
           type="text"
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
-          placeholder="Jump to Patient ID or Name..."
+          placeholder="Search patient…"
           className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-900 focus:bg-white text-slate-900 placeholder:text-slate-400 font-medium"
         />
       </form>
@@ -95,17 +95,17 @@ export const Header = () => {
         <button
           onClick={() => openPatientPortalCompanion('P-017')}
           className="px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-50 text-cyan-800 border border-cyan-200 hover:bg-cyan-100 transition-colors flex items-center space-x-1.5 shadow-2xs"
-          title="Patient Mobile QR Companion"
+          title="Patient QR Portal"
         >
           <QrCode className="w-3.5 h-3.5 text-cyan-700" />
-          <span className="hidden sm:inline">Patient QR Companion</span>
+          <span className="hidden sm:inline">Patient QR</span>
         </button>
 
         {/* Reset Dataset */}
         <button
           onClick={handleResetData}
           className="p-1.5 rounded-lg border border-slate-200 text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors"
-          title="Reset to 20 baseline benchmark cases"
+          title="Reset demo data"
         >
           <RotateCcw className="w-3.5 h-3.5" />
         </button>

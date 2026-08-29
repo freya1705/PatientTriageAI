@@ -90,11 +90,10 @@ export const PatientTransparencyCompanion = ({ patientId, onClose }) => {
               </div>
               <div>
                 <div className="text-[10px] font-extrabold text-emerald-800 uppercase tracking-wide">
-                  Ambient Safety Shield Active
+                  Your Vitals Are Being Monitored
                 </div>
                 <div className="text-[11px] text-emerald-900 font-medium">
-                  Continuous sensor surveillance verifying your clinical
-                  stability.
+                  We're continuously checking that you're safe while you wait.
                 </div>
               </div>
             </div>

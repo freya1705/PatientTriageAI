@@ -93,7 +93,7 @@ export const OverrideModal = () => {
           <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1">
             <div className="flex items-center space-x-1.5 font-bold">
               <AlertTriangle className="w-4 h-4 text-amber-600" />
-              <span>Counterfactual Safety Check (Downgrade Advisory)</span>
+              <span>Safety Check (Downgrade Warning)</span>
             </div>
             <p className="text-[11px] text-amber-800 leading-relaxed">
               De-escalating triage priority (Level {currentLevel} → Level {newLevel}) requires recent stable vital signs and clinical absence of red flags.
@@ -146,7 +146,7 @@ export const OverrideModal = () => {
           {/* Mandatory Clinical Rationale */}
           <div>
             <label className="block text-slate-700 font-semibold mb-1">
-              Mandatory Clinical Rationale (HIPAA/GDPR Audit Log): <span className="text-rose-600">*</span>
+              Reason for override (required): <span className="text-rose-600">*</span>
             </label>
             <textarea
               rows={3}

@@ -75,7 +75,7 @@ export const EDPressureMap = () => {
           <div className="flex items-center space-x-2">
             <LayoutGrid className="w-5 h-5 text-purple-700" />
             <h2 className="text-base font-bold text-slate-900 tracking-tight">
-              FLOOR-WIDE ED RESOURCE & WAITING BAY PRESSURE MAP
+              ED Floor Map
             </h2>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
@@ -122,7 +122,7 @@ export const EDPressureMap = () => {
               </h3>
             </div>
             <span className="text-[10px] font-bold text-slate-500">
-              Optical rPPG + BLE Kiosk Tracking
+              Live Tracking
             </span>
           </div>
 

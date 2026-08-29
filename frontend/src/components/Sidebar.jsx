@@ -28,28 +28,28 @@ export const Sidebar = ({ isCollapsed, onToggleCollapse }) => {
 
   const navSections = [
     {
-      title: 'NURSE WORKSPACE',
+      title: 'MY SHIFT',
       items: [
-        { id: 'worklist', label: 'My Worklist', icon: CheckSquare, badge: urgentCount > 0 ? `${urgentCount} Now` : null, badgeColor: 'bg-rose-100 text-rose-800' },
+        { id: 'worklist', label: 'Worklist', icon: CheckSquare, badge: urgentCount > 0 ? `${urgentCount} Now` : null, badgeColor: 'bg-rose-100 text-rose-800' },
         { id: 'my-patients', label: 'My Patients', icon: UserCheck },
-        { id: 'all-waiting', label: 'All Waiting & Search', icon: Users, badge: `${allPatients.length}` },
-        { id: 'intake', label: 'Rapid Intake & Presets', icon: UserPlus }
+        { id: 'all-waiting', label: 'All Patients', icon: Users, badge: `${allPatients.length}` },
+        { id: 'intake', label: 'New Patient', icon: UserPlus }
       ]
     },
     {
-      title: 'ED OPERATIONS',
+      title: 'OPERATIONS',
       items: [
         { id: 'command-center', label: 'Command Center', icon: Compass },
-        { id: 'replay-simulation', label: 'Replay Simulation', icon: Film, badge: 'Demo' },
-        { id: 'evaluation', label: 'Baseline vs AI Impact', icon: Award }
+        { id: 'replay-simulation', label: 'Replay Demo', icon: Film, badge: 'Demo' },
+        { id: 'evaluation', label: 'AI Impact', icon: Award }
       ]
     },
     {
-      title: 'GOVERNANCE & SPECS',
+      title: 'SETTINGS',
       items: [
-        { id: 'audit', label: 'Audit & Governance', icon: FileText },
-        { id: 'about-scoring', label: 'About & Scoring', icon: BookOpen },
-        { id: 'privacy', label: 'Privacy & Scalability', icon: Lock }
+        { id: 'audit', label: 'Audit Log', icon: FileText },
+        { id: 'about-scoring', label: 'How Scoring Works', icon: BookOpen },
+        { id: 'privacy', label: 'Privacy & Scale', icon: Lock }
       ]
     }
   ];
@@ -150,7 +150,7 @@ export const Sidebar = ({ isCollapsed, onToggleCollapse }) => {
             </div>
             <div className="min-w-0 flex-1 text-left">
               <p className="text-xs font-bold text-slate-900 truncate">{activeNurseName}</p>
-              <p className="text-[10px] text-slate-400 truncate">Charge & Bedside RN</p>
+              <p className="text-[10px] text-slate-400 truncate">Charge Nurse</p>
             </div>
           </div>
         ) : (

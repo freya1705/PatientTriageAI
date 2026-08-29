@@ -43,18 +43,18 @@ export const LiveSafetyFeed = () => {
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500"></span>
           </span>
           <h3 className="text-xs font-black uppercase tracking-wider text-slate-800">
-            ⚡ LIVE SAFETY & SURVEILLANCE FEED
+            ⚡ Live Feed
           </h3>
         </div>
         <span className="text-[10px] font-bold text-slate-400">
-          Sub-15ms Stream
+          Real-Time
         </span>
       </div>
 
       <div className="space-y-2.5 max-h-[360px] overflow-y-auto pr-1">
         {liveEvents.length === 0 ? (
           <div className="p-4 text-center text-xs text-slate-400">
-            Listening for live vital streams and clinical triggers...
+            Waiting for updates…
           </div>
         ) : (
           liveEvents.slice(0, 10).map((ev, idx) => (

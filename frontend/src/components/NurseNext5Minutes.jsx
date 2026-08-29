@@ -37,8 +37,8 @@ export const NurseNext5Minutes = () => {
       ? [
           {
             timeBudget: "30 sec",
-            actionTitle: "Spot-Check Unattended Waiting Patient",
-            reason: `Family attendant stepped away; ${awayPatient.name} (${awayPatient.id}) sitting unmonitored`,
+            actionTitle: "Check on unattended patient",
+            reason: `Attendant left — ${awayPatient.name} is alone`,
             patient: awayPatient,
             urgency: "HIGH",
             badgeColor: "bg-orange-50 text-orange-800 border-orange-200",
@@ -47,32 +47,32 @@ export const NurseNext5Minutes = () => {
       : []),
     {
       timeBudget: "90 sec",
-      actionTitle: "Bedside Reassessment & O₂ Titration",
-      reason: "Acute vital velocity drop (SpO₂ 91% ↓)",
+      actionTitle: "Reassess vitals & adjust O₂",
+      reason: "SpO₂ dropping",
       patient: topPatients[0] || allPatients[0],
       urgency: "HIGH",
       badgeColor: "bg-rose-50 text-rose-700 border-rose-200",
     },
     {
       timeBudget: "60 sec",
-      actionTitle: "Physician Review & Lactate Screen",
-      reason: "Prolonged wait without clinical attendance",
+      actionTitle: "Get doctor + check lactate",
+      reason: "Long wait, no doctor seen",
       patient: topPatients[1] || allPatients[1],
       urgency: "MEDIUM",
       badgeColor: "bg-amber-50 text-amber-700 border-amber-200",
     },
     {
       timeBudget: "45 sec",
-      actionTitle: "Acquire Repeat Vitals & ECG",
-      reason: "Safety Clock expired; observations stale",
+      actionTitle: "Retake vitals + ECG",
+      reason: "Recheck overdue",
       patient: topPatients[2] || allPatients[2],
       urgency: "MEDIUM",
       badgeColor: "bg-purple-50 text-purple-700 border-purple-200",
     },
     {
       timeBudget: "30 sec",
-      actionTitle: "Confirm Symptom Progression",
-      reason: "Initial intake uncertainty; verify pain delta",
+      actionTitle: "Check if symptoms changed",
+      reason: "Intake was unclear — recheck pain",
       patient: topPatients[3] || allPatients[3],
       urgency: "LOW",
       badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
@@ -90,11 +90,10 @@ export const NurseNext5Minutes = () => {
             </div>
             <div>
               <h2 className="text-base font-black tracking-tight text-white">
-                NURSE ACTION VIEW: YOUR NEXT 5 MINUTES
+                YOUR NEXT 5 MINUTES
               </h2>
               <p className="text-xs text-blue-200">
-                Converting raw risk scores into an actionable, prioritized
-                clinical workflow schedule.
+                Your top tasks right now, in order of urgency.
               </p>
             </div>
           </div>
@@ -103,7 +102,7 @@ export const NurseNext5Minutes = () => {
         <div className="flex items-center space-x-3 bg-blue-950/60 px-3.5 py-2 rounded-xl border border-blue-800 text-xs">
           <Clock className="w-4 h-4 text-cyan-300" />
           <span>
-            Total Time Budget: <strong>4m 45s</strong> (4 Micro-Actions)
+            Total Time Budget: <strong>~5 min</strong>
           </span>
         </div>
       </div>
@@ -178,7 +177,7 @@ export const NurseNext5Minutes = () => {
                   className="px-4 py-2 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition-colors flex items-center space-x-1"
                 >
                   <Zap className="w-3.5 h-3.5" />
-                  <span>Execute ({task.timeBudget})</span>
+                  <span>Start ({task.timeBudget})</span>
                 </button>
 
                 <button
@@ -186,7 +185,7 @@ export const NurseNext5Minutes = () => {
                   className="px-3 py-2 rounded-lg text-xs font-semibold bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 transition-colors"
                   title="View Counterfactual 'What If?'"
                 >
-                  🔮 Forecast
+                  What-If
                 </button>
 
                 <button

@@ -10,10 +10,8 @@ import { LiveSafetyFeed } from "../components/LiveSafetyFeed";
 import { SafetySummaryPanel } from "../components/SafetySummaryPanel";
 import { CounterfactualWidget } from "../components/CounterfactualWidget";
 import { SafetyOutcomeModal } from "../components/SafetyOutcomeModal";
-import { WhyComparisonModal } from "../components/WhyComparisonModal";
 import { PatientTransparencyCompanion } from "../components/PatientTransparencyCompanion";
 import { OverrideModal } from "../components/OverrideModal";
-import { WhyExplanationModal } from "../components/WhyExplanationModal";
 import { VitalTrendModal } from "../components/VitalTrendModal";
 import { SafetyClock } from "../components/SafetyClock";
 import {
@@ -49,8 +47,6 @@ export const Dashboard = () => {
     openCounterfactualModal,
     safetyOutcomeData,
     setSafetyOutcomeData,
-    whyComparisonPair,
-    setWhyComparisonPair,
     portalPatientId,
     setPortalPatientId,
     handleSimulateDeterioration,
@@ -70,7 +66,7 @@ export const Dashboard = () => {
         <div className="text-center space-y-2">
           <Activity className="w-8 h-8 text-cyan-700 animate-spin mx-auto" />
           <p className="text-xs font-semibold text-slate-500">
-            Loading live emergency command center...
+            Loading…
           </p>
         </div>
       </div>
@@ -81,11 +77,11 @@ export const Dashboard = () => {
 
   const failureCategories = [
     { id: "ALL", label: "All Cases" },
-    { id: "CAT_A", label: "Cat A: Resuscitation" },
-    { id: "CAT_B", label: "Cat B: Hidden / Age" },
-    { id: "CAT_C", label: "Cat C: Unknown ≠ Safe" },
-    { id: "CAT_D", label: "Cat D: Deteriorating" },
-    { id: "CAT_E", label: "Cat E: Attention Gap" },
+    { id: "CAT_A", label: "Critical" },
+    { id: "CAT_B", label: "Hidden Risk" },
+    { id: "CAT_C", label: "Incomplete Data" },
+    { id: "CAT_D", label: "Deteriorating" },
+    { id: "CAT_E", label: "Unmonitored" },
   ];
 
   const filteredPatients = allPatients.filter((p) => {
@@ -156,7 +152,7 @@ export const Dashboard = () => {
                 <div>
                   <div className="flex items-center space-x-2">
                     <h2 className="text-sm font-bold text-slate-900 tracking-tight">
-                      Emergency Patient Census ({filteredPatients.length} of{" "}
+                      All Patients ({filteredPatients.length} of{" "}
                       {allPatients.length})
                     </h2>
                     <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
@@ -164,8 +160,7 @@ export const Dashboard = () => {
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Continuous physiological tracking, staleness expiration
-                    countdowns, and attention gap metrics.
+                    Live vitals, recheck timers, and priority scores.
                   </p>
                 </div>
 
@@ -217,8 +212,8 @@ export const Dashboard = () => {
                   <option value="ALL">All Stations</option>
                   <option value="UNATTENDED">Unattended Only</option>
                   <option value="ATTENDED">Attended Only</option>
-                  <option value="PEDIATRIC">Pediatric (&lt;16y)</option>
-                  <option value="GERIATRIC">Geriatric (65y+)</option>
+                  <option value="PEDIATRIC">Children (&lt;16)</option>
+                  <option value="GERIATRIC">Elderly (65+)</option>
                 </select>
               </div>
 
@@ -228,11 +223,11 @@ export const Dashboard = () => {
                   <thead>
                     <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px] tracking-wider">
                       <th className="py-2.5 px-3">Patient ID</th>
-                      <th className="py-2.5 px-3">Demographics & Complaint</th>
+                      <th className="py-2.5 px-3">Patient</th>
                       <th className="py-2.5 px-3">Triage</th>
-                      <th className="py-2.5 px-3">Safety Clock</th>
-                      <th className="py-2.5 px-3">Risk & Trajectory</th>
-                      <th className="py-2.5 px-3">Attention Gap</th>
+                      <th className="py-2.5 px-3">Recheck Timer</th>
+                      <th className="py-2.5 px-3">Risk</th>
+                      <th className="py-2.5 px-3">Priority</th>
                       <th className="py-2.5 px-3 text-right">Actions</th>
                     </tr>
                   </thead>
@@ -308,7 +303,7 @@ export const Dashboard = () => {
                                         : "bg-slate-100 text-slate-600"
                                   }`}
                                 >
-                                  {p.trajectory_status}
+                                  {{'RAPID_DETERIORATION': 'Deteriorating', 'WORSENING': 'Worsening', 'IMPROVING': 'Improving', 'STABLE': 'Stable'}[p.trajectory_status] || p.trajectory_status}
                                 </span>
                               </div>
                               <div className="text-[10px] font-mono text-slate-400 mt-0.5">
@@ -333,7 +328,7 @@ export const Dashboard = () => {
                                 <button
                                   onClick={() => handleClosedLoopReassess(p.id)}
                                   className="p-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors"
-                                  title="1-Click Reassessment"
+                                  title="Quick Reassess"
                                 >
                                   <Zap className="w-3.5 h-3.5" />
                                 </button>
@@ -341,7 +336,7 @@ export const Dashboard = () => {
                                 <button
                                   onClick={() => openCounterfactualModal(p)}
                                   className="p-1.5 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors"
-                                  title="🔮 Counterfactual Trajectory"
+                                  title="What-If Forecast"
                                 >
                                   🔮
                                 </button>
@@ -349,7 +344,7 @@ export const Dashboard = () => {
                                 <button
                                   onClick={() => setWhyModalPatient(p)}
                                   className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
-                                  title="Why did AI recommend this score?"
+                                  title="Why this score?"
                                 >
                                   <HelpCircle className="w-3.5 h-3.5" />
                                 </button>
@@ -358,7 +353,7 @@ export const Dashboard = () => {
                                   onClick={() => viewPatientDetail(p.id)}
                                   className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 transition-colors"
                                 >
-                                  Dossier
+                                  Details
                                 </button>
                               </div>
                             </td>
@@ -390,14 +385,6 @@ export const Dashboard = () => {
 
       {safetyOutcomeData && <SafetyOutcomeModal />}
 
-      {whyComparisonPair && (
-        <WhyComparisonModal
-          p1Id={whyComparisonPair[0]}
-          p2Id={whyComparisonPair[1]}
-          onClose={() => setWhyComparisonPair(null)}
-        />
-      )}
-
       {portalPatientId && (
         <PatientTransparencyCompanion
           patientId={portalPatientId}
@@ -406,7 +393,6 @@ export const Dashboard = () => {
       )}
 
       <OverrideModal />
-      <WhyExplanationModal />
       <VitalTrendModal />
     </div>
   );

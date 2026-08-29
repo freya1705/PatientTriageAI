@@ -99,21 +99,21 @@ export const ActionQueue = ({ filterMode = "ALL" }) => {
     if (isDeteriorating) {
       whatChangedText = `SpO₂ 96% → ${vitals.spo2 ?? 91}% (↓ 5%) • HR 92 → ${vitals.heart_rate ?? 117} bpm (↑ 25 bpm)`;
     } else if (isExpired) {
-      whatChangedText = `Evidence ${patient.elapsed_since_vital || 48}m old without clinician update`;
+      whatChangedText = `Vitals recorded ${patient.elapsed_since_vital || 48}m old no update since`;
     } else if (patient.is_uncertain) {
       whatChangedText =
-        "Missing baseline SpO₂ & blood pressure at triage intake";
+        "SpO₂ and blood pressure not recorded at intake";
     } else if (patient.total_waiting_mins > 30) {
       whatChangedText = `Waiting ${patient.total_waiting_mins}m unmonitored in waiting room`;
     }
 
     // Why summary
-    let whySummary = "Routine waiting surveillance";
+    let whySummary = "Routine monitoring";
     if (isDeteriorating)
-      whySummary = "Rapid physiological deterioration detected";
-    else if (isExpired) whySummary = "Recommended reassessment window expired";
+      whySummary = "Vitals dropping rapidly";
+    else if (isExpired) whySummary = "Overdue for a recheck";
     else if (patient.is_uncertain)
-      whySummary = "High clinical uncertainty (Unknown ≠ Safe)";
+      whySummary = "Incomplete vitals — needs verification";
 
     // Primary Action Label
     let actionLabel = "RECHECK VITALS";
@@ -194,7 +194,7 @@ export const ActionQueue = ({ filterMode = "ALL" }) => {
                   className="mt-1 inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300"
                   title={patient.referral_reason}
                 >
-                  <span>🏥 Referral Candidate (Urgent Care / PHC)</span>
+                  <span>🏥 Referral Candidate</span>
                 </div>
               )}
             </div>
@@ -238,7 +238,7 @@ export const ActionQueue = ({ filterMode = "ALL" }) => {
                   ? "bg-amber-100 text-amber-900 border-amber-300"
                   : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
               }`}
-              title="Claim this patient to prevent duplicate work"
+              title="Claim this patient"
             >
               {isHandledByMe ? "✓ I'M ON IT" : "I'M ON IT"}
             </button>
@@ -278,7 +278,7 @@ export const ActionQueue = ({ filterMode = "ALL" }) => {
             <button
               onClick={() => viewPatientDetail(patient.id)}
               className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
-              title="Open full clinical dossier"
+              title="Open patient record"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -296,12 +296,11 @@ export const ActionQueue = ({ filterMode = "ALL" }) => {
           <div className="flex items-center space-x-2">
             <span className="w-3 h-3 rounded-full bg-rose-600 animate-ping"></span>
             <h2 className="text-sm font-black text-slate-900 tracking-tight uppercase">
-              🔴 ACTION REQUIRED NOW ({urgentPatients.length}{" "}
-              {urgentPatients.length === 1 ? "Patient" : "Patients"})
+              🔴 Act Now ({urgentPatients.length})
             </h2>
           </div>
           <span className="text-xs text-slate-500 font-medium">
-            Immediate nurse bedside reassessment required
+            These patients need you at bedside
           </span>
         </div>
 
@@ -309,8 +308,7 @@ export const ActionQueue = ({ filterMode = "ALL" }) => {
           <div className="bg-emerald-50/60 border border-emerald-200 rounded-xl p-4 text-center text-xs text-emerald-800 font-semibold flex items-center justify-center space-x-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             <span>
-              All acute physiological alarms resolved &bull; No critical
-              deteriorations in waiting room.
+              All clear — no urgent actions right now.
             </span>
           </div>
         ) : (
@@ -325,11 +323,11 @@ export const ActionQueue = ({ filterMode = "ALL" }) => {
             <div className="flex items-center space-x-2">
               <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
               <h2 className="text-sm font-black text-slate-900 tracking-tight uppercase">
-                🟠 REASSESS SOON ({reassessSoonPatients.length} Patients)
+                🟠 Recheck Soon ({reassessSoonPatients.length})
               </h2>
             </div>
             <span className="text-xs text-slate-500 font-medium">
-              Evidence expired or uncertainty high
+              Vitals are stale or incomplete
             </span>
           </div>
 
@@ -346,17 +344,15 @@ export const ActionQueue = ({ filterMode = "ALL" }) => {
         <div className="flex items-center space-x-2">
           <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
           <span className="font-bold text-slate-800">
-            {stableCount > 0 ? stableCount : 12} PATIENTS STABLE IN MONITORING
+            {stableCount > 0 ? stableCount : 12} Stable — monitoring continues
           </span>
-          <span className="text-slate-400">&bull;</span>
-          <span>Continuous ambient sensor surveillance active</span>
         </div>
 
         <button
           onClick={() => setActiveTab("all-waiting")}
           className="font-bold text-cyan-700 hover:text-cyan-900 flex items-center space-x-1"
         >
-          <span>View complete census</span>
+          <span>View all patients</span>
           <ChevronRight className="w-3.5 h-3.5" />
         </button>
       </div>

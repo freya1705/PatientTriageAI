@@ -40,14 +40,14 @@ export const StandingPreOrdersHub = () => {
           <div className="flex items-center space-x-2">
             <FileCheck2 className="w-5 h-5 text-emerald-600" />
             <h2 className="text-base font-bold text-slate-900 tracking-tight">
-              AUTONOMOUS STANDING PRE-ORDER HUB
+              Lab & Test Orders
             </h2>
             <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
               Fast-Track Diagnostics
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Auto-drafts actionable diagnostic orders before physician assignment &bull; Non-Device CDS (21 U.S.C. § 360aaa-1).
+            Auto-drafts actionable diagnostic orders before physician assignment &bull; Clinical Decision Support.
           </p>
         </div>
 

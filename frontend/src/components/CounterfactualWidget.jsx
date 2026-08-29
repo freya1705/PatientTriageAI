@@ -44,14 +44,14 @@ export const CounterfactualWidget = ({ patient, onClose }) => {
           <div>
             <div className="flex items-center space-x-2">
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200">
-                🔮 Counterfactual Safety Intelligence
+                🔮 What-If Forecast
               </span>
               <span className="text-xs text-slate-400 font-mono font-bold">
                 {patient.id}
               </span>
             </div>
             <h2 className="text-lg font-black text-slate-900 mt-1">
-              "What If We Do Nothing?" — 20-Minute Trajectory Forecast
+              What happens in the next 20 minutes?
             </h2>
             <p className="text-xs text-slate-500">
               Patient: <strong className="text-slate-800">{patient.name}</strong> ({patient.age}y &bull; {patient.chief_complaint})
@@ -95,7 +95,7 @@ export const CounterfactualWidget = ({ patient, onClose }) => {
                 <div className="flex items-center justify-between pb-2 border-b border-rose-200/80">
                   <div className="flex items-center space-x-1.5 text-rose-800 font-bold text-xs">
                     <TrendingUp className="w-4 h-4 text-rose-600" />
-                    <span>PATH A: INACTION (Do Nothing)</span>
+                    <span>If No Action</span>
                   </div>
                   <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-rose-200 text-rose-900">
                     High Hazard
@@ -127,7 +127,7 @@ export const CounterfactualWidget = ({ patient, onClose }) => {
                 <div className="flex items-center justify-between pb-2 border-b border-emerald-200/80">
                   <div className="flex items-center space-x-1.5 text-emerald-800 font-bold text-xs">
                     <TrendingDown className="w-4 h-4 text-emerald-600" />
-                    <span>PATH B: INTERVENE NOW</span>
+                    <span>If You Act Now</span>
                   </div>
                   <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-200 text-emerald-900">
                     Safe Path
