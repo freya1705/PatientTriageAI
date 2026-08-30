@@ -21,8 +21,7 @@ export const ActionQueue = ({ filterMode = "ALL" }) => {
     queueData,
     viewPatientDetail,
     openReassessmentModal,
-    setWhyModalPatient,
-    openWhatIfModal,
+    openPatientDrawer,
     openWhyComparison,
     handleImOnIt,
     handlingMap,
@@ -256,31 +255,14 @@ export const ActionQueue = ({ filterMode = "ALL" }) => {
               <span>{actionLabel}</span>
             </button>
 
-            {/* Why Button */}
+            {/* Unified Patient Drawer / Details Trigger */}
             <button
-              onClick={() => setWhyModalPatient(patient)}
-              className="p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 text-xs font-bold border border-slate-200"
-              title="Why is this patient prioritized?"
+              onClick={() => openPatientDrawer(patient)}
+              className="px-2.5 py-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-xs font-bold border border-slate-200 transition-colors flex items-center space-x-1"
+              title="Open Clinical Dossier, Why This Rank & Forecast"
             >
-              Why?
-            </button>
-
-            {/* What If Button */}
-            <button
-              onClick={() => openWhatIfModal(patient)}
-              className="p-2 rounded-lg text-purple-700 hover:bg-purple-50 text-xs font-bold border border-purple-200"
-              title="What if waiting continues?"
-            >
-              🔮
-            </button>
-
-            {/* Open Detail */}
-            <button
-              onClick={() => viewPatientDetail(patient.id)}
-              className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
-              title="Open patient record"
-            >
-              <ChevronRight className="w-4 h-4" />
+              <span>Details</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>

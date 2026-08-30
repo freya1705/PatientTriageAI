@@ -16,7 +16,7 @@ export const SearchAllWaitingPage = () => {
     queueData,
     viewPatientDetail,
     openReassessmentModal,
-    setWhyModalPatient,
+    openPatientDrawer,
     handleImOnIt,
     handlingMap,
     fetchQueue,

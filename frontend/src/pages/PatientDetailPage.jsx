@@ -23,8 +23,7 @@ export const PatientDetailPage = () => {
     selectedPatientId,
     setActiveTab,
     openReassessmentModal,
-    openWhatIfModal,
-    setWhyModalPatient,
+    openPatientDrawer,
     handleToggleAttending,
     setOverrideModalPatient,
   } = useTriage();
@@ -250,7 +249,7 @@ export const PatientDetailPage = () => {
               </button>
 
               <button
-                onClick={() => openWhatIfModal(patient)}
+                onClick={() => openPatientDrawer(patient)}
                 className="w-full p-3 rounded-lg bg-purple-50 hover:bg-purple-100 border border-purple-200 text-left transition-colors flex items-center justify-between group"
               >
                 <div>
