@@ -53,3 +53,8 @@ class HospitalConfigUpdate(BaseModel):
     reassess_window_l3: Optional[int] = None
     reassess_window_l4: Optional[int] = None
     reassess_window_l5: Optional[int] = None
+
+class AssignPhysicianRequest(BaseModel):
+    physician_name: Optional[str] = "Dr. Emily Zhang, MD (Staff Physician)"
+    department_or_bay: Optional[str] = "Acute Care Bay 1"
+    assign: bool = True

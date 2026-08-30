@@ -9,7 +9,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Optional
 
 from ..database import get_db_connection, seed_benchmark_patients
-from ..models.schemas import PatientIntakeRequest, AddVitalsRequest, ClinicianOverrideRequest
+from ..models.schemas import PatientIntakeRequest, AddVitalsRequest, ClinicianOverrideRequest, AssignPhysicianRequest
 from ..services.risk_engine import calculate_triage_assessment
 from ..services.deterioration_engine import analyze_vital_deterioration
 from ..services.safety_expiry_engine import calculate_safety_staleness_and_decay
@@ -377,6 +377,49 @@ def toggle_attending_status(patient_id: str):
         "success": True,
         "is_attended": bool(new_attended),
         "attending_physician": new_physician
+    }
+
+@router.post("/{patient_id}/assign-physician")
+def assign_physician(patient_id: str, req: AssignPhysicianRequest):
+    """Assigns or dispatches a patient to an attending physician and ED treatment bay/department."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, name FROM patients WHERE id = ?", (patient_id,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Patient not found")
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    if req.assign:
+        assigned_desc = f"{req.physician_name} • {req.department_or_bay}" if req.department_or_bay else req.physician_name
+        is_attended = 1
+    else:
+        assigned_desc = None
+        is_attended = 0
+
+    cursor.execute("""
+    UPDATE patients
+    SET is_attended = ?, attending_physician = ?, updated_at = ?
+    WHERE id = ?
+    """, (is_attended, assigned_desc, now_iso, patient_id))
+
+    log_audit_event(
+        event_type="PHYSICIAN_ASSIGNMENT",
+        patient_id=patient_id,
+        clinician_decision=f"Assigned to {assigned_desc}" if is_attended else "Unassigned physician (Returned to waiting queue)",
+        clinician_role="Charge Nurse",
+        outcome=f"Care Handoff: {assigned_desc or 'None (Waiting Room)'}",
+        conn=conn
+    )
+
+    conn.commit()
+    conn.close()
+
+    return {
+        "success": True,
+        "is_attended": bool(is_attended),
+        "attending_physician": assigned_desc
     }
 
 @router.post("/{patient_id}/toggle-attendant")

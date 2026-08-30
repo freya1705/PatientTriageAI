@@ -55,6 +55,11 @@ export const api = {
     return res.data;
   },
 
+  assignPhysician: async (id, data) => {
+    const res = await axios.post(`${API_BASE}/patients/${id}/assign-physician`, data);
+    return res.data;
+  },
+
   toggleAttendant: async (id) => {
     const res = await axios.post(`${API_BASE}/patients/${id}/toggle-attendant`);
     return res.data;

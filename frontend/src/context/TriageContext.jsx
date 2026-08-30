@@ -359,12 +359,48 @@ export const TriageProvider = ({ children }) => {
       await fetchLiveFeed();
       showToast(
         res.is_attended
-          ? `👩⚕️ Attending physician assigned to ${patientId}`
+          ? `👨‍⚕️ Attending physician assigned to ${patientId}`
           : `Patient ${patientId} marked unattended`,
         "info",
       );
     } catch (err) {
       showToast("Toggle failed", "error");
+    }
+  };
+
+  const handleAssignPhysician = async (
+    patientId,
+    doctorName,
+    department,
+    assign = true,
+  ) => {
+    try {
+      const res = await api.assignPhysician(patientId, {
+        physician_name: doctorName || "Dr. Emily Zhang, MD (Staff Physician)",
+        department_or_bay: department || "Acute Care Bay 1",
+        assign: assign,
+      });
+      await fetchQueue();
+      await fetchLiveFeed();
+      showToast(
+        assign
+          ? `👨‍⚕️ Handed off ${patientId} to ${res.attending_physician}`
+          : `Patient ${patientId} returned to unmonitored waiting queue`,
+        assign ? "success" : "info",
+      );
+      setDrawerPatient((prev) => {
+        if (prev && prev.id === patientId) {
+          return {
+            ...prev,
+            is_attended: res.is_attended,
+            attending_physician: res.attending_physician,
+          };
+        }
+        return prev;
+      });
+      return res;
+    } catch (err) {
+      showToast("Assignment failed", "error");
     }
   };
 
@@ -422,6 +458,7 @@ export const TriageProvider = ({ children }) => {
         handleResetData,
         handleSimulateDeterioration,
         handleToggleAttending,
+        handleAssignPhysician,
         handleToggleAttendant,
         handleClosedLoopReassess,
         viewPatientDetail,

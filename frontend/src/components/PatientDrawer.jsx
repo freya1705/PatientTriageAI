@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTriage } from '../context/TriageContext';
 import {
   X,
@@ -9,6 +9,9 @@ import {
   ShieldCheck,
   TrendingDown,
   UserCheck,
+  UserX,
+  Stethoscope,
+  Building2,
 } from 'lucide-react';
 
 export const PatientDrawer = () => {
@@ -17,9 +20,16 @@ export const PatientDrawer = () => {
     setDrawerPatient,
     openReassessmentModal,
     handleImOnIt,
+    handleAssignPhysician,
     handlingMap,
     activeNurseName,
   } = useTriage();
+
+  const [selectedDoctor, setSelectedDoctor] = useState(
+    'Dr. Emily Zhang, MD (Staff Physician)',
+  );
+  const [selectedBay, setSelectedBay] = useState('Acute Care Bay 1');
+  const [isAssigning, setIsAssigning] = useState(false);
 
   if (!drawerPatient) return null;
 
@@ -36,11 +46,28 @@ export const PatientDrawer = () => {
     setDrawerPatient(null);
   };
 
+  const onAssignSubmit = async (e) => {
+    e.preventDefault();
+    setIsAssigning(true);
+    await handleAssignPhysician(p.id, selectedDoctor, selectedBay, true);
+    setIsAssigning(false);
+  };
+
+  const onUnassign = async () => {
+    setIsAssigning(true);
+    await handleAssignPhysician(p.id, null, null, false);
+    setIsAssigning(false);
+  };
+
   // Sparkline data points based on vitals
   const trendPoints = [
     { time: '-15m', spo2: 96, hr: 92 },
     { time: '-10m', spo2: 94, hr: 95 },
-    { time: '-5m', spo2: vitals.spo2 ? Math.min(92, vitals.spo2 + 4) : 88, hr: 104 },
+    {
+      time: '-5m',
+      spo2: vitals.spo2 ? Math.min(92, vitals.spo2 + 4) : 88,
+      hr: 104,
+    },
     { time: 'Now', spo2: vitals.spo2 ?? 78, hr: vitals.heart_rate ?? 101 },
   ];
 
@@ -58,7 +85,7 @@ export const PatientDrawer = () => {
         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-slate-50/80">
           <div>
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">
-              PATIENT DOSSIER
+              PATIENT DOSSIER & CARE HANDOFF
             </span>
             <div className="flex items-center space-x-2 mt-0.5">
               <h3 className="text-lg font-black text-slate-900">{p.name}</h3>
@@ -66,9 +93,7 @@ export const PatientDrawer = () => {
                 {p.id} &bull; {p.age}y {p.gender === 'Female' ? 'F' : 'M'}
               </span>
             </div>
-            <p className="text-xs text-slate-600 mt-0.5">
-              {p.chief_complaint}
-            </p>
+            <p className="text-xs text-slate-600 mt-0.5">{p.chief_complaint}</p>
           </div>
 
           <button
@@ -88,10 +113,14 @@ export const PatientDrawer = () => {
             </span>
             <div className="grid grid-cols-3 gap-2 text-center">
               <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-                <span className="text-[10px] font-bold text-slate-400 block">SpO₂</span>
+                <span className="text-[10px] font-bold text-slate-400 block">
+                  SpO₂
+                </span>
                 <span
                   className={`text-base font-black ${
-                    (vitals.spo2 ?? 98) < 92 ? 'text-rose-600 font-extrabold' : 'text-slate-900'
+                    (vitals.spo2 ?? 98) < 92
+                      ? 'text-rose-600 font-extrabold'
+                      : 'text-slate-900'
                   }`}
                 >
                   {vitals.spo2 ?? 78}%
@@ -99,18 +128,27 @@ export const PatientDrawer = () => {
               </div>
 
               <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-                <span className="text-[10px] font-bold text-slate-400 block">HEART RATE</span>
+                <span className="text-[10px] font-bold text-slate-400 block">
+                  HEART RATE
+                </span>
                 <span
                   className={`text-base font-black ${
-                    (vitals.heart_rate ?? 75) > 100 ? 'text-rose-600' : 'text-slate-900'
+                    (vitals.heart_rate ?? 75) > 100
+                      ? 'text-rose-600'
+                      : 'text-slate-900'
                   }`}
                 >
-                  {vitals.heart_rate ?? 101} <span className="text-[10px] font-normal text-slate-400">bpm</span>
+                  {vitals.heart_rate ?? 101}{' '}
+                  <span className="text-[10px] font-normal text-slate-400">
+                    bpm
+                  </span>
                 </span>
               </div>
 
               <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-                <span className="text-[10px] font-bold text-slate-400 block">BLOOD PRESS.</span>
+                <span className="text-[10px] font-bold text-slate-400 block">
+                  BLOOD PRESS.
+                </span>
                 <span className="text-sm font-black text-slate-900 mt-0.5 block">
                   {vitals.systolic_bp || 92}/{vitals.diastolic_bp || 54}
                 </span>
@@ -121,20 +159,33 @@ export const PatientDrawer = () => {
           {/* VITAL TREND SPARKLINE */}
           <div className="space-y-2 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
             <div className="flex items-center justify-between text-[11px] font-bold">
-              <span className="text-slate-500 uppercase tracking-wider">PHYSIOLOGICAL TREND</span>
+              <span className="text-slate-500 uppercase tracking-wider">
+                PHYSIOLOGICAL TREND
+              </span>
               <span className="text-rose-600 font-mono">SpO₂ ↓ 18% (15m)</span>
             </div>
 
             {/* Visual Sparkline Bar Representation */}
             <div className="flex items-end justify-between h-14 pt-2 px-2 gap-2 border-b border-slate-200 pb-1">
               {trendPoints.map((pt, idx) => (
-                <div key={idx} className="flex-1 flex flex-col items-center gap-1">
-                  <span className="text-[9px] font-mono font-bold text-slate-500">{pt.spo2}%</span>
+                <div
+                  key={idx}
+                  className="flex-1 flex flex-col items-center gap-1"
+                >
+                  <span className="text-[9px] font-mono font-bold text-slate-500">
+                    {pt.spo2}%
+                  </span>
                   <div
                     className={`w-full rounded-t transition-all ${
-                      pt.spo2 < 90 ? 'bg-rose-500' : pt.spo2 < 95 ? 'bg-amber-400' : 'bg-emerald-400'
+                      pt.spo2 < 90
+                        ? 'bg-rose-500'
+                        : pt.spo2 < 95
+                          ? 'bg-amber-400'
+                          : 'bg-emerald-400'
                     }`}
-                    style={{ height: `${Math.max(12, (pt.spo2 - 60) * 1.5)}px` }}
+                    style={{
+                      height: `${Math.max(12, (pt.spo2 - 60) * 1.5)}px`,
+                    }}
                   />
                   <span className="text-[9px] text-slate-400">{pt.time}</span>
                 </div>
@@ -155,6 +206,102 @@ export const PatientDrawer = () => {
                   ? 'Observation shelf-life expired (48m wait without updated bedside check).'
                   : 'Stable physiological trajectory. Continue routine queue monitoring.'}
             </p>
+          </div>
+
+          {/* 👨‍⚕️ PHYSICIAN & DEPARTMENT HANDOFF (NEW INTEGRATION) */}
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-1.5">
+                <Stethoscope className="w-4 h-4 text-cyan-700" />
+                <span className="text-xs font-black uppercase tracking-wider text-slate-800">
+                  Physician &amp; Department Handoff
+                </span>
+              </div>
+
+              {p.is_attended && (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                  Assigned
+                </span>
+              )}
+            </div>
+
+            {p.is_attended ? (
+              <div className="p-3 rounded-lg bg-emerald-50/80 border border-emerald-200 space-y-2">
+                <div className="flex items-center space-x-2">
+                  <UserCheck className="w-4 h-4 text-emerald-700" />
+                  <span className="text-xs font-bold text-emerald-950">
+                    {p.attending_physician || 'Dr. Emily Zhang, MD'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-emerald-800">
+                  Active physician coverage. Attention Gap unmonitored risk is discounted.
+                </p>
+                <button
+                  onClick={onUnassign}
+                  disabled={isAssigning}
+                  className="text-xs font-bold text-rose-700 hover:text-rose-900 underline transition-colors"
+                >
+                  Unassign &bull; Return to Unattended Waiting Queue
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={onAssignSubmit} className="space-y-2.5">
+                {/* Doctor Selection */}
+                <div>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                    Assign Attending Physician:
+                  </label>
+                  <select
+                    value={selectedDoctor}
+                    onChange={(e) => setSelectedDoctor(e.target.value)}
+                    className="w-full text-xs bg-white border border-slate-200 rounded-lg p-2 font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-900"
+                  >
+                    <option value="Dr. Emily Zhang, MD (Staff Physician)">
+                      Dr. Emily Zhang, MD (Staff Physician)
+                    </option>
+                    <option value="Dr. Marcus Vance, MD (Attending Physician)">
+                      Dr. Marcus Vance, MD (Attending Physician)
+                    </option>
+                    <option value="Dr. Sarah Al-Mansoor, MD (Trauma Surgeon)">
+                      Dr. Sarah Al-Mansoor, MD (Trauma Surgeon)
+                    </option>
+                    <option value="Dr. Rajesh Patel, MD (Cardiologist)">
+                      Dr. Rajesh Patel, MD (Cardiology On-Call)
+                    </option>
+                  </select>
+                </div>
+
+                {/* Treatment Bay / Department Selection */}
+                <div>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                    Dispatch to ED Area / Bed:
+                  </label>
+                  <select
+                    value={selectedBay}
+                    onChange={(e) => setSelectedBay(e.target.value)}
+                    className="w-full text-xs bg-white border border-slate-200 rounded-lg p-2 font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-900"
+                  >
+                    <option value="Resuscitation Bay 1">Resuscitation Bay 1 (Critical)</option>
+                    <option value="Acute Care Bay 1">Acute Care Bay 1</option>
+                    <option value="Acute Care Bed 3">Acute Care Bed 3</option>
+                    <option value="Fast Track Room 2">Fast Track Room 2 (Minor)</option>
+                    <option value="Observation Holding Unit">Observation Holding Unit</option>
+                    <option value="Cardiac Monitoring Suite">Cardiac Monitoring Suite</option>
+                  </select>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isAssigning}
+                  className="w-full py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors flex items-center justify-center space-x-1.5 shadow-xs"
+                >
+                  <UserCheck className="w-3.5 h-3.5" />
+                  <span>
+                    {isAssigning ? 'Assigning…' : 'Assign Physician & Dispatch to Bed'}
+                  </span>
+                </button>
+              </form>
+            )}
           </div>
 
           {/* RECOMMENDED ACTION */}
@@ -181,9 +328,18 @@ export const PatientDrawer = () => {
               AUDIT TRAIL
             </span>
             <p className="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 font-mono text-[11px] leading-relaxed">
-              • Initial intake: ESI Level {p.triage_level} at 10:00 AM<br />
-              • Ambient surveillance flag: Vital velocity spike detected<br />
+              • Initial intake: ESI Level {p.triage_level} at 10:00 AM
+              <br />
+              • Ambient surveillance flag: Vital velocity spike detected
+              <br />
               • Priority elevated: Rank #1 under Attention Gap rule
+              <br />
+              {p.attending_physician && (
+                <>
+                  • Physician coverage: {p.attending_physician}
+                  <br />
+                </>
+              )}
             </p>
           </div>
         </div>
