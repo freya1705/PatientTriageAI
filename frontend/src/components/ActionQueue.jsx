@@ -1,33 +1,26 @@
-import React from "react";
-import { useTriage } from "../context/TriageContext";
+import React from 'react';
+import { useTriage } from '../context/TriageContext';
 import {
   Zap,
   Clock,
-  HelpCircle,
-  Activity,
   CheckCircle2,
   ChevronRight,
   UserCheck,
-  User,
+  AlertTriangle,
+  Activity,
   ShieldCheck,
-  TrendingDown,
-  AlertOctagon,
-  Scale,
-} from "lucide-react";
-import { SafetyClock } from "./SafetyClock";
+  Eye,
+} from 'lucide-react';
 
-export const ActionQueue = ({ filterMode = "ALL" }) => {
+export const ActionQueue = ({ filterMode = 'ALL' }) => {
   const {
     queueData,
-    viewPatientDetail,
     openReassessmentModal,
     openPatientDrawer,
-    openWhyComparison,
     handleImOnIt,
     handlingMap,
     activeNurseName,
     assignedPatientIds,
-    setActiveTab,
   } = useTriage();
 
   if (!queueData) return null;
@@ -36,233 +29,223 @@ export const ActionQueue = ({ filterMode = "ALL" }) => {
 
   // Filter based on parent tab if needed
   let displayPatients = allPatients;
-  if (filterMode === "MY_PATIENTS") {
+  if (filterMode === 'MY_PATIENTS') {
     displayPatients = allPatients.filter((p) => assignedPatientIds.has(p.id));
-  } else if (filterMode === "ACTION_NOW") {
+  } else if (filterMode === 'ACTION_NOW') {
     displayPatients = allPatients.filter(
       (p) =>
-        p.action_badge === "ESCALATE" ||
-        p.action_badge === "IMMEDIATE" ||
+        p.action_badge === 'ESCALATE' ||
+        p.action_badge === 'IMMEDIATE' ||
+        p.action_badge === 'REASSESS' ||
+        p.trajectory_status === 'RAPID_DETERIORATION' ||
         (p.risk_score || 0) >= 70,
     );
-  } else if (filterMode === "EXPIRING") {
+  } else if (filterMode === 'EXPIRING' || filterMode === 'RECHECK') {
     displayPatients = allPatients.filter(
       (p) =>
-        p.safety_status === "EXPIRED" || (p.minutes_until_expiry ?? 15) <= 5,
+        p.safety_status === 'EXPIRED' ||
+        (p.minutes_until_expiry && p.minutes_until_expiry <= 5) ||
+        p.action_badge === 'WATCH' ||
+        p.is_uncertain,
     );
-  } else if (filterMode === "UNATTENDED") {
+  } else if (filterMode === 'UNATTENDED') {
     displayPatients = allPatients.filter((p) => !p.is_attended);
   }
 
-  // Segment into clinical priority groups
-  const urgentPatients = displayPatients.filter(
+  // 3-State Segmentation: ACT NOW, RECHECK, SAFE TO WAIT
+  const actNowList = displayPatients.filter(
     (p) =>
-      p.action_badge === "ESCALATE" ||
-      p.action_badge === "IMMEDIATE" ||
-      p.trajectory_status === "RAPID_DETERIORATION" ||
-      (p.risk_score || 0) >= 70,
+      p.action_badge === 'ESCALATE' ||
+      p.action_badge === 'IMMEDIATE' ||
+      p.trajectory_status === 'RAPID_DETERIORATION' ||
+      p.trajectory_status === 'WORSENING' ||
+      (p.risk_score || 0) >= 70 ||
+      p.is_deteriorating,
   );
 
-  const reassessSoonPatients = displayPatients.filter(
+  const recheckList = displayPatients.filter(
     (p) =>
-      !urgentPatients.some((u) => u.id === p.id) &&
-      (p.action_badge === "REASSESS" ||
-        p.safety_status === "EXPIRED" ||
+      !actNowList.some((u) => u.id === p.id) &&
+      (p.action_badge === 'REASSESS' ||
+        p.action_badge === 'WATCH' ||
+        p.safety_status === 'EXPIRED' ||
+        (p.minutes_until_expiry && p.minutes_until_expiry <= 5) ||
         p.is_uncertain),
   );
 
-  const watchPatients = displayPatients.filter(
+  const safeList = displayPatients.filter(
     (p) =>
-      !urgentPatients.some((u) => u.id === p.id) &&
-      !reassessSoonPatients.some((r) => r.id === p.id) &&
-      (p.risk_score || 0) >= 35,
+      !actNowList.some((u) => u.id === p.id) &&
+      !recheckList.some((r) => r.id === p.id),
   );
 
-  const stableCount =
-    allPatients.length -
-    (urgentPatients.length +
-      reassessSoonPatients.length +
-      watchPatients.length);
-
-  const renderActionCard = (patient, index, priorityLevel) => {
+  const renderPatientRow = (patient, stateType) => {
     const vitals = patient.latest_vitals || {};
-    const isDeteriorating =
-      patient.trajectory_status in
-      { RAPID_DETERIORATION: true, WORSENING: true };
-    const isExpired = patient.safety_status === "EXPIRED";
     const handling = handlingMap[patient.id];
     const isHandledByMe = handling?.nurseName === activeNurseName;
 
-    // What Changed summary
-    let whatChangedText = "Vitals stable since arrival";
-    if (isDeteriorating) {
-      whatChangedText = `SpO₂ 96% → ${vitals.spo2 ?? 91}% (↓ 5%) • HR 92 → ${vitals.heart_rate ?? 117} bpm (↑ 25 bpm)`;
-    } else if (isExpired) {
-      whatChangedText = `Vitals recorded ${patient.elapsed_since_vital || 48}m old no update since`;
+    // Clinically important change / vitals shift
+    let changeVitals = 'Vitals stable since arrival';
+    let deltaSub = null;
+    let aiSignal = 'Routine baseline surveillance';
+
+    if (patient.trajectory_status in { RAPID_DETERIORATION: true, WORSENING: true } || (patient.risk_score || 0) >= 70) {
+      changeVitals = `SpO₂ 96% → ${vitals.spo2 ?? 78}%`;
+      deltaSub = `↓ ${96 - (vitals.spo2 ?? 78)}% • HR 92 → ${vitals.heart_rate ?? 117} bpm (↑ 25)`;
+      aiSignal = 'Rapid oxygen desaturation & tachycardia';
+    } else if (patient.safety_status === 'EXPIRED') {
+      changeVitals = `Vitals recorded ${patient.elapsed_since_vital || 48}m ago`;
+      deltaSub = 'Shelf-life expired • Overdue for recheck';
+      aiSignal = 'Unmonitored observation shelf-life expired';
     } else if (patient.is_uncertain) {
-      whatChangedText =
-        "SpO₂ and blood pressure not recorded at intake";
+      changeVitals = 'Missing intake vitals';
+      deltaSub = 'Unknown ≠ Safe penalty active';
+      aiSignal = 'Incomplete physiological data';
     } else if (patient.total_waiting_mins > 30) {
-      whatChangedText = `Waiting ${patient.total_waiting_mins}m unmonitored in waiting room`;
+      changeVitals = `Waiting ${patient.total_waiting_mins}m in lounge`;
+      deltaSub = 'Attendant away spot-check';
+      aiSignal = 'Prolonged unattended wait';
     }
-
-    // Why summary
-    let whySummary = "Routine monitoring";
-    if (isDeteriorating)
-      whySummary = "Vitals dropping rapidly";
-    else if (isExpired) whySummary = "Overdue for a recheck";
-    else if (patient.is_uncertain)
-      whySummary = "Incomplete vitals — needs verification";
-
-    // Primary Action Label
-    let actionLabel = "RECHECK VITALS";
-    if (priorityLevel === "URGENT") actionLabel = "REASSESS NOW";
-    else if (patient.is_uncertain) actionLabel = "ACQUIRE VITALS";
-    else if (patient.is_attended) actionLabel = "REVIEW PATIENT";
 
     return (
       <div
         key={patient.id}
-        className={`bg-white rounded-xl border p-4 transition-all ${
-          priorityLevel === "URGENT"
-            ? "border-rose-300 ring-2 ring-rose-100 shadow-sm"
-            : priorityLevel === "NEXT"
-              ? "border-amber-200 shadow-2xs hover:border-amber-300"
-              : "border-slate-200 hover:border-slate-300"
+        className={`bg-white rounded-xl border p-4 transition-all duration-150 ${
+          stateType === 'ACT_NOW'
+            ? 'border-rose-300 ring-2 ring-rose-50 shadow-xs'
+            : stateType === 'RECHECK'
+              ? 'border-amber-200 shadow-2xs hover:border-amber-300'
+              : 'border-slate-200/90 hover:border-slate-300'
         }`}
       >
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          {/* Left: Priority + Demographics */}
-          <div className="flex items-start space-x-3 min-w-[260px]">
-            <div
-              className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs flex-shrink-0 border ${
-                priorityLevel === "URGENT"
-                  ? "bg-rose-600 text-white border-rose-700 shadow-xs animate-pulse"
-                  : priorityLevel === "NEXT"
-                    ? "bg-amber-500 text-white border-amber-600"
-                    : "bg-slate-100 text-slate-700 border-slate-200"
-              }`}
-            >
-              {priorityLevel === "URGENT"
-                ? "🔴"
-                : priorityLevel === "NEXT"
-                  ? "🟠"
-                  : "🟡"}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
+          {/* 1. Left: Severity & Patient Identity */}
+          <div className="flex items-start space-x-3 min-w-[240px]">
+            {/* Dot Indicator */}
+            <div className="mt-1 flex-shrink-0">
+              {stateType === 'ACT_NOW' && (
+                <span className="flex h-3 w-3 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-600"></span>
+                </span>
+              )}
+              {stateType === 'RECHECK' && (
+                <span className="inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+              )}
+              {stateType === 'SAFE' && (
+                <span className="inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+              )}
             </div>
 
-            <div>
+            <div className="space-y-0.5 min-w-0">
               <div className="flex items-center space-x-2">
-                <span className="font-mono text-xs font-bold text-slate-900">
-                  {patient.id}
-                </span>
-                <span className="text-sm font-bold text-slate-900">
+                <h4 className="text-sm font-black text-slate-900 truncate">
                   {patient.name}
+                </h4>
+                <span className="text-[11px] font-mono font-bold text-slate-500">
+                  {patient.age}y {patient.gender === 'Female' ? 'F' : 'M'}
                 </span>
-                <span className="text-xs text-slate-400">
-                  {patient.age}y &bull; {patient.gender}
-                </span>
               </div>
 
-              <div className="text-xs font-semibold text-slate-700 mt-0.5">
-                "{patient.chief_complaint}"
+              <div className="flex items-center space-x-2 text-[11px] text-slate-500">
+                <span className="font-mono font-bold text-slate-700">{patient.id}</span>
+                <span>&bull;</span>
+                <span className="font-semibold text-slate-600">Level {patient.display_triage_level || patient.triage_level}</span>
+                {patient.attendant_away && (
+                  <span className="text-amber-700 font-bold bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200 text-[10px]">
+                    Away
+                  </span>
+                )}
               </div>
 
-              <div className="text-[11px] text-slate-400 font-mono mt-0.5">
-                Waiting <strong>{patient.total_waiting_mins} min</strong> &bull;
-                Level {patient.display_triage_level}
-              </div>
+              <p className="text-xs text-slate-600 truncate max-w-[220px]">
+                {patient.chief_complaint}
+              </p>
+            </div>
+          </div>
 
-              {/* Handling Status Badge */}
-              {handling && (
-                <div className="mt-1.5 inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 animate-pulse">
-                  <span>🟡 Being handled by {handling.nurseName}</span>
-                </div>
-              )}
-
-              {/* Attendant Away Badge */}
-              {patient.attendant_away && (
-                <div className="mt-1 inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-900 border border-orange-300">
-                  <span className="w-1.5 h-1.5 rounded-full bg-orange-600 animate-ping" />
-                  <span>Attendant Away</span>
-                </div>
-              )}
-
-              {/* Referral Candidate Badge */}
-              {patient.referral_eligible && (
-                <div
-                  className="mt-1 inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300"
-                  title={patient.referral_reason}
+          {/* 2. Center: Clinically Important Change */}
+          <div className="flex-1 min-w-[200px] border-t md:border-t-0 md:border-l border-slate-100 md:pl-4 pt-2 md:pt-0">
+            <div className="flex items-baseline space-x-2">
+              <span className="text-xs font-black text-slate-900">
+                {changeVitals}
+              </span>
+              {deltaSub && (
+                <span
+                  className={`text-[11px] font-bold ${
+                    stateType === 'ACT_NOW'
+                      ? 'text-rose-600'
+                      : stateType === 'RECHECK'
+                        ? 'text-amber-700'
+                        : 'text-slate-500'
+                  }`}
                 >
-                  <span>🏥 Referral Candidate</span>
-                </div>
+                  {deltaSub}
+                </span>
               )}
             </div>
-          </div>
 
-          {/* Center: WHAT CHANGED & WHY */}
-          <div className="flex-1 min-w-[240px] space-y-1">
-            <div className="text-xs">
-              <span className="font-bold text-slate-900 uppercase tracking-wide text-[10px] mr-1.5">
-                WHAT CHANGED:
+            <div className="text-[11px] text-slate-500 mt-0.5 flex items-center space-x-1.5">
+              <span className="font-bold uppercase tracking-wider text-[9px] text-slate-400">
+                AI SIGNAL:
               </span>
-              <span className="text-slate-800 font-semibold">
-                {whatChangedText}
-              </span>
-            </div>
-
-            <div className="text-xs text-slate-500">
-              <span className="font-bold uppercase tracking-wide text-[10px] mr-1.5">
-                WHY:
-              </span>
-              <span className="text-slate-600">{whySummary}</span>
-            </div>
-
-            <div className="pt-1 flex items-center space-x-2">
-              <SafetyClock
-                elapsedMins={patient.elapsed_since_vital || 0}
-                minutesUntilExpiry={patient.minutes_until_expiry ?? 15}
-                safetyStatus={patient.safety_status}
-                size="compact"
-              />
+              <span className="font-semibold text-slate-700">{aiSignal}</span>
             </div>
           </div>
 
-          {/* Right: NEXT ACTION & Secondary Buttons */}
-          <div className="flex items-center space-x-2 self-stretch lg:self-center justify-between lg:justify-end flex-shrink-0">
-            {/* "I'm on it" button */}
+          {/* 3. Right: Single Primary Action + Details */}
+          <div className="flex items-center space-x-2 self-end md:self-center flex-shrink-0 pt-2 md:pt-0">
+            {/* "I'm on it" Claim Button */}
             <button
               onClick={() => handleImOnIt(patient.id)}
-              className={`px-3 py-2 rounded-lg text-xs font-bold transition-all border ${
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all border ${
                 isHandledByMe
-                  ? "bg-amber-100 text-amber-900 border-amber-300"
-                  : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                  ? 'bg-amber-100 text-amber-900 border-amber-300'
+                  : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
               }`}
-              title="Claim this patient"
+              title="Claim patient"
             >
-              {isHandledByMe ? "✓ I'M ON IT" : "I'M ON IT"}
+              {isHandledByMe ? '✓ Claimed' : "I'm on it"}
             </button>
 
-            {/* Primary Action Button */}
-            <button
-              onClick={() => openReassessmentModal(patient)}
-              className={`px-4 py-2 rounded-lg text-xs font-black shadow-xs transition-colors flex items-center space-x-1.5 ${
-                priorityLevel === "URGENT"
-                  ? "bg-rose-600 hover:bg-rose-700 text-white shadow-rose-200"
-                  : "bg-amber-600 hover:bg-amber-700 text-white"
-              }`}
-            >
-              <Zap className="w-3.5 h-3.5" />
-              <span>{actionLabel}</span>
-            </button>
+            {/* ONE Primary Action Button */}
+            {stateType === 'ACT_NOW' && (
+              <button
+                onClick={() => openReassessmentModal(patient)}
+                className="px-3.5 py-1.5 rounded-lg text-xs font-black bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition-colors flex items-center space-x-1"
+              >
+                <Zap className="w-3.5 h-3.5" />
+                <span>REASSESS NOW</span>
+              </button>
+            )}
 
-            {/* Unified Patient Drawer / Details Trigger */}
+            {stateType === 'RECHECK' && (
+              <button
+                onClick={() => openReassessmentModal(patient)}
+                className="px-3.5 py-1.5 rounded-lg text-xs font-black bg-amber-600 hover:bg-amber-700 text-white shadow-xs transition-colors flex items-center space-x-1"
+              >
+                <Clock className="w-3.5 h-3.5" />
+                <span>RECHECK</span>
+              </button>
+            )}
+
+            {stateType === 'SAFE' && (
+              <button
+                onClick={() => openPatientDrawer(patient)}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white transition-colors flex items-center space-x-1"
+              >
+                <Eye className="w-3.5 h-3.5" />
+                <span>VIEW</span>
+              </button>
+            )}
+
+            {/* Secondary Details Link */}
             <button
               onClick={() => openPatientDrawer(patient)}
-              className="px-2.5 py-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-xs font-bold border border-slate-200 transition-colors flex items-center space-x-1"
-              title="Open Clinical Dossier, Why This Rank & Forecast"
+              className="px-2 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+              title="Open Details Drawer"
             >
-              <span>Details</span>
-              <ChevronRight className="w-3.5 h-3.5" />
+              Details
             </button>
           </div>
         </div>
@@ -272,72 +255,59 @@ export const ActionQueue = ({ filterMode = "ALL" }) => {
 
   return (
     <div className="space-y-6">
-      {/* 🔴 LEVEL 1: ACTION REQUIRED NOW */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
+      {/* 🔴 SECTION 1: ACT NOW */}
+      {actNowList.length > 0 && (
+        <div className="space-y-2.5">
           <div className="flex items-center space-x-2">
-            <span className="w-3 h-3 rounded-full bg-rose-600 animate-ping"></span>
-            <h2 className="text-sm font-black text-slate-900 tracking-tight uppercase">
-              🔴 Act Now ({urgentPatients.length})
-            </h2>
-          </div>
-          <span className="text-xs text-slate-500 font-medium">
-            These patients need you at bedside
-          </span>
-        </div>
-
-        {urgentPatients.length === 0 ? (
-          <div className="bg-emerald-50/60 border border-emerald-200 rounded-xl p-4 text-center text-xs text-emerald-800 font-semibold flex items-center justify-center space-x-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-            <span>
-              All clear — no urgent actions right now.
+            <span className="flex h-2.5 w-2.5 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-600"></span>
             </span>
+            <h3 className="text-xs font-black uppercase tracking-wider text-rose-900">
+              🔴 ACT NOW &bull; {actNowList.length} Patients Not Safe to Wait
+            </h3>
           </div>
-        ) : (
-          urgentPatients.map((p, idx) => renderActionCard(p, idx, "URGENT"))
-        )}
-      </div>
-
-      {/* 🟠 LEVEL 2: REASSESS SOON */}
-      {reassessSoonPatients.length > 0 && (
-        <div className="space-y-3 pt-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-              <h2 className="text-sm font-black text-slate-900 tracking-tight uppercase">
-                🟠 Recheck Soon ({reassessSoonPatients.length})
-              </h2>
-            </div>
-            <span className="text-xs text-slate-500 font-medium">
-              Vitals are stale or incomplete
-            </span>
-          </div>
-
-          <div className="space-y-3">
-            {reassessSoonPatients
-              .slice(0, 4)
-              .map((p, idx) => renderActionCard(p, idx, "NEXT"))}
+          <div className="space-y-2">
+            {actNowList.map((p) => renderPatientRow(p, 'ACT_NOW'))}
           </div>
         </div>
       )}
 
-      {/* 🟢 LEVEL 3: MONITORING (Compact Collapse) */}
-      <div className="bg-slate-100/70 border border-slate-200 rounded-xl p-3.5 flex items-center justify-between text-xs text-slate-600">
-        <div className="flex items-center space-x-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span className="font-bold text-slate-800">
-            {stableCount > 0 ? stableCount : 12} Stable — monitoring continues
-          </span>
+      {/* 🟡 SECTION 2: RECHECK */}
+      {recheckList.length > 0 && (
+        <div className="space-y-2.5 pt-2">
+          <div className="flex items-center space-x-2">
+            <span className="inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+            <h3 className="text-xs font-black uppercase tracking-wider text-amber-900">
+              🟡 RECHECK SOON &bull; {recheckList.length} Patients Overdue / Expiring
+            </h3>
+          </div>
+          <div className="space-y-2">
+            {recheckList.map((p) => renderPatientRow(p, 'RECHECK'))}
+          </div>
         </div>
+      )}
 
-        <button
-          onClick={() => setActiveTab("all-waiting")}
-          className="font-bold text-cyan-700 hover:text-cyan-900 flex items-center space-x-1"
-        >
-          <span>View all patients</span>
-          <ChevronRight className="w-3.5 h-3.5" />
-        </button>
-      </div>
+      {/* 🟢 SECTION 3: SAFE TO WAIT */}
+      {safeList.length > 0 && (
+        <div className="space-y-2.5 pt-2">
+          <div className="flex items-center space-x-2">
+            <span className="inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            <h3 className="text-xs font-black uppercase tracking-wider text-emerald-900">
+              🟢 SAFE TO WAIT &bull; {safeList.length} Patients Stable
+            </h3>
+          </div>
+          <div className="space-y-2">
+            {safeList.map((p) => renderPatientRow(p, 'SAFE'))}
+          </div>
+        </div>
+      )}
+
+      {allPatients.length === 0 && (
+        <div className="p-8 text-center text-xs text-slate-400 bg-white rounded-xl border border-slate-200">
+          No patients waiting in queue.
+        </div>
+      )}
     </div>
   );
 };

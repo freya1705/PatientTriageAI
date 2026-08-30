@@ -2,16 +2,15 @@ import React, { useState } from "react";
 import { TriageProvider, useTriage } from "./context/TriageContext";
 import { Sidebar } from "./components/Sidebar";
 import { Header } from "./components/Header";
-import { Dashboard } from "./pages/Dashboard";
 import { NurseWorklist } from "./pages/NurseWorklist";
 import { SearchAllWaitingPage } from "./pages/SearchAllWaitingPage";
 import { CommandCenterPage } from "./pages/CommandCenterPage";
+import { AuditPage } from "./pages/AuditPage";
+import { PatientDetailPage } from "./pages/PatientDetailPage";
 import { ReplaySimulationPage } from "./pages/ReplaySimulationPage";
 import { IntakePage } from "./pages/IntakePage";
 import { AboutScoringPage } from "./pages/AboutScoringPage";
 import { EvaluationPage } from "./pages/EvaluationPage";
-import { PatientDetailPage } from "./pages/PatientDetailPage";
-import { AuditPage } from "./pages/AuditPage";
 import { PrivacyPage } from "./pages/PrivacyPage";
 
 // Global Modals & Drawers
@@ -32,8 +31,8 @@ const AppContent = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex font-sans overflow-x-hidden">
-      {/* 1. Left Navigation Rail */}
+    <div className="min-h-screen bg-slate-50/70 text-slate-900 flex font-sans overflow-x-hidden">
+      {/* 1. Left Minimal Navigation Rail */}
       <Sidebar
         isCollapsed={isSidebarCollapsed}
         onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
@@ -62,20 +61,20 @@ const AppContent = () => {
         )}
 
         {/* Primary Page Router */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 p-4 sm:p-6 max-w-6xl w-full mx-auto">
           {(activeTab === "worklist" ||
             activeTab === "dashboard" ||
-            activeTab === "control-tower") && <Dashboard />}
+            activeTab === "control-tower") && <NurseWorklist />}
           {activeTab === "my-patients" && (
             <NurseWorklist initialFilter="MY_PATIENTS" />
           )}
           {activeTab === "all-waiting" && <SearchAllWaitingPage />}
           {activeTab === "command-center" && <CommandCenterPage />}
+          {activeTab === "audit" && <AuditPage />}
+          {activeTab === "patient-detail" && <PatientDetailPage />}
           {activeTab === "replay-simulation" && <ReplaySimulationPage />}
           {activeTab === "intake" && <IntakePage />}
-          {activeTab === "patient-detail" && <PatientDetailPage />}
           {activeTab === "evaluation" && <EvaluationPage />}
-          {activeTab === "audit" && <AuditPage />}
           {activeTab === "about-scoring" && <AboutScoringPage />}
           {activeTab === "privacy" && <PrivacyPage />}
         </main>
@@ -83,7 +82,7 @@ const AppContent = () => {
         {/* Minimalist Clinical Footer */}
         <footer className="border-t border-slate-200 bg-white py-3 px-6 text-center text-xs text-slate-400">
           <p>
-            PatientTriage.ai &bull; Emergency Waiting Room Safety &bull; Accenture Innovation Challenge 2026
+            PatientTriage.ai &bull; Emergency Waiting Room Safety Copilot &bull; Continuous Risk Surveillance
           </p>
         </footer>
       </div>
