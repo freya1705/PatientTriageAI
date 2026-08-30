@@ -6,6 +6,7 @@ import {
   Zap,
   RotateCcw,
   QrCode,
+  Flame,
 } from 'lucide-react';
 
 export const Header = () => {
@@ -14,6 +15,8 @@ export const Header = () => {
     openPatientDrawer,
     openPatientPortalCompanion,
     handleSimulateDeterioration,
+    handleToggleSurge,
+    surgeActive,
     handleResetData,
     incomingEmsList,
   } = useTriage();
@@ -73,7 +76,7 @@ export const Header = () => {
       </div>
 
       {/* Center: Search */}
-      <form onSubmit={handleSearchSubmit} className="hidden sm:flex items-center relative w-64">
+      <form onSubmit={handleSearchSubmit} className="hidden sm:flex items-center relative w-60">
         <Search className="w-3.5 h-3.5 absolute left-3 text-slate-400 pointer-events-none" />
         <input
           type="text"
@@ -84,8 +87,22 @@ export const Header = () => {
         />
       </form>
 
-      {/* Right: Demo Action Tools & Patient Companion */}
+      {/* Right: 3X Surge Toggle, Demo Action Tools & Patient Companion */}
       <div className="flex items-center space-x-2">
+        {/* 🚨 3X SURGE MODE TOGGLE */}
+        <button
+          onClick={handleToggleSurge}
+          className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center space-x-1.5 shadow-xs border ${
+            surgeActive
+              ? 'bg-amber-600 hover:bg-amber-700 text-white border-amber-700 ring-2 ring-amber-200 animate-pulse'
+              : 'bg-white hover:bg-amber-50 text-amber-900 border-amber-300'
+          }`}
+          title="Toggle 3X Surge Mode (60 ED Patients)"
+        >
+          <Flame className="w-3.5 h-3.5 text-amber-500" />
+          <span>{surgeActive ? '🚨 Surge Active (60 ED)' : '3X Surge Mode'}</span>
+        </button>
+
         {/* 1-Click Demo Trigger: Simulate Deterioration */}
         <button
           onClick={() => handleSimulateDeterioration('P-014')}
