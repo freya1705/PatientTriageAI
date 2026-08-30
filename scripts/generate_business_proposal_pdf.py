@@ -173,10 +173,10 @@ def build_pdf():
         body_style
     ))
     story.append(Paragraph(
-        "<b>PatientTriage.ai</b> delivers a continuous physiological safety layer that monitors vital velocity (&Delta;SpO₂, &Delta;HR), "
-        "dynamic evidence decay (&tau;<sub>staleness</sub>), data uncertainty (<i>Unknown is NOT Safe</i>), and physician coverage (<b>The Attention Gap</b>). "
-        "The intelligence layer performs continuous trend analysis and prioritization, while deterministic safety rules provide hard guardrails. "
-        "It generates <b>$3.82M in net annual value</b> per 500-bed hospital while eliminating silent waiting room mortality.",
+        "<b>PatientTriage.ai</b> delivers an active autonomous safety control tower that continuously monitors vital velocity (&Delta;SpO₂, &Delta;HR), "
+        "evidence validity shelf-life (Safety Clocks), data uncertainty (<i>Unknown is NOT Safe</i>), and clinician attention (<b>The Attention Gap</b>). "
+        "It provides 4 switchable workspaces (Overview, Nurse Tasks, Floor Map, Lab Orders), 108 EMS Pre-Arrival Telemetry, and Referral Eligibility Scoring (RES), "
+        "generating <b>$3.82M in net annual value</b> per 500-bed hospital facility.",
         body_style
     ))
 
@@ -189,9 +189,9 @@ def build_pdf():
     # Solution & Architecture
     story.append(Paragraph("2. Solution Design &amp; 3-Tier Layered Architecture", h1_style))
     story.append(Paragraph(
-        "PatientTriage.ai enforces a strict 3-tier architecture: <b>Tier 1: Deterministic Safety Layer</b> (hard red-flags and downgrade blocking); "
-        "<b>Tier 2: AI Decision-Support Layer</b> (vital velocity, dynamic confidence decay, and Attention Gap re-ranking with multimodal BLE sensor and kiosk ingestion); and "
-        "<b>Tier 3: Clinician Governance Layer</b> (clinician override authority with mandatory justification and append-only audit logging). Runs air-gapped on edge hardware with sub-15ms latency.",
+        "PatientTriage.ai enforces a strict 3-tier architecture: <b>Tier 1: Deterministic Guardrails</b> (hard red-flags and downgrade blocking); "
+        "<b>Tier 2: AI &amp; Trajectory Engine</b> (vital velocity, dynamic confidence decay, Attention Gap re-ranking, 108 EMS Pre-Arrival FHIR parser, and RES scoring); and "
+        "<b>Tier 3: Multi-Surface Dispatch &amp; Governance</b> (Overview, Nurse Tasks, Floor Map, Standing Pre-Orders Hub, and unified Patient Drawer with append-only audit logging). Runs air-gapped on edge hardware with sub-15ms latency.",
         body_style
     ))
 
@@ -199,7 +199,7 @@ def build_pdf():
     story.append(Paragraph("3. Target Users &amp; Stakeholder Value Propositions", h1_style))
     user_data = [
         [Paragraph("<b>Stakeholder</b>", body_style), Paragraph("<b>Primary Clinical / Financial Pain Point</b>", body_style), Paragraph("<b>PatientTriage.ai Value Proposition</b>", body_style)],
-        [Paragraph("<b>Triage Nurses (RNs)</b>", body_style), Paragraph("Overwhelmed tracking 40+ waiting patients; fear of silent deterioration.", body_style), Paragraph("Surfaces Top 3 actionable tasks with single Next-Best-Action buttons.", body_style)],
+        [Paragraph("<b>Triage Nurses (RNs)</b>", body_style), Paragraph("Overwhelmed tracking 40+ waiting patients; fear of silent deterioration.", body_style), Paragraph("Nurse Tasks ('Next 5 Mins') view with 1-click Bedside Reassess & Attendant Away alerts.", body_style)],
         [Paragraph("<b>Emergency MDs</b>", body_style), Paragraph("Blind to which waiting patient has worsened since initial intake.", body_style), Paragraph("Attention Gap Queue dispatches doctors to highest unmet clinical need.", body_style)],
         [Paragraph("<b>Chief Medical Officers</b>", body_style), Paragraph("Delayed diagnosis lawsuits, sentinel events in waiting lounges.", body_style), Paragraph("100% Downgrade Guardrails & append-only audit trail for malpractice defense.", body_style)],
         [Paragraph("<b>Hospital CFOs</b>", body_style), Paragraph("Uncompensated ICU boarding, LWBS revenue leakage, nurse turnover.", body_style), Paragraph("Delivers measurable $3.82M annual net ROI per 500-bed hospital facility.", body_style)],
@@ -228,7 +228,7 @@ def build_pdf():
         [Paragraph("<b>2. Avoided ICU Transfers</b>", body_style), Paragraph("145 waiting room ICU crashes/yr", body_style), Paragraph("64% reduction (93 avoided ICU stays @ $15k)", body_style), Paragraph("<font color='#047857'><b>+$1,395,000 / yr</b></font>", body_style)],
         [Paragraph("<b>3. Malpractice Risk Mitigation</b>", body_style), Paragraph("$1.2M annual liability reserve", body_style), Paragraph("40% reduction via documented audit trail", body_style), Paragraph("<font color='#047857'><b>+$480,000 / yr</b></font>", body_style)],
         [Paragraph("<b>4. Nurse Retention &amp; Overtime</b>", body_style), Paragraph("26.8% nurse turnover (14 replacements)", body_style), Paragraph("4 replacements avoided + 15% overtime reduction", body_style), Paragraph("<font color='#047857'><b>+$378,000 / yr</b></font>", body_style)],
-        [Paragraph("<b>5. ED Throughput &amp; Boarding</b>", body_style), Paragraph("248 mins average wait/boarding", body_style), Paragraph("30-minute reduction via optimized dispatch", body_style), Paragraph("<font color='#047857'><b>+$445,000 / yr</b></font>", body_style)],
+        [Paragraph("<b>5. ED Throughput &amp; Boarding</b>", body_style), Paragraph("248 mins average wait/boarding", body_style), Paragraph("30-minute reduction via optimized dispatch & pre-orders", body_style), Paragraph("<font color='#047857'><b>+$445,000 / yr</b></font>", body_style)],
         [Paragraph("<b>TOTAL GROSS ANNUAL VALUE</b>", body_style), Paragraph("—", body_style), Paragraph("—", body_style), Paragraph("<font color='#047857'><b>$3,821,200 / yr</b></font>", body_style)],
         [Paragraph("<b>Software Subscription &amp; Support</b>", body_style), Paragraph("—", body_style), Paragraph("Enterprise Tier License", body_style), Paragraph("<font color='#b91c1c'>-$240,000 / yr</font>", body_style)],
         [Paragraph("<b>NET ANNUAL ROI TO HOSPITAL</b>", body_style), Paragraph("—", body_style), Paragraph("<b>14.9x Net Return on Investment</b>", body_style), Paragraph("<font color='#047857'><b>+$3,581,200 / yr</b></font>", body_style)],
@@ -254,10 +254,10 @@ def build_pdf():
     story.append(Paragraph("6. Phased Implementation Roadmap &amp; Precise Trial Endpoints", h1_style))
     roadmap_data = [
         [Paragraph("<b>Phase</b>", body_style), Paragraph("<b>Timeline</b>", body_style), Paragraph("<b>Milestones &amp; Trial Endpoints</b>", body_style)],
-        [Paragraph("<b>Phase 1: Lab Validation</b>", body_style), Paragraph("Q3 2026", body_style), Paragraph("20 synthetic benchmark scenarios validated across 33 automated tests; sub-15ms inference latency.", body_style)],
+        [Paragraph("<b>Phase 1: Lab Validation</b>", body_style), Paragraph("Q3 2026", body_style), Paragraph("20 synthetic benchmark scenarios validated across 51 automated tests; sub-15ms inference latency.", body_style)],
         [Paragraph("<b>Phase 2: Shadow Trial</b>", body_style), Paragraph("Q4 2026", body_style), Paragraph("Silent shadow deployment alongside Epic/Cerner via HL7 FHIR; clinician concordance evaluation.", body_style)],
         [Paragraph("<b>Phase 3: Live Hospital Pilot</b>", body_style), Paragraph("Q1–Q2 2027", body_style), Paragraph("<b>Primary Safety Endpoint:</b> &gt;45% reduction in Mean Time to Escalation (MTTE); <b>Operational Endpoint:</b> &lt;2 non-actionable alerts/nurse/shift; <b>Economic Endpoint:</b> &ge;25% LWBS reduction over 90 days.", body_style)],
-        [Paragraph("<b>Phase 4: Enterprise Scale</b>", body_style), Paragraph("Q3 2027+", body_style), Paragraph("Regional hospital network rollout with multi-facility dashboarding and centralized telemedicine escalation.", body_style)],
+        [Paragraph("<b>Phase 4: Enterprise Scale</b>", body_style), Paragraph("Q3 2027+", body_style), Paragraph("Regional hospital network rollout with multi-facility dashboarding, 108 EMS ambulance integrations, and referral diversion.", body_style)],
     ]
     roadmap_table = Table(roadmap_data, colWidths=[1.6 * inch, 1.1 * inch, 4.8 * inch])
     roadmap_table.setStyle(TableStyle([
@@ -273,7 +273,7 @@ def build_pdf():
     # Risks & Mitigations
     story.append(Paragraph("7. Key Risks, Regulatory Compliance &amp; Mitigations", h1_style))
     story.append(Paragraph("• <b>AI Hallucination Risk:</b> Mitigated by 3-tier architecture where deterministic safety red-flags override all statistical models.", bullet_style))
-    story.append(Paragraph("• <b>Clinician Alarm Fatigue:</b> Mitigated by queue compression surfacing only the top 3 actionable tasks rather than flooding nurses.", bullet_style))
+    story.append(Paragraph("• <b>Clinician Alarm Fatigue:</b> Mitigated by queue compression surfacing only top actionable tasks rather than flooding nurses.", bullet_style))
     story.append(Paragraph("• <b>Regulatory Classification (SaMD):</b> Positioned as Non-Device CDS (21 U.S.C. § 360aaa-1); clinician retains 100% decision authority.", bullet_style))
     story.append(Paragraph("• <b>Data Privacy (HIPAA/GDPR):</b> Runs air-gapped on local hospital network with zero external cloud LLM dependencies and append-only audit logging.", bullet_style))
 

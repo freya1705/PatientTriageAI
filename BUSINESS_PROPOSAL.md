@@ -20,19 +20,20 @@ Between intake and physician examination, patients deteriorate silently in waiti
 [ Ambient / Ingestion Layer ]
  ├── Optical RGB/NIR Cameras (Waiting Bay) ──> Real-time rPPG (Pulse, Resp Rate, SpO2)
  ├── Smart Kiosk / Mobile Check-in (Symptoms) ──> Multimodal Ingestion Engine
- └── HL7 FHIR Bridge ──> Baseline EHR / Historical Comorbidities
+ └── HL7 FHIR Bridge ──> 108 EMS Pre-Arrival Telemetry & Baseline EHR Comorbidities
                  │
                  ▼
 [ Real-Time Edge Processing Engine (Sub-15ms) ]
  ├── Tier 1: Deterministic Guardrails (Downgrade Block, Hard Red Flags)
- ├── Tier 2: Causal & Counterfactual Neural Engine (Trajectory Forecasting)
+ ├── Tier 2: Causal & Counterfactual Neural Engine (Trajectory Forecasting & RES)
  └── Tier 3: Attention Gap Optimizer (Decay Staleness + Coverage Allocation)
                  │
                  ▼
 [ Multi-Surface Dispatch & Interface Layer ]
  ├── Surface A: Clinical Command Cockpit (Charge Nurse & Attending MD)
  ├── Surface B: Autonomous Pre-Order Dispatcher (Auxiliary Tech / Phlebotomy)
- └── Surface C: Patient-Facing "Smart Transparency" Companion (Mobile QR/SMS)
+ ├── Surface C: 108 EMS Inbound Telemetry & Resus Bay Pre-Allocation
+ └── Surface D: Patient-Facing "Smart Transparency" Companion (Mobile QR/SMS)
 ```
 
 **PatientTriage.ai** transforms passive alert lists into an **Active Autonomous ED Safety Control Tower** that continuously decides:
@@ -42,15 +43,17 @@ Between intake and physician examination, patients deteriorate silently in waiti
 
 ---
 
-## 2. The 5 Core Product Innovations
+## 2. The 7 Core Product Innovations
 
 | Innovation | Operational Function | Clinical & Business Impact |
 | :--- | :--- | :--- |
 | 🧠 **Dynamic Risk Velocity** | Evaluates continuous rate-of-change ($\Delta\text{Vitals} / \Delta t$) rather than static thresholds | Detects occult shock and septic decompensation $45\%$ faster |
 | ⏱️ **Signature Safety Clock** | Tracks observation shelf-life with visual countdown to validity expiry | Eliminates false assumptions that aging unmonitored vitals remain safe |
 | 👁️ **Attention Gap Allocation** | Discounts attended patients ($w_c = -35$) to elevate unattended waiting cases | Directs nurse attention to where human intervention is urgently required |
-| 🔮 **Counterfactual Safety** | Forecasts *"What if we do nothing?"* vs *"Intervene now"* (20-min trajectory) | Provides causal decision support before irreversible collapse occurs |
-| ⚡ **Closed-Loop Action Loop** | Auto-drafts standing diagnostic pre-orders and tracks Time to Intervention | Cuts diagnostic turnaround time by 18 mins; logs tamper-evident audit ledger |
+| 🚑 **108 EMS Pre-Arrival Telemetry** | Ingests ambulance telemetry via HL7 FHIR Bridge (LOINC codes) | Pre-computes inbound triage level & enables 1-click Resus Bay pre-allocation |
+| 👤 **Attendant-Away Surveillance** | Flags patients sitting alone when family/caregivers step away | Injects high-priority nurse spot-checks on the spatial floor map |
+| 🏥 **Referral Candidate Scoring (RES)** | Evaluates 0–100% diversion safety score for low-acuity cases | Safely redirects minor complaints to community clinics, relieving tertiary ED load |
+| ⚡ **Closed-Loop Action Loop** | Auto-drafts standing pre-orders and tracks Time to Intervention | Cuts diagnostic turnaround time by 18 mins; logs tamper-evident audit ledger |
 
 > **Philosophical Foundation**: `Unknown ≠ Safe` — Missing parameters actively trigger uncertainty penalties rather than being assumed benign.
 
@@ -104,10 +107,10 @@ Financial model calibrated for an average **50,000-annual-visit hospital emergen
 - **Privacy & Security**: Operates completely air-gapped on local edge servers; patient identifiers are pseudonymized; zero PHI leaves hospital premises (HIPAA & GDPR Article 9 aligned).
 
 ### 4-Phase Phased Execution Roadmap
-1. **Phase 1 (Months 1–3) — Edge Pilot**: Deploy contactless camera/rPPG testbed in 2 triage bays; benchmark synthetic sensitivity.
-2. **Phase 2 (Months 4–6) — Shadow Surveillance**: Integrate HL7 FHIR stream; measure Attention Gap divergence vs standard nurse reassessments.
-3. **Phase 3 (Months 7–9) — Active Clinical Cockpit**: Launch Nurse View ("Next 5 Minutes") and Standing Pre-Order Hub with charge nurse feedback.
-4. **Phase 4 (Months 10–12) — Enterprise Rollout**: Activate Patient Transparency Companion QR portal across 3 regional hospital emergency networks.
+1. **Phase 1 (Months 1–3) — Edge Pilot**: Deploy contactless camera/rPPG testbed in 2 triage bays; benchmark synthetic sensitivity across 51 automated tests.
+2. **Phase 2 (Months 4–6) — Shadow Surveillance**: Integrate HL7 FHIR stream & 108 EMS pre-arrival telemetry; measure Attention Gap divergence vs standard nurse reassessments.
+3. **Phase 3 (Months 7–9) — Active Clinical Cockpit**: Launch Nurse Tasks ("Next 5 Minutes") and Standing Pre-Order Hub with charge nurse feedback.
+4. **Phase 4 (Months 10–12) — Enterprise Rollout**: Activate Patient Transparency Companion QR portal & Referral Diversion across 3 regional hospital emergency networks.
 
 ---
 *Created by **Freya Jadhav** for the **Accenture Innovation Challenge 2026**.*
