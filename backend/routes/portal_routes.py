@@ -91,21 +91,48 @@ def get_live_safety_feed():
 
     events = []
     for r in rows:
+        pid = r["patient_id"] or ""
+        etype = r["event_type"] or ""
+        actor = r["clinician_role"] or "Safety Engine"
+        decision = r["clinician_decision"] or ""
+        outcome = r["outcome"] or ""
+
+        # Build clean, high-signal clinical summary with patient context
+        raw_text = outcome or decision or etype
+        if pid and pid not in ("SYSTEM", "UNKNOWN", "ED_OVERVIEW"):
+            if "Physician assignment: None" in decision:
+                summary = f"⚠️ Unassigned physician from {pid} (Returned to unattended queue)"
+            elif "Physician assignment:" in decision:
+                doc_name = decision.replace("Physician assignment:", "").strip()
+                summary = f"👨‍⚕️ Assigned {doc_name} to {pid}"
+            elif "Stabilized" in outcome or "reassessment" in etype.lower():
+                summary = f"🟢 Bedside Reassessment: {pid} vitals refreshed ({outcome or 'Risk stabilized'})"
+            elif "vital" in etype.lower() or "delta" in etype.lower():
+                summary = f"🔴 Vital Drop Alert: {pid} physiological velocity shift"
+            elif "attendant" in etype.lower():
+                summary = f"⚠️ Attendant Status: {pid} waiting room tag updated"
+            elif pid in raw_text:
+                summary = raw_text
+            else:
+                summary = f"[{pid}] {raw_text}"
+        else:
+            summary = raw_text
+
         events.append({
             "id": r["id"],
-            "patient_id": r["patient_id"],
-            "event_type": r["event_type"],
-            "actor": r["clinician_role"] or "System",
-            "summary": r["outcome"] or r["clinician_decision"] or r["event_type"],
+            "patient_id": pid,
+            "event_type": etype,
+            "actor": actor,
+            "summary": summary,
             "timestamp": r["timestamp"]
         })
 
     # If few audit logs exist, provide clean realistic defaults
     if len(events) < 5:
         events.extend([
-            {"id": "ev-1", "patient_id": "P-017", "event_type": "VITAL_DELTA", "actor": "Ambient Sensor", "summary": "🔴 P-017 SpO₂ dropped from 96% -> 91% (Attention Gap elevated to Rank #1)", "timestamp": "16:03:21"},
+            {"id": "ev-1", "patient_id": "P-017", "event_type": "VITAL_DELTA", "actor": "Ambient Sensor", "summary": "🔴 P-017 SpO₂ dropped 96% -> 91% (Attention Gap elevated to Rank #1)", "timestamp": "16:03:21"},
             {"id": "ev-2", "patient_id": "P-016", "event_type": "SAFETY_EXPIRY", "actor": "Safety Clock", "summary": "🟠 P-016 observation validity window expired (68m wait)", "timestamp": "16:03:08"},
-            {"id": "ev-3", "patient_id": "P-002", "event_type": "CLINICIAN_ASSIGNED", "actor": "Dr. Marcus Vance", "summary": "👨⚕️ Attending physician assigned to P-002 (Attention Gap discounted)", "timestamp": "16:01:57"},
+            {"id": "ev-3", "patient_id": "P-002", "event_type": "CLINICIAN_ASSIGNED", "actor": "Dr. Marcus Vance", "summary": "👨‍⚕️ Attending physician assigned to P-002 (Attention Gap discounted)", "timestamp": "16:01:57"},
             {"id": "ev-4", "patient_id": "P-007", "event_type": "PREORDER_DRAFTED", "actor": "Pre-Order Hub", "summary": "🧪 Auto-drafted Troponin + 12-Lead ECG for P-007", "timestamp": "16:00:42"},
             {"id": "ev-5", "patient_id": "P-005", "event_type": "REASSESSMENT_COMPLETE", "actor": "RN Sarah Chen", "summary": "🟢 P-005 reassessment completed. Risk reduced 62 -> 34.", "timestamp": "15:58:19"}
         ])

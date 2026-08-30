@@ -216,6 +216,29 @@ export const Dashboard = () => {
                   <option value="PEDIATRIC">Children (&lt;16)</option>
                   <option value="GERIATRIC">Elderly (65+)</option>
                 </select>
+
+                {/* Toggle Live Feed Sidebar */}
+                <button
+                  onClick={() => setShowRightPanel(!showRightPanel)}
+                  className={`text-xs px-2.5 py-1.5 rounded-lg border font-bold transition-colors flex items-center space-x-1.5 flex-shrink-0 ${
+                    showRightPanel
+                      ? "bg-slate-100 text-slate-800 border-slate-300 hover:bg-slate-200"
+                      : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
+                  }`}
+                  title="Toggle Live Clinical Feed & Safety Radar"
+                >
+                  {showRightPanel ? (
+                    <>
+                      <PanelRightClose className="w-3.5 h-3.5" />
+                      <span>Hide Feed</span>
+                    </>
+                  ) : (
+                    <>
+                      <PanelRightOpen className="w-3.5 h-3.5" />
+                      <span>Show Feed</span>
+                    </>
+                  )}
+                </button>
               </div>
 
               {/* Census Table */}
@@ -355,10 +378,12 @@ export const Dashboard = () => {
           </div>
 
           {/* Right Column: Live Safety Feed Ticker + Safety Radar */}
-          <div className="w-full lg:w-80 space-y-6 flex-shrink-0">
-            <LiveSafetyFeed />
-            <SafetySummaryPanel />
-          </div>
+          {showRightPanel && (
+            <div className="w-full lg:w-80 space-y-6 flex-shrink-0">
+              <LiveSafetyFeed />
+              <SafetySummaryPanel />
+            </div>
+          )}
         </div>
       )}
     </div>
