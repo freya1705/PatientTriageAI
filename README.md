@@ -180,16 +180,14 @@ python -m pytest -v
 
 ---
 
-## 📄 Submission Deliverables & Artifacts
+## 📄 Project Deliverables & Resources
 
-| Deliverable | Format | Link / File |
+| Resource | Description | Link |
 | :--- | :--- | :--- |
-| 🌐 **Public GitHub Link** | Repository URL | [https://github.com/freya1705/PatientTriageAI.git](https://github.com/freya1705/PatientTriageAI.git) |
-| 🎬 **Prototype Video Folder** | Google Drive | [Accenture Demo Video Folder](https://drive.google.com/drive/folders/1qeAV4E03yaVNREZVVUIRtUZ2KoMC7Ptg?usp=sharing) |
-| 📄 **README Document (PDF)** | PDF Document | [`PatientTriage_AI_Accenture_Submission_README.pdf`](./PatientTriage_AI_Accenture_Submission_README.pdf) |
-| 📄 **Business Proposal (PDF)** | PDF Document | [`PatientTriage_AI_Business_Proposal.pdf`](./PatientTriage_AI_Business_Proposal.pdf) |
-| 📊 **Business Proposal (PPT)** | 4-Slide PPTX | [`PatientTriage_AI_Accenture_Proposal_4Slides.pptx`](./PatientTriage_AI_Accenture_Proposal_4Slides.pptx) |
-| 🎬 **Video Narration Script** | Markdown | [`DEMO_VIDEO_SCRIPT.md`](./DEMO_VIDEO_SCRIPT.md) |
+| 🌐 **Public GitHub Repository** | Complete Source Code & Intelligence Backend | [https://github.com/freya1705/PatientTriageAI.git](https://github.com/freya1705/PatientTriageAI.git) |
+| 🎬 **Prototype Video Demonstration** | Official Demonstration Video Folder | [Accenture Demo Video Drive](https://drive.google.com/drive/folders/1qeAV4E03yaVNREZVVUIRtUZ2KoMC7Ptg?usp=sharing) |
+| 🎬 **Video Narration Script** | Scene-by-Scene Timed Narration Script | [`DEMO_VIDEO_SCRIPT.md`](./DEMO_VIDEO_SCRIPT.md) |
+| 📑 **Research & Clinical Architecture** | Deep Clinical & Operational Specification | [`Re-search.md`](./Re-search.md) |
 
 ---
 
