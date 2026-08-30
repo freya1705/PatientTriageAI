@@ -19,17 +19,17 @@ export const ReassessmentModal = () => {
     activeNurseName
   } = useTriage();
 
-  if (!reassessmentTargetPatient) return null;
-
-  const p = reassessmentTargetPatient;
-  const vitals = p.latest_vitals || {};
-
   const [spo2, setSpo2] = useState(97);
   const [hr, setHr] = useState(101);
   const [sbp, setSbp] = useState(94);
   const [temp, setTemp] = useState(37.1);
   const [notes, setNotes] = useState('Bedside reassessment completed. Supplemental oxygen administered.');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (!reassessmentTargetPatient) return null;
+
+  const p = reassessmentTargetPatient;
+  const vitals = p.latest_vitals || {};
 
   const handleSubmit = async (e) => {
     e.preventDefault();

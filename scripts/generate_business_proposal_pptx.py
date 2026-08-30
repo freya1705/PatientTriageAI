@@ -1,7 +1,7 @@
 """
 Official 4-Slide PowerPoint Generator for Accenture Innovation Challenge 2026
-Updated with latest prototype innovations: Dynamic Risk, 108 EMS Telemetry, Attention Gap,
-4 Workspaces, Attendant Away, Referral Scoring (RES), Closed-Loop Reassessments, and $3.82M ROI.
+Updated with Closed-Loop Safety & Ownership System, 3-State Model (Act Now / Recheck / Safe to Wait),
+108 EMS Telemetry, Attention Gap, 51 Tests, and $3.82M Net ROI.
 """
 
 import os
@@ -147,19 +147,19 @@ def create_4slide_deck():
     tf_s.word_wrap = True
 
     sub_s = tf_s.paragraphs[0]
-    sub_s.text = "PatientTriage.ai: Active Autonomous Emergency Department Safety Control Tower"
+    sub_s.text = "PatientTriage.ai: Active Closed-Loop Emergency Department Safety Control Tower"
     sub_s.font.size = Pt(13)
     sub_s.font.bold = True
     sub_s.font.color.rgb = C_TEXT_DARK
 
     body_s = tf_s.add_paragraph()
     body_s.text = (
-        "Core Loop: Ingest Telemetry → Forecast Trajectory → Allocate Attention → Reassess (Closed-Loop)\n"
-        "• 1. Continuous Surveillance & 108 EMS Telemetry: Tracks vital velocity (ΔSpO₂, ΔHR) and ingests pre-hospital ambulance telemetry via HL7 FHIR LOINC codes with 1-click Resus Bay pre-allocation.\n"
-        "• 2. The Attention Gap & Attendant-Away Engine: Prioritizes unattended deteriorating patients over attended beds. Detects when a caregiver steps away, auto-injecting nurse spot-check tasks.\n"
-        "• 3. 4 Clinical Workspaces: Provides Overview (Control Tower), Nurse Tasks ('Next 5 Mins'), ED Floor Map (chairs 1–20 halos), and Standing Lab Pre-Orders Hub (Troponin/Lactate auto-drafts saving 18m).\n"
-        "• 4. Referral Scoring & Patient Companion: Evaluates 0–100% diversion (RES) to relieve tertiary ED crowding, while mobile QR trackers de-escalate anxiety to recover $1.12M in walkout revenue.\n"
-        "• 5. Closed-Loop Reassessment: 1-click bedside vitals entry logs a 3m 42s Time to Intervention into an immutable audit ledger ($3.82M Net Hospital ROI; FDA Non-Device CDS compliant)."
+        "Closed-Loop System: Detect → Prioritize → Claim ('I'm on it') → Reassess → Escalate & Assign → Acknowledge → Audit\n"
+        "• 1. Closed-Loop Safety & Ownership: “We don't just detect deterioration. We make sure someone owns the response.” Routes high-priority alerts to Trauma/Physician teams with SLA acknowledgement.\n"
+        "• 2. 3-State Ranked Worklist: Groups waiting room into 🔴 ACT NOW (#1, #2 priority queue), 🟡 RECHECK, and 🟢 SAFE TO WAIT—answering 'Who is no longer safe to wait?' in 2 seconds.\n"
+        "• 3. The Attention Gap & 108 EMS Telemetry: Prioritizes unmonitored deteriorating patients over attended beds, while ingesting ambulance telemetry via HL7 FHIR with 1-click bay pre-allocation.\n"
+        "• 4. 4 Clinical Workspaces & 3X Surge: Equips ED staff with Worklist, Census, Command Center (3X Surge for 60 patients), and Standing Pre-Orders Hub (Troponin/ECG auto-drafts saving 18m).\n"
+        "• 5. Proven Financial & Regulatory Impact: $3.82M Net Hospital ROI, 3m 42s Time to Intervention, and FDA Non-Device CDS compliant tamper-evident audit ledger (51/51 automated tests passed)."
     )
     body_s.font.size = Pt(9.5)
     body_s.font.color.rgb = C_TEXT_DARK
@@ -172,12 +172,12 @@ def create_4slide_deck():
     tbl.columns[1].width = Inches(6.233)
 
     table_data = [
-        ("Traditional Triage Systems", "PatientTriage.ai Autonomous Control Tower"),
+        ("Traditional Triage Systems", "PatientTriage.ai Closed-Loop Control Tower"),
         ("Static Intake Snapshot (One-time score at door)", "Continuous Dynamic Risk (Tracks vital velocity ΔVitals/Δt)"),
         ("Missing Vitals Assumed Safe (False reassurance)", "Unknown ≠ Safe (Missing data triggers uncertainty penalty)"),
-        ("Attended Cases Block Queue (Physician bottlenecks)", "Attention Gap Optimization (Elevates unmonitored waiting patients)"),
+        ("Alerts End at Detection (No defined human owner)", "Closed-Loop Escalation & Ownership (Assigns Trauma Team with SLA)"),
         ("No Pre-Hospital Awareness (Delayed bay allocation)", "108 EMS Telemetry Ingestion (1-click pre-allocated resus bays)"),
-        ("Overwhelms Nurses with Alarms (Alarm fatigue)", "4 Focused Workspaces & 'Next 5 Mins' (Time-budgeted micro-tasks)"),
+        ("Unstructured Workflow (Overwhelms nurses with alarms)", "3-State Ranked Worklist ('I'm on it' alert claiming)"),
         ("High Walkout Rates (4.8% unmonitored LWBS)", "Patient QR Companion + RES Diversion ($3.82M net hospital ROI)")
     ]
 
@@ -226,7 +226,7 @@ def create_4slide_deck():
     pv2.text = (
         "\nGitHub Repository: https://github.com/freya1705/PatientTriageAI\n"
         "• Live Control Tower Prototype: http://localhost:5173\n"
-        "• Demonstration Focus: 108 EMS Telemetry, Attention Gap Re-ranking, Floor Map, and Closed-Loop Reassessment (3m 42s Time to Intervention)\n"
+        "• Closed-Loop Demo: Detect → Prioritize (#1) → Claim ('I'm on it') → Reassess (3m 42s) → Escalate (Trauma Team) → Audit\n"
         "• Verification: 51/51 automated pytest tests passed (100% pass rate)"
     )
     pv2.font.size = Pt(12)
