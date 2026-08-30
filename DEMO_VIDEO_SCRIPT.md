@@ -1,126 +1,153 @@
-# 🎬 PatientTriage.ai — Official Prototype Demonstration Video Script
+# 🎬 PatientTriage.ai — Official Hackathon Demo Video Script
 
 **Accenture Innovation Challenge 2026 — Round 2 Video Submission**  
-**Target Duration:** 2 Minutes 40 Seconds (160 Seconds)  
+**Target Duration:** 2 Minutes 45 Seconds (165 Seconds)  
 **Target Output Format:** MP4 / MOV (H.264 / AAC, 1080p, < 20 MB)  
-**Presenter & Participant:** **Freya Jadhav** (`freya1705`)  
+**Presenter & Participant:** **Freya Jadhav** (Team Leader, IIT Madras, `freya1705`)  
+**Team Name:** **Phoenix**  
 **Repository:** [https://github.com/freya1705/PatientTriageAI](https://github.com/freya1705/PatientTriageAI)
 
 ---
 
 ## ⏱️ Video Structure & Scene-by-Scene Rundown
 
-| Scene       | Time          | Focus Area                           | Key Visual / Action on Screen                                                                    |
-| :---------- | :------------ | :----------------------------------- | :----------------------------------------------------------------------------------------------- |
-| **Scene 1** | `0:00 – 0:25` | **The Hook & Clinical Problem**      | Open **My Worklist** (`http://localhost:5173`) & highlight the compact status ribbon.            |
-| **Scene 2** | `0:25 – 0:55` | **"What Changed?" & "I'm On It"**    | Point to `P-017` in `🔴 ACTION NOW`, click `[ I'M ON IT ]` (shows "Being handled by RN Sarah").  |
-| **Scene 3** | `0:55 – 1:30` | **The Closed-Loop Reassessment**     | Click `[ REASSESS NOW ]` → enter vitals → `[ SAVE ]` → P-017 stabilizes and leaves urgent queue! |
-| **Scene 4** | `1:30 – 1:55` | **Human-Readable Explainability**    | Click `[ Why? ]` (4 plain-English bullets) + `[ 🔮 What If Waiting Continues? ]`.                |
-| **Scene 5** | `1:55 – 2:20` | **Charge Nurse Command Center & QR** | Switch to **Command Center** (Floor Pressure Map) & flash **Patient QR Companion**.              |
-| **Scene 6** | `2:20 – 2:40` | **Hospital ROI & Executive Outro**   | $3.82M Net Annual Value breakdown & GitHub repository outro.                                     |
+| Timestamp | Scene Focus | Key Visual / Action on Screen |
+| :--- | :--- | :--- |
+| `0:00 – 0:15` | **The Hook** | Screen: **Patients Census** (`http://localhost:5173`). Highlight core question: *"Who is no longer safe to wait?"* |
+| `0:15 – 0:35` | **The 3-State Model** | Point to `🔴 ACT NOW`, `🟡 RECHECK`, and `🟢 SAFE TO WAIT` summary indicators. |
+| `0:35 – 0:55` | **Triggering the AI Signal** | Click **`⚡ Demo: Drop SpO₂`** at top right. Tyler Brooks' SpO₂ drops and jumps to Rank #1. |
+| `0:55 – 1:15` | **Ranked Worklist & Ownership** | Go to **My Worklist**. Point to `#1 Tyler Brooks (Criticality: HIGH)`. Click **`[ I'm on it ]`** $\rightarrow$ `🟢 CLAIMED`. |
+| `1:15 – 1:35` | **Explainability & Signal** | Click **`[ Details ]`**. Show `SpO₂ 96% → 91% (↓5%)`, `HR 92 → 127 bpm`, and `SIGNAL STRENGTH: HIGH`. |
+| `1:35 – 1:55` | **Bedside Reassessment** | Click **`[ REASSESS NOW ]`**. Enter vitals (`SpO₂: 97`, `HR: 101`, `BP: 94`, `Temp: 37.1`). Click **`[ SAVE REASSESSMENT ]`**. |
+| `1:55 – 2:15` | **Closed-Loop Escalation** | Outcome modal shows **`ESCALATION RECOMMENDATION`** $\rightarrow$ Click **`[ ASSIGN & NOTIFY ]`** $\rightarrow$ `✓ Assigned to Dr. Sarah Chen & Acknowledged`. |
+| `2:15 – 2:35` | **Tamper-Evident Audit Trail** | Click **`📜 Audit`** on sidebar. Show chronological record of detection, bedside vitals, handoff, and doctor acknowledgment. |
+| `2:35 – 2:50` | **Winning Outro** | Return to dashboard. Closing statement: *"Detect deterioration. Prioritize risk. Route the response."* |
 
 ---
 
-## 🎙️ Complete Word-for-Word Video Script & Director Notes
+## 🎙️ Word-for-Word Video Script & Director Notes
 
 ---
 
-### 📍 Scene 1: The Problem & "My Worklist" (`0:00 – 0:25`)
-
-- **Screen View:** Full-screen browser on **`http://localhost:5173`** (Default page: **MY WORKLIST**).
-- **Director Action:** Mouse slowly highlights the status ribbon: `WAITING 20 | ACTION NEEDED 4 | EXPIRING 3 | ESCALATE 1`.
+### 📍 Scene 1: The Hook (`0:00 – 0:15`)
+- **Screen View:** Browser on `http://localhost:5173` $\rightarrow$ click **`Patients`** on sidebar.
+- **Director Action:** Mouse slowly scans the waiting room census.
 - **Voiceover (Audio Track):**
-  > _"Welcome to PatientTriage.ai. In emergency departments today, triage is treated as a one-time snapshot at the front door. But patients wait for hours, and risk continuously changes._
+  > _"In a crowded emergency department, the most dangerous patient isn't always the patient who arrived most critically ill._
   >
-  > _Most AI dashboards overwhelm clinicians with raw risk scores and complex formulas. PatientTriage.ai does the exact opposite: **we don't make the nurse find the signal — we bring the signal to the nurse.**"_
+  > _It's the patient whose condition is deteriorating while they wait._
+  >
+  > _PatientTriage.ai continuously monitors the waiting room to answer one question: **Who is no longer safe to wait?**"_
 
 ---
 
-### 📍 Scene 2: "What Changed?" & Staff Coordination (`0:25 – 0:55`)
-
-- **Screen View:** Focus on the top card under **`🔴 ACTION REQUIRED NOW`** (Patient `P-017 — Harold Jenkins`).
-- **Director Action:**
-  1. 👉 Point to **`WHAT CHANGED`**: `SpO₂ 96% → 91% (↓ 5%) • HR 92 → 117 bpm (↑ 25 bpm)`.
-  2. 👉 Point to **`SAFETY WINDOW`**: `12 min remaining`.
-  3. 👉 Click the **`[ I'M ON IT ]`** button.
-  4. 👉 Watch the card badge instantly update to `🟡 Being handled by RN Sarah Chen`.
+### 📍 Scene 2: The 3-State Safety Model (`0:15 – 0:35`)
+- **Screen View:** Focus on top summary indicators on **`Patients`** / **`Worklist`**.
+- **Director Action:** Mouse highlights `🔴 ACT NOW`, `🟡 RECHECK`, and `🟢 SAFE TO WAIT`.
 - **Voiceover (Audio Track):**
-  > \*"On the nurse's screen, the information hierarchy is crystal clear.  
-  > In 3 seconds, Nurse Sarah sees:  
-  > **Who needs her:** Patient P-017.  
-  > **What changed:** Oxygen saturation dropped from 96% down to 91%, with a 25 bpm heart rate spike.
+  > _"Here we have a live emergency department waiting room. Every patient has an acuity level, current safety state, and recommended action._
   >
-  > With one click on **[ I'M ON IT ]**, Sarah claims the patient — instantly notifying other nurses to prevent duplicate work."\*
+  > _Instead of asking nurses to manually scan 20 patients, PatientTriage.ai continuously watches for meaningful changes in risk._
+  >
+  > _Patients are automatically grouped into three actionable states: **Act Now**, **Recheck**, and **Safe to Wait**."_
 
 ---
 
-### 📍 Scene 3: The Killer Feature — Closed-Loop Reassessment (`0:55 – 1:30`)
-
-- **Screen View:** Reassessment Modal & Post-Reassessment summary.
+### 📍 Scene 3: Trigger the Demo (`0:35 – 0:55`)
+- **Screen View:** Top header.
 - **Director Action:**
-  1. 👉 Click the red **`[ REASSESS NOW ]`** button on `P-017`.
-  2. 👉 Show the clean bedside form populated with verified recovery vitals (`SpO₂: 95%`, `HR: 101 bpm`, `BP: 124/78 mmHg`).
+  1. 👉 Click the red **`[ ⚡ Demo: Drop SpO₂ ]`** button.
+  2. 👉 Show the toast notification and watch the queue reorder dynamically.
+- **Voiceover (Audio Track):**
+  > _"Now let's simulate a patient deteriorating while waiting._
+  >
+  > _Tyler Brooks' oxygen saturation drops and his heart rate rises._
+  >
+  > _PatientTriage.ai detects the change and immediately identifies a high-priority safety signal."_
+
+---
+
+### 📍 Scene 4: Ranked Worklist & Claiming Alert (`0:55 – 1:15`)
+- **Screen View:** Click **`Worklist`** on left sidebar.
+- **Director Action:**
+  1. 👉 Point to **`🔴 ACT NOW`** $\rightarrow$ `#1 Tyler Brooks (Criticality: HIGH)`.
+  2. 👉 Click **`[ I'm on it ]`** $\rightarrow$ Watch badge update to `🟢 CLAIMED — RN Sarah Chen`.
+- **Voiceover (Audio Track):**
+  > _"The patient is automatically promoted into the nurse's worklist._
+  >
+  > _But we don't just generate another notification. We prioritize the patients who need attention first._
+  >
+  > _Tyler is ranked Number 1 based on the trajectory of his deterioration._
+  >
+  > _With one click on **'I'm on it'**, Nurse Sarah claims the alert — preventing duplicate work across the department."_
+
+---
+
+### 📍 Scene 5: Explainability & Clinical Decision Support (`1:15 – 1:35`)
+- **Screen View:** Click **`[ Details ]`** on Tyler's row to slide out the **Patient Drawer**.
+- **Director Action:**
+  1. 👉 Point to `SpO₂ 96% → 91% (↓ 5%) • HR 92 → 127 bpm (↑ 35 bpm)`.
+  2. 👉 Point to `SIGNAL STRENGTH: HIGH (SpO₂ decline + tachycardia)`.
+- **Voiceover (Audio Track):**
+  > _"The nurse can immediately see why the patient was escalated._
+  >
+  > _The AI doesn't just say 'high risk.' It shows the exact physiological velocity shift that triggered the alert: a 5% oxygen drop and acute tachycardia following blunt trauma._
+  >
+  > _The signal strength is high, and the system recommends immediate bedside verification."_
+
+---
+
+### 📍 Scene 6: Bedside Reassessment (`1:35 – 1:55`)
+- **Screen View:** Reassessment Modal.
+- **Director Action:**
+  1. 👉 Click **`[ REASSESS NOW ]`**.
+  2. 👉 Show pre-filled bedside vitals after supplemental oxygen (`SpO₂: 97%`, `HR: 101 bpm`, `BP: 94/62`, `Temp: 37.1°C`).
   3. 👉 Click **`[ SAVE REASSESSMENT ]`**.
-  4. 👉 The **Safety Outcome Screen** appears: `✓ Reassessment Complete | Time to Intervention: 3m 42s | Risk dropped 84 → 38`.
-  5. 👉 Click **`[ Acknowledge & Continue ]`**.
-  6. 👉 Watch `P-017` **automatically disappear from the urgent queue**, and the status ribbon update to `ACTION NEEDED 3`.
 - **Voiceover (Audio Track):**
-  > \*"When Sarah clicks **[ REASSESS NOW ]**, she enters verified vitals after administering oxygen.
+  > _"The nurse then performs a bedside reassessment and administers supplemental oxygen._
   >
-  > Once saved, the system recalculates in real-time: risk drops from 84 down to 38. The patient stabilizes into **WATCH** state and automatically moves out of the urgent action queue.
-  >
-  > This is a complete **closed-loop clinical workflow**: Detection $\rightarrow$ Recommendation $\rightarrow$ Human Action $\rightarrow$ Verification $\rightarrow$ Recalculation."\*
+  > _Sarah records the verified recovery vitals and clicks **Save Reassessment**."_
 
 ---
 
-### 📍 Scene 4: Unified Patient Drawer & Decision Support (`1:30 – 1:55`)
-
-- **Screen View:** Next card `P-014` (`🟠 RECHECK SOON`).
+### 📍 Scene 7: Closed-Loop Escalation & Clinical Ownership (`1:55 – 2:15`)
+- **Screen View:** Safety Outcome Modal with **`ESCALATION RECOMMENDATION`**.
 - **Director Action:**
-  1. 👉 Click the **`[ Why? ]`** button on `P-014` to slide out the **Unified Patient Drawer**.
-  2. 👉 Show **Tab 1 (Clinical Summary)** with age calibration model (Pediatric/Geriatric/Adult), live vitals, and Companion/Referral status.
-  3. 👉 Show **Tab 2 (Why This Rank)** with plain-English clinical reasons (no math jargon needed).
-  4. 👉 Show **Tab 3 (What Happens Next)** with inaction trajectory projection and 1-click reassessment.
+  1. 👉 Point to `🔴 HIGH PRIORITY` $\rightarrow$ `Route to: ED Physician — Trauma Team (Dr. Sarah Chen)`.
+  2. 👉 Point to `Response target: ≤ 5 min`.
+  3. 👉 Click **`[ ASSIGN & NOTIFY CLINICIAN ]`**.
+  4. 👉 Watch badge confirm `✓ Assigned to Dr. Sarah Chen` and `✓ Acknowledged (SLA Locked)`.
 - **Voiceover (Audio Track):**
-  > \*"Nurses never have to guess why a patient was prioritized. Clicking **[ Why? ]** slides out a clean 3-tab Patient Drawer showing plain-English risk factors, age-specific shock calibrations, and what happens if care is delayed.
+  > _"This is where PatientTriage.ai goes beyond detection._
   >
-  > No math jargon or clunky popups — just immediate, actionable clinical decision support."\*
+  > _If the patient remains concerning, the system recommends the next responsible clinical owner._
+  >
+  > _The nurse assigns the case to Dr. Sarah Chen on the ED Trauma Team with a 5-minute response target._
+  >
+  > _With one click on **Assign & Notify**, clinical ownership is established, acknowledged, and locked._
+  >
+  > _**We don't just detect deterioration. We make sure someone owns the response.**"_
 
 ---
 
-### 📍 Scene 5: Command Center, 108 EMS & Patient Companion (`1:55 – 2:20`)
-
-- **Screen View:** Click **`Command Center`** on left rail, then click **`Patient QR Companion`** topbar button.
-- **Director Action:**
-  1. 👉 Point to the top **108 EMS Inbound Telemetry Banner** (live ETA, incoming STEMI vitals, and 1-click Resus Bay pre-allocation).
-  2. 👉 Show the **ED Floor Pressure Map** with live color-coded status halos for Waiting Room Chairs 1–20 and **`⚠️ Attendant Away`** flags.
-  3. 👉 Show the **`🏥 Referral Candidate (RES 88%)`** badges for safe community clinic redirection.
-  4. 👉 Click **`Patient QR Companion`** to open the mobile phone care tracker with the **"Why is the queue moving?"** de-escalation card.
+### 📍 Scene 8: Immutable Audit Trail & Regulatory Governance (`2:15 – 2:35`)
+- **Screen View:** Click **`📜 Audit`** on left navigation.
+- **Director Action:** Mouse highlights the newest chronological audit records.
 - **Voiceover (Audio Track):**
-  > \*"For charge nurses, the **Command Center** ingests en-route 108 ambulance telemetry with 1-click resus bay pre-allocation, tracks unattended patients across the waiting lounge, and flags safe referral candidates.
+  > _"Every alert, claim, bedside reassessment, escalation, and physician acknowledgement is recorded in an immutable audit ledger._
   >
-  > Meanwhile, our **Patient Transparency Companion** de-escalates waiting room tension by explaining triage priority in plain language directly on patient phones."\*
+  > _This creates a complete human-in-the-loop governance record — so hospitals can answer not only what the AI detected, but also who responded and when."_
 
 ---
 
-### 📍 Scene 6: Measurable Hospital ROI & Outro (`2:20 – 2:40`)
-
-- **Screen View:** Navigate back to **My Worklist** or the main landing page with GitHub link and author badge.
-- **Director Action:** Cursor rests on the Freya Jadhav contributor badge.
+### 📍 Scene 9: Outro & Winning Close (`2:35 – 2:50`)
+- **Screen View:** Return to **My Worklist** (`http://localhost:5173`).
+- **Director Action:** Final panoramic view of the quiet, safe queue (`ACT NOW: 2, SAFE TO WAIT: 13`).
 - **Voiceover (Audio Track):**
-  > \*"By eliminating silent waiting room deterioration and recovering lost walkout revenue, PatientTriage.ai delivers **$3.82M in annual net value** for a standard 50,000-visit emergency department.
+  > _"PatientTriage.ai doesn't replace nurses or doctors._
   >
-  > Compliant with FDA Non-Device CDS standards, the system keeps clinicians in 100% control.
+  > _It makes sure deterioration doesn't disappear into the waiting room._
   >
-  > Triage is a snapshot. Risk isn't.  
-  > I'm Freya Jadhav — thank you for exploring PatientTriage.ai."\*
-
----
-
-## 🎬 5 Tips for a Smooth Recording:
-
-1. **Screen Setup:** Full screen in Google Chrome (`F11` or Hide Bookmarks bar), 1080p resolution.
-2. **Audio:** Use a clean, quiet environment or headset microphone.
-3. **Cursor Pacing:** Move the cursor deliberately and pause for 1 second on buttons before clicking.
-4. **Recording Tools:** OBS Studio, Windows Game Bar (`Win + Alt + R`), or Loom.
-5. **File Size:** Target MP4 H.264 under 20 MB (a 2m 40s recording at 1080p typically exports at ~10–14 MB).
+  > _**Detect deterioration. Prioritize risk. Route the response.**_
+  >
+  > _PatientTriage.ai — keeping patients safe while they wait. Thank you."_

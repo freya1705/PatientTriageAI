@@ -24,9 +24,9 @@ export const ReassessmentModal = () => {
   const p = reassessmentTargetPatient;
   const vitals = p.latest_vitals || {};
 
-  const [spo2, setSpo2] = useState(vitals.spo2 && vitals.spo2 < 93 ? 95 : 97);
-  const [hr, setHr] = useState(vitals.heart_rate && vitals.heart_rate > 105 ? 101 : 78);
-  const [sbp, setSbp] = useState(vitals.systolic_bp || 124);
+  const [spo2, setSpo2] = useState(97);
+  const [hr, setHr] = useState(101);
+  const [sbp, setSbp] = useState(94);
   const [temp, setTemp] = useState(37.1);
   const [notes, setNotes] = useState('Bedside reassessment completed. Supplemental oxygen administered.');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -73,7 +73,7 @@ export const ReassessmentModal = () => {
           <div>
             <span className="text-[10px] font-bold uppercase text-slate-400">Detected Trigger:</span>
             <div className="font-bold text-rose-700 mt-0.5">
-              SpO₂ {vitals.spo2 ?? 91}% &bull; HR {vitals.heart_rate ?? 117} bpm
+              SpO₂ {vitals.spo2 ?? 91}% &bull; HR {vitals.heart_rate ?? 127} bpm
             </div>
           </div>
 

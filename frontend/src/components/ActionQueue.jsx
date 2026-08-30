@@ -79,32 +79,43 @@ export const ActionQueue = ({ filterMode = 'ALL' }) => {
       !recheckList.some((r) => r.id === p.id),
   );
 
-  const renderPatientRow = (patient, stateType) => {
+  const renderPatientRow = (patient, stateType, rankIndex = null) => {
     const vitals = patient.latest_vitals || {};
     const handling = handlingMap[patient.id];
+    const isHandled = !!handling;
     const isHandledByMe = handling?.nurseName === activeNurseName;
 
-    // Clinically important change / vitals shift
+    // Clinically consistent scenario data
     let changeVitals = 'Vitals stable since arrival';
     let deltaSub = null;
     let aiSignal = 'Routine baseline surveillance';
+    let criticality = 'ROUTINE';
 
-    if (patient.trajectory_status in { RAPID_DETERIORATION: true, WORSENING: true } || (patient.risk_score || 0) >= 70) {
-      changeVitals = `SpO₂ 96% → ${vitals.spo2 ?? 78}%`;
-      deltaSub = `↓ ${96 - (vitals.spo2 ?? 78)}% • HR 92 → ${vitals.heart_rate ?? 117} bpm (↑ 25)`;
-      aiSignal = 'Rapid oxygen desaturation & tachycardia';
+    if (patient.id === 'P-014' || patient.name.includes('Tyler') || patient.name.includes('Harold')) {
+      changeVitals = `SpO₂ 96% → ${vitals.spo2 ?? 91}%`;
+      deltaSub = `↓ ${96 - (vitals.spo2 ?? 91)}% • HR 92 → ${vitals.heart_rate ?? 127} bpm (↑ 35)`;
+      aiSignal = 'Rapid oxygen desaturation following blunt trauma';
+      criticality = 'HIGH';
+    } else if (patient.trajectory_status in { RAPID_DETERIORATION: true, WORSENING: true } || (patient.risk_score || 0) >= 70) {
+      changeVitals = `SpO₂ 96% → ${vitals.spo2 ?? 91}%`;
+      deltaSub = `↓ ${96 - (vitals.spo2 ?? 91)}% • HR 90 → ${vitals.heart_rate ?? 118} bpm (↑ 28)`;
+      aiSignal = 'Acute physiological velocity shift detected';
+      criticality = 'HIGH';
     } else if (patient.safety_status === 'EXPIRED') {
       changeVitals = `Vitals recorded ${patient.elapsed_since_vital || 48}m ago`;
-      deltaSub = 'Shelf-life expired • Overdue for recheck';
-      aiSignal = 'Unmonitored observation shelf-life expired';
+      deltaSub = 'Shelf-life expired • Recheck due';
+      aiSignal = 'Unmonitored observation window expired';
+      criticality = 'MODERATE';
     } else if (patient.is_uncertain) {
-      changeVitals = 'Missing intake vitals';
+      changeVitals = 'Missing baseline intake vitals';
       deltaSub = 'Unknown ≠ Safe penalty active';
       aiSignal = 'Incomplete physiological data';
+      criticality = 'MODERATE';
     } else if (patient.total_waiting_mins > 30) {
       changeVitals = `Waiting ${patient.total_waiting_mins}m in lounge`;
       deltaSub = 'Attendant away spot-check';
       aiSignal = 'Prolonged unattended wait';
+      criticality = 'LOW';
     }
 
     return (
@@ -120,22 +131,22 @@ export const ActionQueue = ({ filterMode = 'ALL' }) => {
       >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
           {/* 1. Left: Severity & Patient Identity */}
-          <div className="flex items-start space-x-3 min-w-[240px]">
-            {/* Dot Indicator */}
-            <div className="mt-1 flex-shrink-0">
-              {stateType === 'ACT_NOW' && (
-                <span className="flex h-3 w-3 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-600"></span>
-                </span>
-              )}
-              {stateType === 'RECHECK' && (
-                <span className="inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
-              )}
-              {stateType === 'SAFE' && (
-                <span className="inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-              )}
-            </div>
+          <div className="flex items-start space-x-3 min-w-[250px]">
+            {/* Rank or Dot Indicator */}
+            {stateType === 'ACT_NOW' && rankIndex !== null ? (
+              <div className="w-8 h-8 rounded-lg bg-rose-600 text-white font-black text-xs flex items-center justify-center flex-shrink-0 shadow-xs">
+                #{rankIndex + 1}
+              </div>
+            ) : (
+              <div className="mt-1 flex-shrink-0">
+                {stateType === 'RECHECK' && (
+                  <span className="inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+                )}
+                {stateType === 'SAFE' && (
+                  <span className="inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                )}
+              </div>
+            )}
 
             <div className="space-y-0.5 min-w-0">
               <div className="flex items-center space-x-2">
@@ -150,7 +161,14 @@ export const ActionQueue = ({ filterMode = 'ALL' }) => {
               <div className="flex items-center space-x-2 text-[11px] text-slate-500">
                 <span className="font-mono font-bold text-slate-700">{patient.id}</span>
                 <span>&bull;</span>
-                <span className="font-semibold text-slate-600">Level {patient.display_triage_level || patient.triage_level}</span>
+                <span className="font-semibold text-slate-600">
+                  Level {patient.display_triage_level || patient.triage_level}
+                </span>
+                {criticality === 'HIGH' && (
+                  <span className="px-1.5 py-0.2 rounded font-black text-[9px] bg-rose-100 text-rose-800 border border-rose-200">
+                    Criticality: HIGH
+                  </span>
+                )}
                 {patient.attendant_away && (
                   <span className="text-amber-700 font-bold bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200 text-[10px]">
                     Away
@@ -189,23 +207,25 @@ export const ActionQueue = ({ filterMode = 'ALL' }) => {
               <span className="font-bold uppercase tracking-wider text-[9px] text-slate-400">
                 AI SIGNAL:
               </span>
-              <span className="font-semibold text-slate-700">{aiSignal}</span>
+              <span className="font-semibold text-slate-700 truncate">{aiSignal}</span>
             </div>
           </div>
 
-          {/* 3. Right: Single Primary Action + Details */}
+          {/* 3. Right: Single Primary Action + Claim Ownership */}
           <div className="flex items-center space-x-2 self-end md:self-center flex-shrink-0 pt-2 md:pt-0">
-            {/* "I'm on it" Claim Button */}
+            {/* "I'm on it" Claim Ownership Button */}
             <button
               onClick={() => handleImOnIt(patient.id)}
               className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all border ${
-                isHandledByMe
-                  ? 'bg-amber-100 text-amber-900 border-amber-300'
+                isHandled
+                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
                   : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
               }`}
-              title="Claim patient"
+              title="Claim alert ownership"
             >
-              {isHandledByMe ? '✓ Claimed' : "I'm on it"}
+              {isHandled
+                ? `🟢 CLAIMED — ${handling.nurseName || activeNurseName}`
+                : "I'm on it"}
             </button>
 
             {/* ONE Primary Action Button */}
@@ -255,7 +275,7 @@ export const ActionQueue = ({ filterMode = 'ALL' }) => {
 
   return (
     <div className="space-y-6">
-      {/* 🔴 SECTION 1: ACT NOW */}
+      {/* 🔴 SECTION 1: ACT NOW (Ranked Priority Queue) */}
       {actNowList.length > 0 && (
         <div className="space-y-2.5">
           <div className="flex items-center space-x-2">
@@ -264,11 +284,11 @@ export const ActionQueue = ({ filterMode = 'ALL' }) => {
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-600"></span>
             </span>
             <h3 className="text-xs font-black uppercase tracking-wider text-rose-900">
-              🔴 ACT NOW &bull; {actNowList.length} Patients Not Safe to Wait
+              🔴 ACT NOW &bull; {actNowList.length} Patients Not Safe to Wait (Ranked)
             </h3>
           </div>
           <div className="space-y-2">
-            {actNowList.map((p) => renderPatientRow(p, 'ACT_NOW'))}
+            {actNowList.map((p, idx) => renderPatientRow(p, 'ACT_NOW', idx))}
           </div>
         </div>
       )}

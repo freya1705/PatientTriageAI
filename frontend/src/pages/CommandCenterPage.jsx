@@ -149,11 +149,14 @@ export const CommandCenterPage = () => {
               const vitals = p.latest_vitals || {};
               const isUrgent = actNowList.some((u) => u.id === p.id);
 
-              let vitalsText = 'SpO₂ 96% → 78%';
+              let vitalsText = 'SpO₂ 96% → 91%';
               let reasonText = 'Rapid deterioration detected';
 
-              if (p.trajectory_status in { RAPID_DETERIORATION: true, WORSENING: true }) {
-                vitalsText = `SpO₂ 96% → ${vitals.spo2 ?? 78}% (↓ 18%)`;
+              if (p.id === 'P-014' || p.name.includes('Tyler') || p.name.includes('Harold')) {
+                vitalsText = `SpO₂ 96% → ${vitals.spo2 ?? 91}% (↓ 5%)`;
+                reasonText = 'Rapid oxygen desaturation & tachycardia (blunt trauma)';
+              } else if (p.trajectory_status in { RAPID_DETERIORATION: true, WORSENING: true }) {
+                vitalsText = `SpO₂ 96% → ${vitals.spo2 ?? 91}% (↓ 5%)`;
                 reasonText = 'Rapid oxygen desaturation & tachycardia';
               } else if (p.safety_status === 'EXPIRED') {
                 vitalsText = `Wait: ${p.total_waiting_mins}m unmonitored`;

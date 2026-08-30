@@ -4,7 +4,7 @@ import { ActionQueue } from '../components/ActionQueue';
 import { Activity } from 'lucide-react';
 
 export const NurseWorklist = ({ initialFilter = 'ALL' }) => {
-  const { queueData, loading } = useTriage();
+  const { queueData, loading, handlingMap } = useTriage();
   const [filterMode, setFilterMode] = useState(initialFilter);
 
   if (loading && !queueData) {
@@ -21,7 +21,7 @@ export const NurseWorklist = ({ initialFilter = 'ALL' }) => {
   const allPatients = queueData?.all_patients || [];
 
   // Count exactly 3 states
-  const actNowCount = allPatients.filter(
+  const actNowPatients = allPatients.filter(
     (p) =>
       p.action_badge === 'ESCALATE' ||
       p.action_badge === 'IMMEDIATE' ||
@@ -29,7 +29,11 @@ export const NurseWorklist = ({ initialFilter = 'ALL' }) => {
       p.trajectory_status === 'WORSENING' ||
       (p.risk_score || 0) >= 70 ||
       p.is_deteriorating,
-  ).length;
+  );
+
+  const actNowCount = actNowPatients.length;
+  const claimedCount = actNowPatients.filter((p) => handlingMap[p.id]).length;
+  const unassignedCount = actNowCount - claimedCount;
 
   const recheckCount = allPatients.filter(
     (p) =>
@@ -52,7 +56,7 @@ export const NurseWorklist = ({ initialFilter = 'ALL' }) => {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
-      {/* 1. Master Header: Title & 3 Compact Status Indicators */}
+      {/* 1. Master Header: Title & 3 Compact Status Indicators with Ownership */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200 gap-4">
         <div>
           <h1 className="text-2xl font-black text-slate-900 tracking-tight">
@@ -64,7 +68,7 @@ export const NurseWorklist = ({ initialFilter = 'ALL' }) => {
         </div>
 
         {/* ONLY 3 Compact Summary Indicators */}
-        <div className="flex items-center space-x-2 text-xs font-black">
+        <div className="flex flex-wrap items-center gap-2 text-xs font-black">
           {/* 🔴 ACT NOW */}
           <button
             onClick={() => setFilterMode(filterMode === 'ACTION_NOW' ? 'ALL' : 'ACTION_NOW')}
@@ -75,10 +79,16 @@ export const NurseWorklist = ({ initialFilter = 'ALL' }) => {
                   ? 'bg-rose-50 border-rose-200 text-rose-800 hover:bg-rose-100'
                   : 'bg-white border-slate-200 text-slate-600'
             }`}
+            title="Immediate Intervention Queue"
           >
             <span className="w-2 h-2 rounded-full bg-rose-600 animate-ping"></span>
             <span>🔴 ACT NOW</span>
             <span className="font-mono text-sm">{actNowCount}</span>
+            {actNowCount > 0 && (
+              <span className="text-[10px] font-normal opacity-80">
+                ({unassignedCount} unassigned &bull; {claimedCount} in progress)
+              </span>
+            )}
           </button>
 
           {/* 🟡 RECHECK */}

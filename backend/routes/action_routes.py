@@ -128,16 +128,26 @@ def perform_closed_loop_reassessment(req: ReassessActionRequest):
         "status": "success",
         "patient_id": req.patient_id,
         "safety_outcome": {
-            "title": "✓ Action Completed & Closed-Loop Recorded",
+            "title": "✓ Bedside Reassessment Completed & Risk Recalculated",
             "time_to_intervention": "3m 42s",
             "actor": req.nurse_name,
+            "patient_id": req.patient_id,
+            "patient_name": patient_dict.get("name", "Tyler Brooks"),
             "before_risk": before_state["risk_score"],
             "after_risk": eval_state["risk_score"],
             "risk_reduction_points": risk_delta,
             "before_vitals": f"SpO₂ {before_state['spo2']}%, HR {before_state['hr']} bpm",
             "after_vitals": f"SpO₂ {updated_spo2}%, HR {updated_hr} bpm",
-            "new_status": "CONTINUE MONITORING",
-            "message": f"Patient {req.patient_id} stabilized. Risk decreased by {risk_delta} points. Patient smoothly leaves emergency intervention queue."
+            "new_status": "STABILIZED & MONITORING",
+            "message": f"Patient {req.patient_id} ({patient_dict.get('name', 'Patient')}) reassessed. Vital signs stabilized. Risk decreased by {risk_delta} points.",
+            "escalation_recommendation": {
+                "priority": "HIGH PRIORITY",
+                "recommended_team": "ED Physician — Trauma Team",
+                "physician_name": "Dr. Sarah Chen, MD (ED Trauma)",
+                "department": "Resuscitation Bay 1",
+                "reason": "Persistent tachycardia following blunt abdominal trauma." if ("trauma" in str(patient_dict.get("chief_complaint", "")).lower() or "P-014" in req.patient_id) else "Post-hypoxia stabilization & ongoing pulse oximetry surveillance.",
+                "response_target": "≤ 5 min"
+            }
         },
         "updated_state": eval_state
     }

@@ -162,7 +162,7 @@ export const PatientDrawer = () => {
               <span className="text-slate-500 uppercase tracking-wider">
                 PHYSIOLOGICAL TREND
               </span>
-              <span className="text-rose-600 font-mono">SpO₂ ↓ 18% (15m)</span>
+              <span className="text-rose-600 font-mono">SpO₂ ↓ 5% &bull; HR ↑ 35 bpm (15m)</span>
             </div>
 
             {/* Visual Sparkline Bar Representation */}
@@ -177,7 +177,7 @@ export const PatientDrawer = () => {
                   </span>
                   <div
                     className={`w-full rounded-t transition-all ${
-                      pt.spo2 < 90
+                      pt.spo2 < 92
                         ? 'bg-rose-500'
                         : pt.spo2 < 95
                           ? 'bg-amber-400'
@@ -197,11 +197,11 @@ export const PatientDrawer = () => {
           <div className="p-4 rounded-xl bg-rose-50/80 border border-rose-200 space-y-1">
             <div className="flex items-center space-x-1.5 text-rose-800 text-xs font-black uppercase tracking-wider">
               <Activity className="w-3.5 h-3.5 text-rose-600" />
-              <span>AI SAFETY SIGNAL</span>
+              <span>AI SAFETY SIGNAL: HIGH PRIORITY</span>
             </div>
             <p className="text-xs font-bold text-rose-950 leading-relaxed">
               {isDeteriorating
-                ? 'Rapid oxygen desaturation: SpO₂ dropped from 96% down to 78% with tachycardia (HR 101 bpm).'
+                ? 'Rapid oxygen desaturation: SpO₂ dropped from 96% down to 91% with acute tachycardia (HR 127 bpm) following blunt trauma.'
                 : isExpired
                   ? 'Observation shelf-life expired (48m wait without updated bedside check).'
                   : 'Stable physiological trajectory. Continue routine queue monitoring.'}
@@ -256,14 +256,14 @@ export const PatientDrawer = () => {
                     onChange={(e) => setSelectedDoctor(e.target.value)}
                     className="w-full text-xs bg-white border border-slate-200 rounded-lg p-2 font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-900"
                   >
+                    <option value="Dr. Sarah Chen, MD (ED Trauma)">
+                      Dr. Sarah Chen, MD (ED Trauma)
+                    </option>
                     <option value="Dr. Emily Zhang, MD (Staff Physician)">
                       Dr. Emily Zhang, MD (Staff Physician)
                     </option>
                     <option value="Dr. Marcus Vance, MD (Attending Physician)">
                       Dr. Marcus Vance, MD (Attending Physician)
-                    </option>
-                    <option value="Dr. Sarah Al-Mansoor, MD (Trauma Surgeon)">
-                      Dr. Sarah Al-Mansoor, MD (Trauma Surgeon)
                     </option>
                     <option value="Dr. Rajesh Patel, MD (Cardiologist)">
                       Dr. Rajesh Patel, MD (Cardiology On-Call)
@@ -317,8 +317,8 @@ export const PatientDrawer = () => {
                   : 'Maintain routine waiting surveillance.'}
             </p>
             <div className="pt-2 flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-800">
-              <span>Model Confidence:</span>
-              <span className="font-bold text-emerald-400">HIGH (98.4%)</span>
+              <span>SIGNAL STRENGTH:</span>
+              <span className="font-bold text-emerald-400">HIGH (SpO₂ decline + tachycardia)</span>
             </div>
           </div>
 
