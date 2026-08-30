@@ -1,6 +1,6 @@
 """
-Publication-Grade PowerPoint Generator for PatientTriage.ai Business Proposal
-Generates PatientTriage_AI_Business_Proposal.pptx for Accenture Innovation Challenge 2026 Round 2
+Official 4-Slide PowerPoint Generator for Accenture Innovation Challenge 2026
+Generates PatientTriage_AI_Business_Proposal.pptx following Accenture's exact 4-slide structure.
 """
 
 import os
@@ -10,384 +10,233 @@ from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
 
-def create_deck():
+def create_4slide_deck():
     prs = Presentation()
     # 16:9 Widescreen dimensions
     prs.slide_width = Inches(13.333)
     prs.slide_height = Inches(7.5)
     blank_layout = prs.slide_layouts[6]
 
-    # Color Palette
-    C_NAVY_DARK = RGBColor(15, 23, 42)      # #0f172a
-    C_SLATE_CARD = RGBColor(30, 41, 59)     # #1e293b
-    C_CYAN_ACCENT = RGBColor(2, 132, 199)   # #0284c7
-    C_EMERALD = RGBColor(16, 185, 129)      # #10b981
-    C_ROSE = RGBColor(225, 29, 72)          # #e11d48
-    C_AMBER = RGBColor(245, 158, 11)        # #f59e0b
+    # Exact Accenture Template Colors
+    C_PURPLE = RGBColor(168, 0, 255)       # #a800ff Accenture Purple Header
+    C_PURPLE_LIGHT = RGBColor(243, 232, 255) # #f3e8ff Subheading Background
+    C_TEXT_DARK = RGBColor(15, 23, 42)     # #0f172a
     C_WHITE = RGBColor(255, 255, 255)
-    C_MUTED = RGBColor(148, 163, 184)       # #94a3b8
-    C_LIGHT_BG = RGBColor(248, 250, 252)    # #f8fafc
+    C_MUTED = RGBColor(100, 116, 139)      # #64748b
+    C_TEAL_BG = RGBColor(204, 251, 241)    # #ccfbf1 Table Light Teal
+    C_TEAL_DARK = RGBColor(15, 118, 110)   # #0f766e Table Text
 
-    def add_bg(slide, dark=True):
+    def add_white_bg(slide):
         bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, Inches(13.333), Inches(7.5))
         bg.fill.solid()
-        bg.fill.fore_color.rgb = C_NAVY_DARK if dark else C_LIGHT_BG
+        bg.fill.fore_color.rgb = C_WHITE
         bg.line.fill.background()
         return bg
 
-    def add_header(slide, title_text, category_text="ACCENTURE INNOVATION CHALLENGE 2026", dark=True):
-        # Category pill/subtitle
-        cat_box = slide.shapes.add_textbox(Inches(0.8), Inches(0.5), Inches(11.7), Inches(0.35))
-        tf_c = cat_box.text_frame
-        tf_c.word_wrap = True
-        p_c = tf_c.paragraphs[0]
-        p_c.text = category_text.upper()
-        p_c.font.size = Pt(10)
-        p_c.font.bold = True
-        p_c.font.color.rgb = C_CYAN_ACCENT
-
-        # Title
-        title_box = slide.shapes.add_textbox(Inches(0.8), Inches(0.8), Inches(11.7), Inches(0.6))
-        tf_t = title_box.text_frame
-        tf_t.word_wrap = True
-        p_t = tf_t.paragraphs[0]
-        p_t.text = title_text
-        p_t.font.size = Pt(22)
-        p_t.font.bold = True
-        p_t.font.color.rgb = C_WHITE if dark else C_NAVY_DARK
-
-    def add_card(slide, left, top, width, height, bg_color=C_SLATE_CARD, border_color=None):
-        shape = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left, top, width, height)
-        shape.fill.solid()
-        shape.fill.fore_color.rgb = bg_color
-        if border_color:
-            shape.line.color.rgb = border_color
-            shape.line.width = Pt(1.5)
-        else:
-            shape.line.fill.background()
-        return shape
+    def add_purple_banner(slide, text):
+        banner = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(0.8), Inches(11.733), Inches(0.65))
+        banner.fill.solid()
+        banner.fill.fore_color.rgb = C_PURPLE
+        banner.line.fill.background()
+        
+        tf = banner.text_frame
+        tf.word_wrap = True
+        p = tf.paragraphs[0]
+        p.text = f" {text}"
+        p.font.size = Pt(20)
+        p.font.bold = True
+        p.font.color.rgb = C_WHITE
+        p.alignment = PP_ALIGN.LEFT
+        return banner
 
     # ==========================================================
-    # SLIDE 1: Title & Vision
+    # SLIDE 1: Team Details
     # ==========================================================
     s1 = prs.slides.add_slide(blank_layout)
-    add_bg(s1, dark=True)
+    add_white_bg(s1)
 
-    # Main Hero Box
-    hb = s1.shapes.add_textbox(Inches(0.8), Inches(1.5), Inches(11.7), Inches(3.0))
-    tf1 = hb.text_frame
-    tf1.word_wrap = True
-
-    p0 = tf1.paragraphs[0]
-    p0.text = "PATIENTTRIAGE.AI"
-    p0.font.size = Pt(44)
-    p0.font.bold = True
-    p0.font.color.rgb = C_WHITE
-
-    p1 = tf1.add_paragraph()
-    p1.text = "“Triage is a snapshot. Risk isn't.”"
-    p1.font.size = Pt(24)
+    # Title: Team details
+    t1 = s1.shapes.add_textbox(Inches(0.8), Inches(0.6), Inches(11.7), Inches(0.8))
+    tf1 = t1.text_frame
+    p1 = tf1.paragraphs[0]
+    p1.text = "Team details"
+    p1.font.size = Pt(36)
     p1.font.bold = True
-    p1.font.color.rgb = C_CYAN_ACCENT
-    p1.space_before = Pt(10)
+    p1.font.color.rgb = C_TEXT_DARK
 
-    p2 = tf1.add_paragraph()
-    p2.text = "The Active Autonomous Emergency Department Safety Control Tower"
-    p2.font.size = Pt(16)
-    p2.font.color.rgb = C_MUTED
-    p2.space_before = Pt(6)
+    # Team Name Banner
+    t_banner = s1.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.5), Inches(11.733), Inches(0.45))
+    t_banner.fill.solid()
+    t_banner.fill.fore_color.rgb = C_PURPLE_LIGHT
+    t_banner.line.fill.background()
+    tf_tb = t_banner.text_frame
+    p_tb = tf_tb.paragraphs[0]
+    p_tb.text = " TEAM NAME: Phoenix"
+    p_tb.font.size = Pt(13)
+    p_tb.font.bold = True
+    p_tb.font.color.rgb = C_PURPLE
 
-    # 4 Feature Metric Cards at Bottom
-    metrics = [
-        ("CORE INNOVATION", "Dynamic Risk Velocity", "Vital shift tracking vs static snapshot", C_CYAN_ACCENT),
-        ("PHILOSOPHY", "Unknown ≠ Safe", "Missing data penalizes confidence", C_ROSE),
-        ("ANNUAL NET VALUE", "$3.82M / Hospital", "64% Avoided ICU Transfers + LWBS", C_EMERALD),
-        ("AUTHOR & TRACK", "Freya Jadhav (freya1705)", "Round 2 Technical Prototype & Proposal", C_WHITE)
-    ]
-    card_w = Inches(2.7)
-    card_h = Inches(1.8)
-    for i, (kpi, val, desc, col) in enumerate(metrics):
-        left = Inches(0.8 + i * 2.95)
-        add_card(s1, left, Inches(4.8), card_w, card_h)
-        tb = s1.shapes.add_textbox(left + Inches(0.15), Inches(4.9), card_w - Inches(0.3), card_h - Inches(0.2))
-        tf = tb.text_frame
-        tf.word_wrap = True
-        
-        p = tf.paragraphs[0]
-        p.text = kpi
-        p.font.size = Pt(9)
-        p.font.bold = True
-        p.font.color.rgb = C_MUTED
-        
-        pv = tf.add_paragraph()
-        pv.text = val
-        pv.font.size = Pt(14)
-        pv.font.bold = True
-        pv.font.color.rgb = col
-        pv.space_before = Pt(4)
-        
-        pd = tf.add_paragraph()
-        pd.text = desc
-        pd.font.size = Pt(9)
-        pd.font.color.rgb = C_MUTED
-        pd.space_before = Pt(3)
+    # Member Details Box (Right of Photo)
+    m_box = s1.shapes.add_textbox(Inches(3.2), Inches(2.3), Inches(9.0), Inches(4.5))
+    tf_m = m_box.text_frame
+    tf_m.word_wrap = True
+
+    pm1 = tf_m.paragraphs[0]
+    pm1.text = "Freya Jadhav"
+    pm1.font.size = Pt(32)
+    pm1.font.bold = True
+    pm1.font.color.rgb = C_PURPLE
+
+    pm2 = tf_m.add_paragraph()
+    pm2.text = "(Team Leader)"
+    pm2.font.size = Pt(28)
+    pm2.font.bold = True
+    pm2.font.color.rgb = C_PURPLE
+
+    pm3 = tf_m.add_paragraph()
+    pm3.text = "College: IIT Madras\nStream: Data Science and Applications\nYear of graduation: 2028"
+    pm3.font.size = Pt(14)
+    pm3.font.color.rgb = C_TEXT_DARK
+    pm3.space_before = Pt(18)
 
     # ==========================================================
-    # SLIDE 2: The Problem & Clinical Crisis
+    # SLIDE 2: Describe the Problem Statement (200 words)
     # ==========================================================
     s2 = prs.slides.add_slide(blank_layout)
-    add_bg(s2, dark=True)
-    add_header(s2, "The Crisis: The Blind Spot in Emergency Waiting Rooms")
+    add_white_bg(s2)
+    add_purple_banner(s2, "Describe the problem statement (200 words)")
 
-    p_cards = [
-        ("1. Silent Decompensation", "140M annual visits face 3–6 hr wait times. ESI 3/4 patients worsen unmonitored; physiological decline may remain undetected until sudden collapse.", C_ROSE),
-        ("2. The 'Missing Data Is Safe' Myth", "Traditional triage algorithms treat missing vitals as benign. Under 'Unknown is NOT Safe', incomplete data heightens vigilance instead of offering false reassurance.", C_AMBER),
-        ("3. The Attention Bottleneck", "Attended critical patients anchor doctors and block queues, while deteriorating unmonitored patients stay hidden at the bottom of the list.", C_CYAN_ACCENT),
-        ("4. Legacy EHR Blind Spot", "Epic EDI & Cerner MEWS only score admitted inpatient beds. PatientTriage.ai is purpose-built for waiting rooms and clinician coverage gaps.", C_EMERALD)
-    ]
-    for i, (title, desc, col) in enumerate(p_cards):
-        row = i // 2
-        col_idx = i % 2
-        l = Inches(0.8 + col_idx * 5.95)
-        t = Inches(1.7 + row * 2.6)
-        add_card(s2, l, t, Inches(5.75), Inches(2.35), border_color=col)
-        
-        tb = s2.shapes.add_textbox(l + Inches(0.25), t + Inches(0.2), Inches(5.25), Inches(1.95))
-        tf = tb.text_frame
-        tf.word_wrap = True
-        
-        pt = tf.paragraphs[0]
-        pt.text = title
-        pt.font.size = Pt(16)
-        pt.font.bold = True
-        pt.font.color.rgb = col
-        
-        pd = tf.add_paragraph()
-        pd.text = desc
-        pd.font.size = Pt(11)
-        pd.font.color.rgb = C_WHITE
-        pd.space_before = Pt(8)
+    p_box = s2.shapes.add_textbox(Inches(0.8), Inches(1.7), Inches(11.733), Inches(5.3))
+    tf_p = p_box.text_frame
+    tf_p.word_wrap = True
+
+    sub_p = tf_p.paragraphs[0]
+    sub_p.text = "Patient Triage Doesn’t End at Arrival: The Waiting-Room Surveillance Gap"
+    sub_p.font.size = Pt(16)
+    sub_p.font.bold = True
+    sub_p.font.color.rgb = C_TEXT_DARK
+
+    body_p1 = tf_p.add_paragraph()
+    body_p1.text = (
+        "Emergency departments face acute operational strain during mass-casualty surges and peak hours. "
+        "Globally, emergency crowding increases 10-day patient mortality by ~30%, with 90% of emergency medical "
+        "condition deaths preventable through timely prioritization. In India, ranking 144th in emergency access, "
+        "over 79% of healthcare workers report triage bottlenecks as their primary operational barrier, compounded by "
+        "the fact that only 12.14% of registrations capture structured diagnostic data at intake.\n\n"
+        "The fundamental failure of current emergency workflows is that triage is treated as a one-time static snapshot "
+        "at the front door. However, arrival classification quickly degrades: patients initially categorized as lower "
+        "risk can silently deteriorate, exceed clinically safe reassessment windows, or experience internal "
+        "decompensation while waiting unmonitored.\n\n"
+        "When clinical staff are overwhelmed, data is incomplete, and clinical attention becomes the scarce resource, "
+        "two distinct decisions must be made:\n"
+        "• Who needs attention first upon arrival?\n"
+        "• Who is no longer safe to keep waiting?\n\n"
+        "Current systems fail to monitor this second, life-critical question, resulting in dangerous unmonitored delays, "
+        "alert fatigue, and preventable patient mortality."
+    )
+    body_p1.font.size = Pt(11.5)
+    body_p1.font.color.rgb = C_TEXT_DARK
+    body_p1.space_before = Pt(8)
 
     # ==========================================================
-    # SLIDE 3: System Architecture & The Attention Gap
+    # SLIDE 3: Proposed Solution (200 words)
     # ==========================================================
     s3 = prs.slides.add_slide(blank_layout)
-    add_bg(s3, dark=True)
-    add_header(s3, "System Architecture: 3-Tier Layered Safety & The Attention Gap")
+    add_white_bg(s3)
+    add_purple_banner(s3, "Proposed solution (200 words)")
 
-    tiers = [
-        ("TIER 1: DETERMINISTIC GUARDRAILS", "• Hard clinical red-flags (SpO₂ < 85%, SBP < 75 mmHg, Stroke FAST, stridor)\n• 100% Downgrade Guardrails (prevent unsafe score lowering without evidence)", C_ROSE),
-        ("TIER 2: AI TRAJECTORY & ATTENTION GAP", "• Priority = Base Risk + Vital Velocity (ΔV) + Evidence Staleness (τ) + Uncertainty (Unknown≠Safe) - Physician Coverage (wc)\n• 108 EMS Pre-Arrival Ingestion via HL7 FHIR LOINC\n• Referral Eligibility Scoring (RES 0–100%)", C_CYAN_ACCENT),
-        ("TIER 3: MULTI-SURFACE DISPATCH & GOVERNANCE", "• 4 Clinical Workspaces: Overview, Nurse Tasks, Floor Map, Lab Orders\n• Unified slide-over Patient Drawer with human-readable 'Why?'\n• 100% Clinician override authority + Immutable append-only audit trail", C_EMERALD)
+    s_box = s3.shapes.add_textbox(Inches(0.8), Inches(1.6), Inches(11.733), Inches(2.6))
+    tf_s = s_box.text_frame
+    tf_s.word_wrap = True
+
+    sub_s = tf_s.paragraphs[0]
+    sub_s.text = "Core Loop: Arrive → Prioritize → Wait → Monitor → Reprioritize"
+    sub_s.font.size = Pt(13)
+    sub_s.font.bold = True
+    sub_s.font.color.rgb = C_TEXT_DARK
+
+    body_s = tf_s.add_paragraph()
+    body_s.text = (
+        "Step 1: Rapid Arrival Prioritization. Uses intake symptoms, vitals, complaint, and injury type to assign immediate priority. "
+        "Supports standard hospital triage (ESI 1–5) and switches instantly to mass-casualty disaster mode (Red/Yellow/Green/Black).\n"
+        "Step 2: Continuous Waiting-Room Safety. Continuously monitors patients while they wait using automated timers (elapsed wait time and overdue review windows) "
+        "and new vitals entered during regular checks—without needing expensive wearable sensors.\n"
+        "Step 3: Workflow Automation vs. Human Authority. Automated by System: Tracks waiting timers, flags missing vitals, triggers hospital escalation ladders, and ranks urgent tasks. "
+        "Decided by Doctors: Medical diagnosis, treatment plans, prescriptions, and 100% final override authority.\n"
+        "Step 4: Live Action Queue & Safety Guardrail. Surfaces a clean Top-3 Action Queue for staff instead of noisy alarms. "
+        "Follows the core rule: Uncertainty ≠ Low Risk—missing critical vitals blocks a safe rating and triggers immediate human review."
+    )
+    body_s.font.size = Pt(10)
+    body_s.font.color.rgb = C_TEXT_DARK
+    body_s.space_before = Pt(4)
+
+    # Comparison Table
+    table_shape = s3.shapes.add_table(7, 2, Inches(0.8), Inches(4.3), Inches(11.733), Inches(2.7))
+    tbl = table_shape.table
+    tbl.columns[0].width = Inches(5.5)
+    tbl.columns[1].width = Inches(6.233)
+
+    table_data = [
+        ("Most systems", "PatientTriage.ai"),
+        ("Assess patients at arrival", "Continues monitoring while they wait"),
+        ("Give a fixed risk score", "Updates priority when risk changes"),
+        ("Track queues", "Treats long waiting time as a safety signal"),
+        ("May struggle with missing data", "Flags uncertainty for human review"),
+        ("Generate many alerts", "Shows only the Top-3 actions first"),
+        ("Depend heavily on hospital systems", "Standalone-first and integration-ready")
     ]
-    for i, (t_title, t_body, col) in enumerate(tiers):
-        l = Inches(0.8 + i * 3.95)
-        add_card(s3, l, Inches(1.7), Inches(3.8), Inches(5.2), border_color=col)
+
+    for row_idx, (col1, col2) in enumerate(table_data):
+        cell1 = tbl.cell(row_idx, 0)
+        cell2 = tbl.cell(row_idx, 1)
         
-        tb = s3.shapes.add_textbox(l + Inches(0.2), Inches(1.9), Inches(3.4), Inches(4.8))
-        tf = tb.text_frame
-        tf.word_wrap = True
+        cell1.text = col1
+        cell2.text = col2
         
-        pt = tf.paragraphs[0]
-        pt.text = t_title
-        pt.font.size = Pt(13)
-        pt.font.bold = True
-        pt.font.color.rgb = col
-        
-        pd = tf.add_paragraph()
-        pd.text = t_body
-        pd.font.size = Pt(10.5)
-        pd.font.color.rgb = C_WHITE
-        pd.space_before = Pt(10)
+        # Background fill
+        cell1.fill.solid()
+        cell2.fill.solid()
+        if row_idx == 0:
+            cell1.fill.fore_color.rgb = RGBColor(153, 246, 228)  # #99f6e4 Header Teal
+            cell2.fill.fore_color.rgb = RGBColor(153, 246, 228)
+        else:
+            cell1.fill.fore_color.rgb = RGBColor(240, 253, 250)  # #f0fdfa Light Teal Row
+            cell2.fill.fore_color.rgb = RGBColor(240, 253, 250)
+            
+        for cell, is_bold in [(cell1, row_idx == 0), (cell2, row_idx == 0)]:
+            p = cell.text_frame.paragraphs[0]
+            p.font.size = Pt(10)
+            p.font.bold = is_bold
+            p.font.color.rgb = C_TEXT_DARK
 
     # ==========================================================
-    # SLIDE 4: Clinical Command Cockpit (Live Demo Features)
+    # SLIDE 4: Video
     # ==========================================================
     s4 = prs.slides.add_slide(blank_layout)
-    add_bg(s4, dark=True)
-    add_header(s4, "The Clinical Cockpit: 4 Switchable Workspaces")
+    add_white_bg(s4)
+    add_purple_banner(s4, "Video")
 
-    workspaces = [
-        ("🧭 1. Overview (Control Tower)", "Dynamic Priority Stream continuously re-ranking patients by unmet clinical need + Searchable census + Live audit feed.", C_CYAN_ACCENT),
-        ("🩺 2. Nurse Tasks ('Next 5 Mins')", "Time-budgeted micro-tasks (90s, 60s, 45s, 30s) converting abstract scores into direct bedside clinical actions + 'Attendant Away' spot-checks.", C_ROSE),
-        ("🗺️ 3. ED Floor Pressure Map", "Real-time spatial visualization of Waiting Lounge Chairs 1–20 (pulsing halos 🟢/🟡/🟠/🔴) vs Treatment Bays + Unaccompanied patient alerts.", C_AMBER),
-        ("🧪 4. Standing Lab Pre-Orders Hub", "Auto-drafts Troponin+ECG and Lactate orders before MD assignment with 1-click approval, cutting diagnostic turnaround time by 18 minutes.", C_EMERALD)
-    ]
-    for i, (w_title, w_desc, col) in enumerate(workspaces):
-        row = i // 2
-        col_idx = i % 2
-        l = Inches(0.8 + col_idx * 5.95)
-        t = Inches(1.7 + row * 2.6)
-        add_card(s4, l, t, Inches(5.75), Inches(2.35), border_color=col)
-        
-        tb = s4.shapes.add_textbox(l + Inches(0.25), t + Inches(0.2), Inches(5.25), Inches(1.95))
-        tf = tb.text_frame
-        tf.word_wrap = True
-        
-        pt = tf.paragraphs[0]
-        pt.text = w_title
-        pt.font.size = Pt(16)
-        pt.font.bold = True
-        pt.font.color.rgb = col
-        
-        pd = tf.add_paragraph()
-        pd.text = w_desc
-        pd.font.size = Pt(11)
-        pd.font.color.rgb = C_WHITE
-        pd.space_before = Pt(8)
+    v_box = s4.shapes.add_textbox(Inches(0.8), Inches(2.2), Inches(11.733), Inches(3.0))
+    tf_v = v_box.text_frame
+    tf_v.word_wrap = True
 
-    # ==========================================================
-    # SLIDE 5: Patient Transparency Companion & De-Escalation
-    # ==========================================================
-    s5 = prs.slides.add_slide(blank_layout)
-    add_bg(s5, dark=True)
-    add_header(s5, "Patient Transparency Companion: Reducing Anxiety & LWBS")
+    pv1 = tf_v.paragraphs[0]
+    pv1.text = "https://drive.google.com/drive/folders/1qeAV4E03yaVNREZVVUIRtUZ2KoMC7Ptg?usp=sharing"
+    pv1.font.size = Pt(16)
+    pv1.font.bold = True
+    pv1.font.color.rgb = RGBColor(37, 99, 235)  # #2563eb Blue link
+    pv1.font.underline = True
 
-    s5_boxes = [
-        ("📱 Zero-App Install (QR Code / SMS)", "Waiting patients scan a QR code printed on their triage wristband to access a live, mobile-friendly care journey tracker with zero app downloads.", C_CYAN_ACCENT),
-        ("🤝 Behavioral De-Escalation ('Why Queue Moves')", "Directly answers: 'Why did someone who arrived after me get called in first?' — explaining clinical triage acuity without exposing private PHI.", C_EMERALD),
-        ("⏱️ Next Nurse Re-Check Countdown", "Displays a reassuring countdown timer for the next scheduled vital check, eliminating waiting room uncertainty and panic.", C_AMBER),
-        ("💰 $1.12M LWBS Revenue Recovery", "By keeping waiting patients informed and engaged, reduces Left-Without-Being-Seen (LWBS) walkout rates from 4.8% to <2.9%.", C_ROSE)
-    ]
-    for i, (title, desc, col) in enumerate(s5_boxes):
-        row = i // 2
-        col_idx = i % 2
-        l = Inches(0.8 + col_idx * 5.95)
-        t = Inches(1.7 + row * 2.6)
-        add_card(s5, l, t, Inches(5.75), Inches(2.35), border_color=col)
-        
-        tb = s5.shapes.add_textbox(l + Inches(0.25), t + Inches(0.2), Inches(5.25), Inches(1.95))
-        tf = tb.text_frame
-        tf.word_wrap = True
-        
-        pt = tf.paragraphs[0]
-        pt.text = title
-        pt.font.size = Pt(16)
-        pt.font.bold = True
-        pt.font.color.rgb = col
-        
-        pd = tf.add_paragraph()
-        pd.text = desc
-        pd.font.size = Pt(11)
-        pd.font.color.rgb = C_WHITE
-        pd.space_before = Pt(8)
-
-    # ==========================================================
-    # SLIDE 6: Financial ROI Waterfall ($3.82M Net Value)
-    # ==========================================================
-    s6 = prs.slides.add_slide(blank_layout)
-    add_bg(s6, dark=True)
-    add_header(s6, "Quantified Hospital Business Case & ROI ($3.82M Net Annual Value)")
-
-    # 5 ROI Breakdown Columns
-    roi_items = [
-        ("1. AVOIDED ICU TRANSFERS", "+$1.39M", "64% reduction in waiting room crashes (93 avoided ICU stays @ $15k).", C_EMERALD),
-        ("2. LWBS REVENUE RECOVERY", "+$1.12M", "30% reduction in walkouts via Patient Companion (936 patients retained).", C_CYAN_ACCENT),
-        ("3. DIAGNOSTIC PRE-ORDERS", "+$830k", "18-min LOS reduction enables capacity for 660 additional admissions.", C_AMBER),
-        ("4. MALPRACTICE MITIGATION", "+$480k", "40% liability reduction via tamper-evident audit ledger defense.", C_ROSE),
-        ("TOTAL NET ANNUAL ROI", "+$3.58M", "Gross value $3.82M minus $240k enterprise license (14.9x Net ROI).", C_EMERALD)
-    ]
-    card_w6 = Inches(2.25)
-    for i, (title, val, desc, col) in enumerate(roi_items):
-        l = Inches(0.8 + i * 2.38)
-        add_card(s6, l, Inches(1.7), card_w6, Inches(5.2), border_color=col)
-        
-        tb = s6.shapes.add_textbox(l + Inches(0.15), Inches(1.9), card_w6 - Inches(0.3), Inches(4.8))
-        tf = tb.text_frame
-        tf.word_wrap = True
-        
-        pt = tf.paragraphs[0]
-        pt.text = title
-        pt.font.size = Pt(10)
-        pt.font.bold = True
-        pt.font.color.rgb = C_MUTED
-        
-        pv = tf.add_paragraph()
-        pv.text = val
-        pv.font.size = Pt(20)
-        pv.font.bold = True
-        pv.font.color.rgb = col
-        pv.space_before = Pt(8)
-        
-        pd = tf.add_paragraph()
-        pd.text = desc
-        pd.font.size = Pt(10)
-        pd.font.color.rgb = C_WHITE
-        pd.space_before = Pt(8)
-
-    # ==========================================================
-    # SLIDE 7: Regulatory, Roadmap & Conclusion
-    # ==========================================================
-    s7 = prs.slides.add_slide(blank_layout)
-    add_bg(s7, dark=True)
-    add_header(s7, "Regulatory Compliance, Phased Roadmap & Outro")
-
-    # Left: Regulatory & Privacy Box
-    add_card(s7, Inches(0.8), Inches(1.7), Inches(5.75), Inches(5.2), border_color=C_CYAN_ACCENT)
-    tb_l = s7.shapes.add_textbox(Inches(1.0), Inches(1.9), Inches(5.35), Inches(4.8))
-    tf_l = tb_l.text_frame
-    tf_l.word_wrap = True
-
-    p = tf_l.paragraphs[0]
-    p.text = "REGULATORY & ARCHITECTURE COMPLIANCE"
-    p.font.size = Pt(14)
-    p.font.bold = True
-    p.font.color.rgb = C_CYAN_ACCENT
-
-    items_l = [
-        ("FDA Non-Device CDS (21 U.S.C. § 360aaa-1)", "Transparent rationales & trajectories; clinicians maintain 100% final override authority."),
-        ("Air-Gapped Edge Deployment", "Zero PHI leaves hospital network; sub-15ms inference latency on local server."),
-        ("Immutable Audit Ledger", "Cryptographically verifiable tamper-evident SQLite WAL logging for all clinical actions."),
-        ("Test Verification", "51/51 automated pytest tests passed (100% pass rate).")
-    ]
-    for k, v in items_l:
-        p_k = tf_l.add_paragraph()
-        p_k.text = f"• {k}: "
-        p_k.font.size = Pt(10.5)
-        p_k.font.bold = True
-        p_k.font.color.rgb = C_WHITE
-        p_k.space_before = Pt(8)
-        
-        p_v = tf_l.add_paragraph()
-        p_v.text = f"  {v}"
-        p_v.font.size = Pt(9.5)
-        p_v.font.color.rgb = C_MUTED
-
-    # Right: Phased Roadmap Box
-    add_card(s7, Inches(6.78), Inches(1.7), Inches(5.75), Inches(5.2), border_color=C_EMERALD)
-    tb_r = s7.shapes.add_textbox(Inches(7.0), Inches(1.9), Inches(5.35), Inches(4.8))
-    tf_r = tb_r.text_frame
-    tf_r.word_wrap = True
-
-    p_r = tf_r.paragraphs[0]
-    p_r.text = "PHASED 12-MONTH EXECUTION ROADMAP"
-    p_r.font.size = Pt(14)
-    p_r.font.bold = True
-    p_r.font.color.rgb = C_EMERALD
-
-    phases = [
-        ("Phase 1 (Months 1–3) — Edge Pilot", "Deploy contactless camera testbed in 2 triage bays; benchmark sensitivity across 51 test suites."),
-        ("Phase 2 (Months 4–6) — Shadow Surveillance", "Integrate HL7 FHIR stream & 108 EMS pre-arrival telemetry; evaluate concordance alongside Epic/Cerner."),
-        ("Phase 3 (Months 7–9) — Active Cockpit", "Launch Nurse Tasks ('Next 5 Mins') and Standing Pre-Orders with charge nurse feedback."),
-        ("Phase 4 (Months 10–12) — Enterprise Scaling", "Roll out Patient Companion QR portal & Referral Diversion across 3 regional hospital networks.")
-    ]
-    for k, v in phases:
-        p_pk = tf_r.add_paragraph()
-        p_pk.text = f"• {k}"
-        p_pk.font.size = Pt(10.5)
-        p_pk.font.bold = True
-        p_pk.font.color.rgb = C_WHITE
-        p_pk.space_before = Pt(8)
-        
-        p_pv = tf_r.add_paragraph()
-        p_pv.text = f"  {v}"
-        p_pv.font.size = Pt(9.5)
-        p_pv.font.color.rgb = C_MUTED
+    pv2 = tf_v.add_paragraph()
+    pv2.text = "\nGitHub Repository: https://github.com/freya1705/PatientTriageAI"
+    pv2.font.size = Pt(14)
+    pv2.font.color.rgb = C_MUTED
+    pv2.space_before = Pt(14)
 
     # Save
     pptx_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "PatientTriage_AI_Business_Proposal.pptx")
     prs.save(pptx_path)
-    print(f"[OK] Generated business proposal PPTX: {pptx_path} (Size: {os.path.getsize(pptx_path)} bytes)")
+    print(f"[OK] Generated official 4-slide Accenture PPTX: {pptx_path} (Size: {os.path.getsize(pptx_path)} bytes)")
 
 if __name__ == "__main__":
-    create_deck()
+    create_4slide_deck()
