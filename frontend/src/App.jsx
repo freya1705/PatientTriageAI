@@ -13,12 +13,22 @@ import { EvaluationPage } from "./pages/EvaluationPage";
 import { PatientDetailPage } from "./pages/PatientDetailPage";
 import { AuditPage } from "./pages/AuditPage";
 import { PrivacyPage } from "./pages/PrivacyPage";
+
+// Global Modals & Drawers
 import { OverrideModal } from "./components/OverrideModal";
 import { PatientDrawer } from "./components/PatientDrawer";
 import { VitalTrendModal } from "./components/VitalTrendModal";
+import { ReassessmentModal } from "./components/ReassessmentModal";
+import { SafetyOutcomeModal } from "./components/SafetyOutcomeModal";
+import { PatientTransparencyCompanion } from "./components/PatientTransparencyCompanion";
 
 const AppContent = () => {
-  const { activeTab, toastMessage } = useTriage();
+  const {
+    activeTab,
+    toastMessage,
+    portalPatientId,
+    setPortalPatientId,
+  } = useTriage();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
@@ -78,10 +88,19 @@ const AppContent = () => {
         </footer>
       </div>
 
-      {/* Global Clinical Governance Modals */}
+      {/* Global Clinical Governance Modals & Drawers */}
       <OverrideModal />
       <PatientDrawer />
       <VitalTrendModal />
+      <ReassessmentModal />
+      <SafetyOutcomeModal />
+
+      {portalPatientId && (
+        <PatientTransparencyCompanion
+          patientId={portalPatientId}
+          onClose={() => setPortalPatientId(null)}
+        />
+      )}
     </div>
   );
 };

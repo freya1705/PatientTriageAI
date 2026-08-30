@@ -166,17 +166,6 @@ export const NurseWorklist = ({ initialFilter = "ALL" }) => {
           <LiveSafetyFeed />
         </div>
       </div>
-
-      {/* 4. Global Modals */}
-      <ReassessmentModal />
-      {safetyOutcomeData && <SafetyOutcomeModal />}
-
-      {portalPatientId && (
-        <PatientTransparencyCompanion
-          patientId={portalPatientId}
-          onClose={() => setPortalPatientId(null)}
-        />
-      )}
     </div>
   );
 };

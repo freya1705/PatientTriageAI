@@ -223,13 +223,22 @@ export const SearchAllWaitingPage = () => {
                       <div className="flex items-center justify-end space-x-1.5">
                         <button
                           onClick={() => openReassessmentModal(p)}
-                          className="px-2.5 py-1 rounded bg-rose-600 text-white font-bold text-xs hover:bg-rose-700"
+                          className="px-2.5 py-1 rounded bg-rose-600 text-white font-bold text-xs hover:bg-rose-700 shadow-xs"
+                          title="Bedside Reassessment"
                         >
                           Reassess
                         </button>
                         <button
+                          onClick={() => openPatientDrawer(p)}
+                          className="px-2.5 py-1 rounded bg-slate-100 text-slate-700 font-semibold text-xs hover:bg-slate-200 border border-slate-200"
+                          title="Open Slide-over Details"
+                        >
+                          Details
+                        </button>
+                        <button
                           onClick={() => viewPatientDetail(p.id)}
-                          className="px-2.5 py-1 rounded bg-slate-100 text-slate-700 font-semibold text-xs hover:bg-slate-200"
+                          className="px-2.5 py-1 rounded bg-slate-900 text-white font-semibold text-xs hover:bg-slate-800"
+                          title="Open Full Dossier"
                         >
                           Dossier
                         </button>
