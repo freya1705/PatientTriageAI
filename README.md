@@ -1,193 +1,174 @@
 # PatientTriage.ai 🏥
 
 **“Triage is a snapshot. Risk isn't.”**  
-_The Active Autonomous Emergency Department Safety Control Tower_  
-_Accenture Innovation Challenge 2026 — Round 2 Prototype_
+_AI Safety Copilot for the Emergency Waiting Room — Active Clinical Decision Support_  
+_Accenture Innovation Challenge 2026 — Round 2 Technical Prototype_
 
 [![Python](https://img.shields.io/badge/Python-3.9%20%7C%203.13-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB.svg)](https://react.dev/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.0-38B2AC.svg)](https://tailwindcss.com/)
-[![Pytest](https://img.shields.io/badge/Pytest-51%2F51%20Passed-brightgreen.svg)](https://pytest.org/)
+[![Pytest](https://img.shields.io/badge/Pytest-51%2F51%20Passed%20(100%25)-brightgreen.svg)](https://pytest.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
 
-## 🚨 The ED Safety Control Tower Concept
+## 🚨 1. The Post-Triage Clinical Surveillance Gap
 
-Traditional emergency department dashboards operate as passive, static alert lists. **PatientTriage.ai** transforms the ED experience into an **Active Autonomous Safety Control Tower** that continuously decides:
+Traditional emergency department triage operates as a **one-time static snapshot** at intake. However, ESI Level 3 and 4 patients wait unmonitored for **2.5 to 4.5 hours** before physician examination. During this critical window, acute physiological deterioration (silent hypoxia, sepsis, internal hemorrhage) frequently remains undetected until sudden clinical collapse.
 
-1. **Who needs attention right now?**
-2. **Why are they becoming unsafe?**
-3. **What is the exact next clinical action?**
+**PatientTriage.ai** is an **AI Safety Copilot** purpose-built for the emergency waiting room. It continuously bridges the gap between initial intake and physician evaluation by answering three life-critical questions in real-time:
+
+1. **Who is no longer safe to keep waiting?**
+2. **Why is their physiological trajectory deteriorating?**
+3. **Who should clinicians reassess first, and what is the exact next action?**
 
 ```
-[ Ambient / Ingestion Layer ]
- ├── Optical RGB/NIR Cameras (Waiting Bay) ──> Real-time rPPG (Pulse, Resp Rate, SpO2)
- ├── Smart Kiosk / Mobile Check-in (Symptoms) ──> Multimodal Ingestion Engine
- └── HL7 FHIR Bridge ──> 108 EMS Ambulance Pre-Arrival Telemetry & Baseline EHR
+[ Ambient Ingestion Layer ]
+ ├── Waiting Room Vitals Telemetry (SpO2, Pulse, Blood Pressure, Respiration)
+ ├── Time-Stamped Elapsed Wait Clock & Reassessment Shelf-Life Monitor
+ └── HL7 FHIR Bridge (Encounter, Observation) from Hospital EHR
                  │
                  ▼
-[ Real-Time Edge Processing Engine (Sub-15ms) ]
- ├── Tier 1: Deterministic Guardrails (Downgrade Block, Hard Red Flags)
- ├── Tier 2: Causal & Counterfactual Neural Engine (Trajectory & Inaction Projection)
- └── Tier 3: Attention Gap Optimizer (Decay Staleness + Coverage Allocation + RES)
+[ Hybrid Edge Safety Engine (Sub-15ms) ]
+ ├── Tier 1: Deterministic Guardrails (Downgrade Block, Hard Physiological Red Flags)
+ ├── Tier 2: Dynamic Vital Velocity & Uncertainty Calibration (Unknown ≠ Safe)
+ └── Tier 3: Attention Gap Optimizer (Staleness Decay + Clinical Coverage Discounting)
                  │
                  ▼
-[ Multi-Surface Dispatch & Interface Layer ]
- ├── Surface A: Clinical Command Cockpit (Charge Nurse & Attending MD)
- ├── Surface B: Autonomous Pre-Order Dispatcher (Auxiliary Tech / Phlebotomy)
- └── Surface C: Patient-Facing "Smart Transparency" Companion (Mobile QR/SMS)
+[ 4-State Clinical Cockpit & Worklist ]
+ ├── 🟢 CONTINUE  ──> Vitals stable; within safe observation window
+ ├── 🟡 REASSESS  ──> Observation shelf-life expired; nurse bedside recheck dispatched
+ ├── 🔴 ESCALATE  ──> Hard red-flag breach; immediate resuscitation bay & MD page
+ └── ⚪ UNCERTAIN ──> Missing data penalty; forces physical human verification
 ```
 
 ---
 
-## 🌟 The Core Product Innovations
+## 🌟 2. Three Hero Architectural Differentiators
 
-| Innovation                                | What It Does                                                         | Key Clinical & Operational Synergy                                                            |
-| :---------------------------------------- | :------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
-| 🧠 **Dynamic Risk Velocity**              | Risk recalculates continuously rather than remaining static          | Proves _"Risk changes while waiting"_ with real-time vital velocity tracking                  |
-| ⏱️ **Signature Safety Clock**             | Visual countdown tracking evidence shelf-life & validity             | Replaces static timestamps with active countdowns to expiry (`13:42 remaining` → `EXPIRED`)   |
-| 👁️ **Operational Attention Gap**          | Identifies unmonitored deteriorating patients                        | Prevents attended patients from blocking unattended waiting patients                          |
-| 🚑 **108 EMS Pre-Arrival Telemetry**      | Ingests ambulance telemetry via HL7 FHIR Bridge with LOINC codes     | Pre-computes inbound triage level and enables 1-click Resuscitation Bay pre-allocation        |
-| 👤 **Attendant-Away Surveillance**        | Flags patients sitting alone when family leaves for pharmacy/billing | Floor map tag + auto-injects high-urgency spot-check micro-tasks for nurses                   |
-| 🏥 **Referral Candidate Scoring (RES)**   | Computes Referral Eligibility Score (0–100%) for tertiary ED relief  | Flags stable low-acuity patients safe for redirection to Primary Health Centres / Urgent Care |
-| 🔮 **Counterfactual Inaction Projection** | Forecasts _"What if waiting continues?"_ vs _"Intervene now"_        | Predicts decompensation/septic crashes 20–40 mins in advance                                  |
-| ⚡ **Closed-Loop Action Loop**            | Auto-drafts pre-orders & records closed-loop outcomes                | Tracks Time to Intervention (`3m 42s`) and recalculates post-action stability                 |
-
-> **Philosophical Cornerstone**: `Unknown ≠ Safe` — Missing vitals and aging observations actively increase uncertainty penalty rather than being treated as benign.
+| Hero Differentiator | What It Does | Why It Is Clinically Differentiated |
+| :--- | :--- | :--- |
+| 🧠 **1. Safe-to-Wait Dynamic Surveillance** | Continuously tracks vital sign trajectory velocity ($\Delta\text{SpO}_2, \Delta\text{HR}$) | Proves _"Risk evolves while waiting"_ rather than freezing static intake scores. |
+| 🛡️ **2. Uncertainty Guardrail ($Unknown \ne Safe$)** | Applies explicit uncertainty penalty ($w_u = +15\text{ to }+25\text{ pts}$) on missing telemetry | Eliminates under-triage: missing vitals elevate patient priority for physical check rather than creating false reassurance. |
+| 👁️ **3. Operational Attention Gap** | Prioritizes unmonitored deteriorating waiting patients over attended beds | Subtracts clinician coverage ($w_c = -35\text{ pts}$) when attended, surfacing hidden waiting-room collapses to Rank #1. |
 
 ---
 
-## 🧠 Core Mathematical Formulation: The Attention Gap
+## 🚦 3. Four Discrete Operational Workflow States
 
-$$\text{Priority Score} = w_r(\text{Risk Urgency}) + w_d(\Delta\text{Vital Velocity}) + w_s(\tau_{\text{staleness}}) - w_c(\text{Physician Attended}) + w_u(\text{Uncertainty})$$
-
-**Default Parameter Calibration**:
-
-- $w_r$ (Base Clinical Risk / Urgency): **$1.0$**
-- $w_d$ (Vital Velocity Spike / Degradation): **$+25\text{ to }+40\text{ pts}$**
-- $w_s$ (Evidence Staleness Penalty): **$+20\text{ to }+35\text{ pts}$**
-- $w_u$ (Uncertainty Penalty / Missing Data): **$+15\text{ to }+25\text{ pts}$**
-- $w_c$ (Clinical Coverage Offset): **$-35\text{ pts}$** _(Discounts attended cases so unattended cases surface to top)_
-
----
-
-## 🎛️ Multi-View Control Center Capabilities
-
-### 1. Mode 1: Control Tower & Dynamic Priority Stream
-
-- **3 Giant Hero Metrics**: Total Patients Waiting | Requiring Attention | Shortest Safety Window.
-- **Actionable Census Ribbon**: Simplified into 3 clear categories:
-  - 🔴 **Act Now** (`Escalate` + `Reassess` — pulses with red alert when urgent cases exist)
-  - 🟡 **Recheck Soon** (`Watch` + `Uncertain`)
-  - 🟢 **Stable** (`Low Risk` + `Stable` monitoring)
-  - **Dynamic ED Load Bar**: Continuous `%` capacity meter with color transitions.
-- **108 EMS Pre-Arrival Banner**: Real-time incoming ambulance feed showing ETA, live vital telemetry (SpO₂, HR, BP, RR), paramedic notes (e.g. ST elevation), and a 1-click **"Pre-Allocate Resus Bay"** button.
-- **Unified Slide-Over `PatientDrawer`**: Replaces clutter with a unified 3-tab panel:
-  1. _Clinical Summary:_ Demographics, vital matrix, age model (Pediatric/Geriatric/Adult), and Attendant Away / Referral Candidate status.
-  2. _Why This Rank:_ Plain-English clinical justifications + optional collapsible score formula waterfall.
-  3. _What Happens Next:_ Recommended intervention, inaction risk trajectory, and 1-click reassessment.
-
-### 2. Mode 2: Nurse Action View ("Your Next 5 Minutes")
-
-- Transforms raw risk numbers into time-budgeted clinical micro-tasks:
-  - `⚠️ Attendant Away — 30s`: Spot-check unattended waiting patient whose family stepped away
-  - `P-017 — 90s`: Bedside Reassessment & O₂ Titration (SpO₂ 91% ↓)
-  - `P-001 — 60s`: Physician Review & Lactate Screen (Septic shock hazard)
-  - `P-007 — 45s`: 12-Lead ECG & Troponin Pre-Order Confirmation
-  - `P-016 — 30s`: Confirm Symptom & Temperature Change
-
-### 3. Mode 3: Floor-Wide ED Resource & Pressure Map
-
-- Spatial floor plan of Waiting Lounge (Chairs 1–20), Triage Kiosks, and Treatment/Resuscitation Bays.
-- Real-time pulsating status halos (🟢, 🟡, 🟠, 🔴) identifying patients waiting without direct clinician contact.
-- **Attendant Away Flag**: Visual badge on chairs with interactive 1-click toggle when family members step away to billing or pharmacy.
-
-### 4. Mode 4: Autonomous Standing Pre-Order Hub
-
-- Auto-drafts actionable diagnostic pre-orders (Troponin+ECG, Lactate, Type & Screen) before physician assignment.
-- 1-click **"Approve & Route to Tech"** or **"Dismiss with Mandatory Justification"** (Non-Device CDS 21 U.S.C. § 360aaa-1).
-
-### 5. Mode 5: Patient-Facing "Smart Transparency" Companion
-
-- Mobile web tracker accessed via triage wristband QR code or SMS link (zero app install).
-- Care phases (`Triage Ingested` → `Pre-Labs Dispatched` → `Clinical Surveillance` → `Physician Care Bay`).
-- **De-Escalation Explainer**: _"Why did someone who arrived after me get seen first?"_ card explaining medical urgency vs arrival order to prevent waiting room frustration.
-- **Next Safety Milestone Timer**: Shows estimated vital re-check schedule (~10-15 mins).
+```
++---------------------------------------------------------------------------------------------------------------+
+| State Badge   | Physiological Criteria                         | Clinical Action Dispatched                   |
+| :------------ | :--------------------------------------------- | :------------------------------------------- |
+| 🟢 CONTINUE   | Vitals stable within baseline; clock active   | Safe to wait; ongoing ambient monitoring     |
+| 🟡 REASSESS   | Stale observation or mild drift (ΔHR ≥ +20bpm) | Dispatches nurse bedside vital recheck round  |
+| 🔴 ESCALATE   | Red-flag breach (SpO2 < 85%, SBP < 75 mmHg)    | Immediate resus bay allocation & MD page     |
+| ⚪ UNCERTAIN   | Missing telemetry or sensor noise             | Forces human verification (Unknown ≠ Safe)    |
++---------------------------------------------------------------------------------------------------------------+
+```
 
 ---
 
-## 🎬 Interactive ED Replay Mode (The Live Demo)
+## 📐 4. The Attention Gap Formula & Plain-English Logic
 
-The dashboard includes a built-in **ED Replay Player** (`▶ START SIMULATION`) demonstrating a 90-minute chronological shift across 7 discrete phases:
+$$\text{Action Priority Score} = (w_r \cdot \text{Risk}) + (w_d \cdot \text{Deterioration}) + (w_s \cdot \text{Staleness}) + \text{Wait Hazard} + (w_u \cdot \text{Uncertainty}) - (w_c \cdot \text{Clinical Coverage})$$
 
-1. `10:00 AM`: Morning Baseline (Patient P-017 at Rank #17, ESI 3, Risk 18 🟢).
-2. `10:35 AM`: Prolonged Waiting (P-017 unmonitored for 35m, Safety Clock enters caution).
-3. `11:05 AM`: Staleness Expiry (Safety Clock expires, staleness penalty $+18$ applied, Risk 41 🟡).
-4. `11:21 AM`: Acute Deterioration (SpO₂ drops $96 \rightarrow 91\%$, HR spikes $92 \rightarrow 117\text{ bpm}$, Attention Gap elevates P-017 to Rank #3).
-5. `11:28 AM`: Surge to Rank #1 (P-017 reaches #1, outranking attended trauma cases).
-6. `11:29 AM`: Bedside Reassessment (RN administers O₂, vitals recover $89 \rightarrow 95\%$).
-7. `11:31 AM`: Closed-Loop Stabilization (Risk drops $84 \rightarrow 38$, patient moves to Treatment Bay 4, Safety Outcome logged in 3m 42s).
+### 💬 Plain-English Clinical Translation:
+> **The system does not ask only *"Who is most sick?"* It asks *"Who needs clinical attention most urgently right now, considering trajectory collapse, stale data, uncertainty, and whether a clinician is already at the bedside?"***
 
----
-
-## 📊 Quantified Hospital ROI ($3.82M Net Annual Value)
-
-| Financial Driver                  | Annual Value     | Clinical Mechanism                                                  |
-| :-------------------------------- | :--------------- | :------------------------------------------------------------------ |
-| **Avoided ICU Transfers**         | **$1.39M**       | Early detection of pre-shock hypoperfusion & vital deterioration    |
-| **LWBS Revenue Recovery**         | **$1.12M**       | Transparent patient companion reduces walkouts by $\ge 25\%$        |
-| **Tertiary Referral Load Relief** | **$450k**        | Safe secondary referral redirection for stable Level 4/5 candidates |
-| **Malpractice Risk Mitigation**   | **$480k**        | Tamper-evident audit ledger & deterministic safety guardrails       |
-| **ED Fast-Track Pre-Orders**      | **$830k**        | 18-minute reduction in diagnostic turnaround time                   |
-| **Total Net Economic Impact**     | **$3.82M+ / yr** | Standard 50,000-visit emergency department                          |
+- $w_r = 1.0$: Base risk score ($0–100$)
+- $w_d = +25\text{ to }+40\text{ pts}$: Acute velocity shift ($\Delta\text{SpO}_2 \le -5\%$ or $\Delta\text{HR} \ge +20\text{ bpm}$)
+- $w_s = +20\text{ to }+35\text{ pts}$: Observation shelf-life expired (Safety Clock)
+- $w_u = +15\text{ to }+25\text{ pts}$: Missing baseline vitals / sensor disconnect
+- $w_c = -35\text{ pts}$: Clinician actively assigned ($is\_attended = True$), discounting attended beds to surface waiting cases.
 
 ---
 
-## 🚀 Quickstart & Installation
+## 🥊 5. Competitive Moat vs. Native Inpatient EHR Scores
+
+| Dimension | Legacy EHR Scores (Epic EDI / Cerner MEWS) | PatientTriage.ai AI Safety Copilot |
+| :--- | :--- | :--- |
+| **Surveillance Domain** | Admitted inpatient beds; static snapshot at intake. | **Dedicated waiting-room continuous safety layer.** |
+| **Missing Vitals Handling** | Defaults to normal (creates false reassurance). | **$Unknown \ne Safe$: missing data increases uncertainty penalty.** |
+| **Clinical Coverage Factor** | Ignores whether patient is attended or waiting alone. | **Attention Gap discounts attended cases to surface waiting needs.** |
+| **Deterioration Detection** | Threshold alarms only after severe boundary breach. | **Tracks multi-parameter vital velocity ($\Delta\text{Vitals}/\Delta t$) before collapse.** |
+
+---
+
+## 🧪 6. Prototype Benchmark & CI/CD Verification
+
+_Evaluated across 20 synthetic clinical test cohorts in automated unit and integration testing:_
+
+| Safety Dimension | Static Intake Triage | PatientTriage.ai Prototype | Algorithmic Impact |
+| :--- | :--- | :--- | :--- |
+| **Waiting Deterioration Catch Rate** | `0 / 20` detected | **`20 / 20` detected (100%)** | Surfaces hidden decompensations in waiting rooms |
+| **Stale Observation Flagging** | `0 / 20` flagged | **`20 / 20` flagged (EXPIRED)** | Enforces maximum unmonitored shelf-life limits |
+| **Missing Vitals Under-Triage** | High (assumed safe) | **`0%` False Reassurance** | $Unknown \ne Safe$ forces physical human check |
+| **Attention Gap Priority Re-Rank** | None (attended block) | **Active Re-Ranking** | Elevates unattended deteriorating patients to Rank #1 |
+| **Unsafe Priority Downgrades** | `0` Guardrails | **`100%` Guarded (Blocked)** | Deterministic safety floor prevents silent downgrades |
+
+---
+
+## 📈 7. Business Impact & Modeled ROI (500-Bed Facility)
+
+_Modeled projections based on 65,000 annual ED visits, 500 acute care beds, and $1,200 average ED revenue per visit (derived from published emergency health economics literature; requires hospital-specific validation):_
+
+| Value Driver | Pre-Implementation Baseline | Modeled Post-Implementation Impact | Annual Financial Value |
+| :--- | :--- | :--- | :--- |
+| **1. LWBS Revenue Recovery** | 3,120 patients/yr leave (4.8%) | 30% reduction via proactive re-engagement | **+$1,123,200 / yr** |
+| **2. Avoided ICU Transfers** | 145 waiting room ICU crashes/yr | 64% reduction (93 avoided ICU stays @ $15k) | **+$1,395,000 / yr** |
+| **3. Malpractice Risk Mitigation** | $1.2M annual liability reserve | 40% reduction via documented audit trail | **+$480,000 / yr** |
+| **4. Nurse Retention & Overtime** | 26.8% nurse turnover (14 replacements) | 4 replacements avoided + 15% overtime cut | **+$378,000 / yr** |
+| **5. ED Throughput & Boarding** | 248 mins average wait/boarding | 30-minute reduction via optimized dispatch | **+$445,000 / yr** |
+| **TOTAL GROSS ANNUAL VALUE** | — | — | **$3,821,200 / yr** |
+| **Enterprise License & Support** | — | Annual Software Subscription & Edge Hardware | **-$240,000 / yr** |
+| **ESTIMATED NET ANNUAL ROI** | — | **14.9x Net Return on Investment** | **+$3,581,200 / yr** |
+
+---
+
+## 🗺️ 8. Phased Clinical Implementation Roadmap
+
+- **Phase 1 (Q3 2026 - Completed):** Lab Benchmark Validation • 20 synthetic cohorts verified across 51 automated pytest test cases; sub-15ms inference latency.
+- **Phase 2 (Q4 2026):** Shadow Clinical Trial • Non-interventional background FHIR integration alongside Epic/Cerner to evaluate clinician concordance.
+- **Phase 3 (Q1–Q2 2027):** Live Pilot • Target Endpoints (Requiring Clinical Validation): $>45\%$ reduction in Mean Time to Escalation (MTTE); false alarm rate $< 2$ alerts/nurse/shift; $\ge 25\%$ reduction in Left-Without-Being-Seen (LWBS).
+- **Phase 4 (Q3 2027+):** Multi-Hospital Enterprise Scope • Regional network load balancing, 108 EMS pre-arrival telemetry ingestion, and community referral diversion.
+
+---
+
+## 🚀 9. Quick Start & Execution
 
 ### 1-Click Launchers:
-
 ```bash
-# macOS / Linux
-./start.sh
-
 # Windows PowerShell
 .\start.ps1
 
 # Windows Batch
 start.bat
+
+# macOS / Linux
+./start.sh
 ```
 
 ### Manual Execution:
-
 ```bash
 # 1. Backend (FastAPI on http://localhost:8000)
-python3 -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn backend.main:app --reload --port 8000
+python -m uvicorn backend.main:app --reload --port 8000
 
 # 2. Frontend (React 19 on http://localhost:5173)
-cd frontend
-npm install
-npm run dev
+cd frontend && npm install && npm run dev
 
-# 3. Run Automated Pytest Suite (51 Tests)
+# 3. Run Automated Test Suite (51 Tests)
 python -m pytest -v
 ```
 
 ---
 
-## 📄 Project Deliverables & Resources
+## ⚖️ 10. Regulatory Positioning & Fail-Safe Architecture
 
-| Resource | Description | Link |
-| :--- | :--- | :--- |
-| 🌐 **Public GitHub Repository** | Complete Source Code & Intelligence Backend | [https://github.com/freya1705/PatientTriageAI.git](https://github.com/freya1705/PatientTriageAI.git) |
-| 🎬 **Prototype Video Demonstration** | Official Demonstration Video Folder | [Accenture Demo Video Drive](https://drive.google.com/drive/folders/1qeAV4E03yaVNREZVVUIRtUZ2KoMC7Ptg?usp=sharing) |
-| 🎬 **Video Narration Script** | Scene-by-Scene Timed Narration Script | [`DEMO_VIDEO_SCRIPT.md`](./DEMO_VIDEO_SCRIPT.md) |
-| 📑 **Research & Clinical Architecture** | Deep Clinical & Operational Specification | [`Re-search.md`](./Re-search.md) |
+- **Regulatory Stance:** PatientTriage.ai is an active clinical decision-support research prototype developed for the Accenture Innovation Challenge 2026. Positioned under **FDA Non-Device CDS (21 U.S.C. § 360aaa-1)**; licensed clinicians retain 100% decision authority.
+- **Fail-Safe Protocol:** If network connectivity is lost, the system fails safe to manual clinical rounding with deterministic red-flag guardrails active.
+- **Privacy & Security:** Zero PHI retained, air-gapped on-premise edge deployment, zero external cloud LLM dependencies, append-only audit trail logging.
 
 ---
 
