@@ -2,6 +2,7 @@
 Publication-Grade Business Proposal PDF Generator for PatientTriage.ai
 Generates PatientTriage_AI_Business_Proposal.pdf (Exactly 2 Pages)
 Accenture Innovation Challenge 2026 — Round 2 Business Case
+Incorporates All 6 Targeted Judge-Proofing Edits
 """
 
 import os
@@ -63,8 +64,8 @@ def build_business_proposal_pdf():
         pagesize=letter,
         leftMargin=36,
         rightMargin=36,
-        topMargin=32,
-        bottomMargin=32
+        topMargin=30,
+        bottomMargin=30
     )
 
     styles = getSampleStyleSheet()
@@ -88,22 +89,31 @@ def build_business_proposal_pdf():
         spaceAfter=1
     )
 
+    core_principle_style = ParagraphStyle(
+        'CorePrinciple',
+        fontName='Helvetica-Bold',
+        fontSize=8.2,
+        leading=10.5,
+        textColor=colors.HexColor('#0f172a'),
+        spaceAfter=3
+    )
+
     subtitle_style = ParagraphStyle(
         'DocSubtitle',
         fontName='Helvetica',
-        fontSize=8,
-        leading=10.5,
+        fontSize=7.8,
+        leading=10,
         textColor=colors.HexColor('#64748b'),
-        spaceAfter=5
+        spaceAfter=4
     )
 
     h1_style = ParagraphStyle(
         'CustomH1',
         fontName='Helvetica-Bold',
-        fontSize=9.2,
-        leading=11.5,
+        fontSize=9.0,
+        leading=11.2,
         textColor=colors.HexColor('#0f172a'),
-        spaceBefore=5,
+        spaceBefore=4,
         spaceAfter=2,
         keepWithNext=True
     )
@@ -111,17 +121,17 @@ def build_business_proposal_pdf():
     body_style = ParagraphStyle(
         'CustomBody',
         fontName='Helvetica',
-        fontSize=7.2,
-        leading=9.3,
+        fontSize=7.1,
+        leading=9.1,
         textColor=colors.HexColor('#1e293b'),
-        spaceAfter=2.5
+        spaceAfter=2
     )
 
     bullet_style = ParagraphStyle(
         'CustomBullet',
         fontName='Helvetica',
-        fontSize=7.2,
-        leading=9.2,
+        fontSize=7.1,
+        leading=9.0,
         textColor=colors.HexColor('#1e293b'),
         leftIndent=8,
         firstLineIndent=-5,
@@ -140,16 +150,16 @@ def build_business_proposal_pdf():
     table_cell = ParagraphStyle(
         'TableCell',
         fontName='Helvetica',
-        fontSize=6.8,
-        leading=8.5,
+        fontSize=6.7,
+        leading=8.3,
         textColor=colors.HexColor('#1e293b')
     )
 
     table_cell_bold = ParagraphStyle(
         'TableCellBold',
         fontName='Helvetica-Bold',
-        fontSize=6.8,
-        leading=8.5,
+        fontSize=6.7,
+        leading=8.3,
         textColor=colors.HexColor('#0f172a')
     )
 
@@ -158,6 +168,7 @@ def build_business_proposal_pdf():
     # ================= PAGE 1 =================
     story.append(Paragraph("PatientTriage.ai: Business Proposal & Enterprise Strategy", title_style))
     story.append(Paragraph("“Triage is a snapshot. Risk isn't.” — Closing the Waiting-Room Surveillance Gap", tagline_style))
+    story.append(Paragraph("<b>AI recommends. Deterministic safety rules protect. Clinicians decide.</b>", core_principle_style))
     story.append(Paragraph("Accenture Innovation Challenge 2026 • Round 2 Business Case • Modeled 500-Bed ED Impact", subtitle_style))
     story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor('#0284c7'), spaceAfter=4))
 
@@ -175,8 +186,8 @@ def build_business_proposal_pdf():
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8fafc')),
         ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
         ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
-        ('TOPPADDING', (0, 0), (-1, -1), 2.5),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 2.5),
+        ('TOPPADDING', (0, 0), (-1, -1), 2),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
     ]))
     story.append(roi_meta_table)
     story.append(Spacer(1, 2))
@@ -184,10 +195,10 @@ def build_business_proposal_pdf():
     # Executive Summary
     story.append(Paragraph("Executive Summary", h1_style))
     story.append(Paragraph(
-        "Emergency department (ED) crowding is an escalating global crisis with over 140M annual visits in the US alone and severe post-pandemic nurse turnover (26.8%). "
-        "Traditional emergency triage operates on an outdated premise: a single static snapshot at intake. Once triaged, ESI Level 3/4 patients wait 2.5 to 4.5 hours unmonitored; "
-        "physiological decline (silent hypoxia, sepsis, hemorrhagic shock) remains undetected until sudden waiting-room collapse. "
-        "<b>PatientTriage.ai</b> is an <b>AI Safety Copilot</b> purpose-built for the emergency waiting room. It combines continuous vital velocity surveillance, observation shelf-life decay, "
+        "Triage determines priority at the front door—but patients don't remain static while they wait. "
+        "With over 140M annual US visits and acute nurse turnover (26.8%), ESI Level 3/4 patients wait 2.5 to 4.5 hours unmonitored; "
+        "silent decompensations (hypoxia, sepsis, shock) frequently remain undetected until waiting-room collapse. "
+        "<b>PatientTriage.ai</b> is an <b>AI Safety Copilot</b> purpose-built for the emergency waiting room. It combines continuous vital trajectory surveillance, observation shelf-life decay, "
         "uncertainty scoring (<i>Unknown ≠ Safe</i>), and clinician attention discounting (The Attention Gap) to generate <b>$3.82M in gross annual value ($3.58M net ROI)</b> per 500-bed facility.",
         body_style
     ))
@@ -195,16 +206,14 @@ def build_business_proposal_pdf():
     # 1. Market Opportunity & Problem Framing
     story.append(Paragraph("1. Market Opportunity & Problem Framing (The Surveillance Blind Spot)", h1_style))
     story.append(Paragraph("• <b>Silent Waiting Room Deterioration:</b> Patients classified as stable at intake deteriorate silently while waiting; 79% of ED staff report triage bottlenecks as their primary clinical risk.", bullet_style))
-    story.append(Paragraph("• <b>The 'Missing Data Is Safe' Fallacy:</b> In legacy EHRs, missing telemetry defaults to low urgency. PatientTriage.ai's <i>Unknown ≠ Safe</i> principle treats missing data as heightened clinical risk.", bullet_style))
-    story.append(Paragraph("• <b>Competitive Moat vs. Epic EDI & Cerner MEWS:</b> Inpatient algorithms score static bedded severity. PatientTriage.ai is purpose-built for the waiting room and accounts for <b>physician coverage</b> and <b>evidence staleness decay</b>.", bullet_style))
+    story.append(Paragraph("• <b>Missing & Stale Data Handling:</b> When critical observations are missing or stale, conventional workflows may lack sufficient evidence to safely reassess waiting patients. PatientTriage.ai treats missing or unreliable data as uncertainty rather than reassurance.", bullet_style))
+    story.append(Paragraph("• <b>Competitive Moat vs. Epic & Cerner:</b> Inpatient algorithms score static bedded severity. PatientTriage.ai is purpose-built for the waiting room and accounts for <b>physician coverage</b> and <b>evidence staleness decay</b>.", bullet_style))
 
-    # 2. Solution Design & 4-State Dispatch
-    story.append(Paragraph("2. Solution Architecture & 4-State Clinical Dispatch", h1_style))
+    # 2. Patient Journey & 4-State Dispatch
+    story.append(Paragraph("2. Continuous Patient Journey & 4-State Clinical Dispatch", h1_style))
     story.append(Paragraph(
-        "PatientTriage.ai deploys a 3-tier architecture: <b>Tier 1: Deterministic Guardrails</b> (hard red-flags and downgrade blocking); "
-        "<b>Tier 2: Trajectory & Attention Gap Engine</b> (vital velocity & uncertainty penalty); and <b>Tier 3: Clinical Cockpit</b> ('Next 5 Mins' queue & append-only audit trail). "
-        "The system categorizes every waiting patient into 4 discrete operational states:",
-        body_style
+        "<code>Patient Arrives ──► Triage Baseline ──► Waiting Lounge (2.5–4.5h) ──► Trajectory Check ──► 4-State Queue (🟢/🟡/🔴/⚪) ──► Reassess ──► Escalate</code>",
+        code_style
     ))
 
     disp_data = [
@@ -219,8 +228,8 @@ def build_business_proposal_pdf():
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f1f5f9')),
         ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
         ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
-        ('TOPPADDING', (0, 0), (-1, -1), 2),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
+        ('TOPPADDING', (0, 0), (-1, -1), 1.8),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 1.8),
     ]))
     story.append(disp_table)
     story.append(Spacer(1, 2))
@@ -239,8 +248,8 @@ def build_business_proposal_pdf():
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f1f5f9')),
         ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
         ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
-        ('TOPPADDING', (0, 0), (-1, -1), 2),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
+        ('TOPPADDING', (0, 0), (-1, -1), 1.8),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 1.8),
     ]))
     story.append(stake_table)
 
@@ -287,12 +296,12 @@ def build_business_proposal_pdf():
         body_style
     ))
 
-    # 6. Phased Enterprise Roadmap
-    story.append(Paragraph("6. Phased Enterprise Roadmap & Clinical Trial Endpoints", h1_style))
-    story.append(Paragraph("• <b>Phase 1 (Q3 2026 - Completed):</b> Lab Benchmark Validation • 20 synthetic benchmark cohorts verified across 51 automated unit/integration tests; sub-15ms latency.", bullet_style))
+    # 6. Phased Enterprise Roadmap (WITH CORE VS EXTENSIONS)
+    story.append(Paragraph("6. Phased Enterprise Roadmap: Core Deployment to Regional Extensions", h1_style))
+    story.append(Paragraph("• <b>Phase 1 (Q3 2026 - Completed):</b> Lab Benchmark Validation • 20 synthetic cohorts verified across 51 automated unit/integration tests; sub-15ms latency (<i>validates prototype algorithmic behavior only; not clinical efficacy proof</i>).", bullet_style))
     story.append(Paragraph("• <b>Phase 2 (Q4 2026):</b> Shadow Clinical Trial • Silent background deployment alongside Epic/Cerner via HL7 FHIR; clinician concordance evaluation.", bullet_style))
     story.append(Paragraph("• <b>Phase 3 (Q1–Q2 2027):</b> Live Hospital Pilot • Primary Safety Endpoint: &gt;45% reduction in Mean Time to Escalation (MTTE); Operational Endpoint: &lt;2 non-actionable alerts/nurse/shift; Economic Endpoint: &ge;25% LWBS reduction.", bullet_style))
-    story.append(Paragraph("• <b>Phase 4 (Q3 2027+):</b> Multi-Hospital Scale • Regional hospital network load balancing, 108 EMS ambulance pre-arrival telemetry, and referral scoring.", bullet_style))
+    story.append(Paragraph("• <b>Phase 4 (Q3 2027+):</b> Multi-Hospital Extensions • Regional network load balancing, 108 EMS ambulance pre-arrival telemetry, and referral diversion.", bullet_style))
 
     # 7. Risk Management, Fail-Safe Behavior & Regulatory Compliance
     story.append(Paragraph("7. Risk Management, Fail-Safe Behavior & Regulatory Compliance", h1_style))
