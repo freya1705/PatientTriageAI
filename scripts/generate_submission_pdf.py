@@ -63,8 +63,8 @@ def build_readme_pdf():
         pagesize=letter,
         leftMargin=36,
         rightMargin=36,
-        topMargin=28,
-        bottomMargin=28
+        topMargin=26,
+        bottomMargin=26
     )
 
     styles = getSampleStyleSheet()
@@ -73,8 +73,8 @@ def build_readme_pdf():
         'DocTitle',
         parent=styles['Heading1'],
         fontName='Helvetica-Bold',
-        fontSize=15.5,
-        leading=18.5,
+        fontSize=15,
+        leading=18,
         textColor=colors.HexColor('#0f172a'),
         spaceAfter=1
     )
@@ -100,8 +100,8 @@ def build_readme_pdf():
     h1_style = ParagraphStyle(
         'CustomH1',
         fontName='Helvetica-Bold',
-        fontSize=9.2,
-        leading=11.5,
+        fontSize=9.0,
+        leading=11.2,
         textColor=colors.HexColor('#0f172a'),
         spaceBefore=4,
         spaceAfter=2,
@@ -112,7 +112,7 @@ def build_readme_pdf():
         'CustomBody',
         fontName='Helvetica',
         fontSize=7.1,
-        leading=9.2,
+        leading=9.1,
         textColor=colors.HexColor('#1e293b'),
         spaceAfter=2
     )
@@ -157,14 +157,14 @@ def build_readme_pdf():
 
     # ================= PAGE 1 =================
     story.append(Paragraph("PatientTriage.ai", title_style))
-    story.append(Paragraph("“Triage is a snapshot. Risk isn't.”", tagline_style))
-    story.append(Paragraph("<b>AI recommends. Deterministic safety rules protect. Clinicians decide.</b>", core_principle_style))
+    story.append(Paragraph("“Triage is a snapshot. Risk isn't.” — Closing the Gap Between Triage and Treatment", tagline_style))
+    story.append(Paragraph("<b>AI recommends. Safety rules protect. Clinicians decide.</b>", core_principle_style))
     story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor('#0284c7'), spaceAfter=4))
 
     # Meta Table
     meta_data = [
         [
-            Paragraph("<b>Track</b><br/>Accenture Challenge Round 2 Prototype", table_cell),
+            Paragraph("<b>Challenge</b><br/>Accenture Challenge Round 2 Prototype", table_cell),
             Paragraph("<b>Stack</b><br/>Python 3.13 / FastAPI / React 19 / HL7 FHIR", table_cell),
             Paragraph("<b>Test Verification</b><br/>51/51 Automated Tests Passing (100%)", table_cell),
             Paragraph("<b>Repository</b><br/>github.com/freya1705/PatientTriageAI", table_cell)
@@ -181,33 +181,33 @@ def build_readme_pdf():
     story.append(meta_table)
     story.append(Spacer(1, 2))
 
-    # 1. Post-Triage Surveillance Gap
-    story.append(Paragraph("1. The Post-Triage Clinical Surveillance Gap", h1_style))
+    # 1. The Problem
+    story.append(Paragraph("1. The Problem: What Happens After Triage?", h1_style))
     story.append(Paragraph(
-        "Intake triage captures a single snapshot in time, but patient conditions evolve while waiting. "
-        "ESI Level 3 and 4 patients routinely wait 2.5 to 4.5 hours unmonitored before an examination room opens up. "
-        "During this window, silent clinical decompensation—such as progressive hypoxia, developing sepsis, or internal hemorrhage—often goes unnoticed until acute collapse occurs. "
-        "<b>PatientTriage.ai</b> acts as an ambient decision-support copilot that bridges this post-triage gap by continuously tracking physiological drift, "
-        "data staleness, and missing-variable uncertainty to rank which patients need immediate reassessment.",
+        "When a patient enters the Emergency Department, nurses perform an initial triage assessment. This gives the hospital a snapshot of the patient's condition at that moment. "
+        "But patients may then spend hours waiting for a bed or doctor. For example, an ESI Level 3 or 4 patient may wait around 2.5–4.5 hours. "
+        "During this time, the patient's condition can change (low oxygen, increasing heart rate, sepsis, internal bleeding). "
+        "The problem is that someone may not notice quickly enough that condition has changed. <b>PatientTriage.ai is designed to help close this gap.</b>",
         body_style
     ))
 
-    # 2. Core Architectural Differentiators
-    story.append(Paragraph("2. Core Architectural Differentiators", h1_style))
-    story.append(Paragraph("• <b>1. Dynamic Safe-to-Wait Tracking:</b> Calculates physiological velocity over time (&Delta;SpO₂/&Delta;t, &Delta;HR/&Delta;t) instead of freezing static intake vitals.", bullet_style))
-    story.append(Paragraph("• <b>2. Uncertainty Guardrails (Unknown &ne; Safe):</b> Incomplete vitals or disconnected telemetry trigger an explicit uncertainty penalty (w_u = +15 to +25 pts), escalating unmonitored patients for manual physical re-evaluation rather than assuming stability.", bullet_style))
-    story.append(Paragraph("• <b>3. Attention Gap Optimization:</b> Prevents over-monitoring already attended patients by applying a clinician coverage discount (w_c = -35 pts), elevating overlooked and deteriorating waiting-room patients to the top of the queue.", bullet_style))
+    # 2. How PatientTriage.ai Works
+    story.append(Paragraph("2. How PatientTriage.ai Works", h1_style))
+    story.append(Paragraph("• <b>1. Patient Risk:</b> How serious was the patient's condition during the original triage?", bullet_style))
+    story.append(Paragraph("• <b>2. Patient Deterioration:</b> Are vital signs getting worse? The system tracks change over time (&Delta;SpO₂ falling, &Delta;HR increasing).", bullet_style))
+    story.append(Paragraph("• <b>3. Data Freshness:</b> How recently were vital signs checked? Old information is flagged so it is not treated as fresh.", bullet_style))
+    story.append(Paragraph("• <b>4. Missing Information (<i>Unknown does not mean safe</i>):</b> If data is missing or a monitor disconnects, the system does not assume stability. It marks the patient as uncertain and requests a physical check.", bullet_style))
 
-    # 3. Four Operational Workflow States
-    story.append(Paragraph("3. Four Operational Workflow States", h1_style))
+    # 3. Four Patient Statuses
+    story.append(Paragraph("3. Four Patient Statuses", h1_style))
     state_data = [
-        [Paragraph("<b>State</b>", table_cell_bold), Paragraph("<b>Physiological Trigger</b>", table_cell_bold), Paragraph("<b>Clinical Action Dispatched</b>", table_cell_bold)],
-        [Paragraph("<font color='#059669'><b>🟢 CONTINUE</b></font>", table_cell), Paragraph("Vitals within baseline safe limits; telemetry fresh.", table_cell), Paragraph("Patient remains in waiting lounge under ambient tracking.", table_cell)],
-        [Paragraph("<font color='#d97706'><b>🟡 REASSESS</b></font>", table_cell), Paragraph("Vitals shelf-life expired (stale) or moderate drift (&Delta;HR &ge; +20 bpm).", table_cell), Paragraph("Dispatches triage nurse for a targeted bedside vitals refresh.", table_cell)],
-        [Paragraph("<font color='#dc2626'><b>🔴 ESCALATE</b></font>", table_cell), Paragraph("Hard red-flag breach (SpO₂ &lt; 85%, SBP &lt; 75 mmHg) or rapid collapse.", table_cell), Paragraph("Triggers immediate resuscitation bay assignment and physician paging.", table_cell)],
-        [Paragraph("<font color='#475569'><b>⚪ UNCERTAIN</b></font>", table_cell), Paragraph("Telemetry lost, missing core vitals, or sensor disconnect.", table_cell), Paragraph("Flags missing data under Unknown &ne; Safe to force physical nurse verification.", table_cell)]
+        [Paragraph("<b>Status</b>", table_cell_bold), Paragraph("<b>What it means</b>", table_cell_bold), Paragraph("<b>What the nurse does</b>", table_cell_bold)],
+        [Paragraph("<font color='#059669'><b>🟢 CONTINUE</b></font>", table_cell), Paragraph("Patient is stable and data is recent.", table_cell), Paragraph("Continue monitoring in waiting lounge.", table_cell)],
+        [Paragraph("<font color='#d97706'><b>🟡 REASSESS</b></font>", table_cell), Paragraph("Vitals are getting old or showing moderate change (&Delta;HR &ge; +20 bpm).", table_cell), Paragraph("Check the patient again (targeted bedside refresh).", table_cell)],
+        [Paragraph("<font color='#dc2626'><b>🔴 ESCALATE</b></font>", table_cell), Paragraph("Serious warning sign (SpO₂ &lt; 85%, SBP &lt; 75 mmHg) or rapid collapse.", table_cell), Paragraph("Immediately involve doctor / resuscitation team.", table_cell)],
+        [Paragraph("<font color='#475569'><b>⚪ UNCERTAIN</b></font>", table_cell), Paragraph("Important data is missing or monitoring is disconnected.", table_cell), Paragraph("Physically verify the patient (Unknown &ne; Safe).", table_cell)]
     ]
-    state_table = Table(state_data, colWidths=[1.3 * inch, 2.9 * inch, 3.4 * inch])
+    state_table = Table(state_data, colWidths=[1.3 * inch, 3.0 * inch, 3.3 * inch])
     state_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f1f5f9')),
         ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
@@ -218,62 +218,81 @@ def build_readme_pdf():
     story.append(state_table)
     story.append(Spacer(1, 2))
 
-    # 4. Prioritization Scoring Engine
-    story.append(Paragraph("4. Prioritization Scoring Engine", h1_style))
+    # 4. Patient Priority Score
+    story.append(Paragraph("4. Patient Priority Score & Operational Logic", h1_style))
     story.append(Paragraph(
-        "<b>Action Priority Score</b> = (w_r &times; Risk) + (w_d &times; Deterioration) + (w_s &times; Staleness) + (w_u &times; Uncertainty) &minus; (w_c &times; Clinical Coverage)",
+        "<b>Priority Score</b> = Risk + Deterioration + Old Data + Missing Data &minus; Current Clinical Attention",
         code_style
     ))
-    story.append(Paragraph("• <b>Base Risk (w_r = 1.0):</b> Foundation score derived from initial ESI intake priority.", bullet_style))
-    story.append(Paragraph("• <b>Deterioration (w_d = +25 to +40 pts):</b> Applied when trajectory declines (&Delta;SpO₂ &le; -5%, &Delta;HR &ge; +20 bpm).", bullet_style))
-    story.append(Paragraph("• <b>Staleness (w_s = +20 to +35 pts):</b> Applied automatically when observation shelf-life decays past safe thresholds.", bullet_style))
-    story.append(Paragraph("• <b>Uncertainty (w_u = +15 to +25 pts):</b> Applied when vital streams are missing or sensor confidence is low.", bullet_style))
-    story.append(Paragraph("• <b>Clinical Coverage (w_c = -35 pts):</b> Deducted if a clinician is actively logged at the patient's bedside.", bullet_style))
+    story.append(Paragraph(
+        "<b>In simple terms:</b> Higher original risk &rarr; higher priority • Patient getting worse &rarr; higher priority • Old vital signs &rarr; higher priority • Missing info &rarr; higher priority • Already attended by clinician &rarr; lower waiting-room priority.<br/>"
+        "<b>Ranges:</b> Base Risk (ESI w_r = 1.0) • Deterioration (+25 to +40) • Staleness (+20 to +35) • Uncertainty (+15 to +25) • Clinical Coverage (&minus;35 when attended).<br/>"
+        "<i>Why this matters: A normal list keeps static order. PatientTriage.ai moves deteriorating patients higher in the queue as needs change.</i>",
+        body_style
+    ))
 
     story.append(PageBreak())
 
     # ================= PAGE 2 =================
-    # 5. Prototype Benchmark Evaluation
-    story.append(Paragraph("5. Prototype Benchmark Evaluation", h1_style))
-    story.append(Paragraph("<i>Evaluated across 20 synthetic patient scenarios and 51 automated CI/CD pytest test cases:</i>", body_style))
+    # 5. Main Dashboard & Nurse Workflow
+    story.append(Paragraph("5. Main Dashboard & Focused Action Queue", h1_style))
+    story.append(Paragraph(
+        "The prototype is designed around a simple nurse workflow showing patient name/ID, current status, latest vitals, trajectory change, data age, missing data, priority rank, and recommended action. "
+        "The nurse can instantly answer: <b>“Who do I need to check right now?”</b> without manually scanning a 40-patient list.",
+        body_style
+    ))
+
+    # 6. What Makes PatientTriage.ai Different?
+    story.append(Paragraph("6. What Makes PatientTriage.ai Different?", h1_style))
+    story.append(Paragraph("• <b>1. It looks at change, not just the latest number:</b> Rapid heart rate spikes or oxygen desaturation trends matter before critical collapse.", bullet_style))
+    story.append(Paragraph("• <b>2. Missing data is treated as a warning:</b> Unmonitored or disconnected patients trigger an UNCERTAIN state and a request for physical verification.", bullet_style))
+    story.append(Paragraph("• <b>3. It focuses on patients who may be overlooked:</b> Clinician coverage discounting surfaces unattended waiting patients to the top.", bullet_style))
+
+    # 7. Safety First & Fail-Safe Operation
+    story.append(Paragraph("7. Safety First: Deterministic Rules & Fail-Safe Architecture", h1_style))
+    story.append(Paragraph("• <b>Decision Support Only:</b> PatientTriage.ai does not replace clinicians; licensed medical professionals retain 100% decision authority.", bullet_style))
+    story.append(Paragraph("• <b>Fixed Safety Thresholds:</b> Critical conditions (SpO₂ &lt; 85%, SBP &lt; 75 mmHg) directly trigger an escalation without being masked by an AI score.", bullet_style))
+    story.append(Paragraph("• <b>Fail-Safe Behavior:</b> If network connectivity or telemetry fails, the system prompts manual rounding while local alerts remain active.", bullet_style))
+
+    # 8. Prototype Testing
+    story.append(Paragraph("8. Prototype Testing (20 Synthetic Scenarios & 51 CI/CD Tests)", h1_style))
+    story.append(Paragraph("<i>Tested using 20 synthetic patient scenarios and 51 automated backend pytest tests (100% pass rate):</i>", body_style))
     
-    bench_data = [
-        [Paragraph("<b>Safety &amp; Operational Dimension</b>", table_cell_bold), Paragraph("<b>Static Intake Triage</b>", table_cell_bold), Paragraph("<b>PatientTriage.ai</b>", table_cell_bold), Paragraph("<b>System Impact</b>", table_cell_bold)],
-        [Paragraph("Waiting Decompensation Catch Rate", table_cell), Paragraph("0 / 20 detected", table_cell), Paragraph("<b>20 / 20 detected (100%)</b>", table_cell), Paragraph("Trajectory velocity flags silent collapse early.", table_cell)],
-        [Paragraph("Stale Observation Flagging", table_cell), Paragraph("0 / 20 flagged", table_cell), Paragraph("<b>20 / 20 flagged (100%)</b>", table_cell), Paragraph("Eliminates unmonitored blind spots.", table_cell)],
-        [Paragraph("Missing Vitals Under-Triage", table_cell), Paragraph("High risk", table_cell), Paragraph("<b>0% false reassurance</b>", table_cell), Paragraph("Forces human verification via uncertainty scoring.", table_cell)],
-        [Paragraph("Attention Gap Prioritization", table_cell), Paragraph("Static order", table_cell), Paragraph("<b>Dynamic re-ranking</b>", table_cell), Paragraph("Prioritizes unmonitored patients over attended beds.", table_cell)],
-        [Paragraph("Unsafe Downgrade Prevention", table_cell), Paragraph("Unchecked", table_cell), Paragraph("<b>100% Guarded</b>", table_cell), Paragraph("Hard deterministic floor blocks unsafe score drops.", table_cell)],
+    test_data = [
+        [Paragraph("<b>Test Area</b>", table_cell_bold), Paragraph("<b>Prototype Result</b>", table_cell_bold), Paragraph("<b>Verification Summary</b>", table_cell_bold)],
+        [Paragraph("Waiting-room deterioration detection", table_cell), Paragraph("<b>20 / 20 detected</b>", table_cell), Paragraph("Trajectory velocity flags silent collapse early.", table_cell)],
+        [Paragraph("Old / stale observation detection", table_cell), Paragraph("<b>20 / 20 detected</b>", table_cell), Paragraph("Eliminates unmonitored blind spots.", table_cell)],
+        [Paragraph("Missing vital protection", table_cell), Paragraph("<b>No false reassurance</b>", table_cell), Paragraph("Forces human verification via uncertainty scoring.", table_cell)],
+        [Paragraph("Patient prioritization", table_cell), Paragraph("<b>Dynamic Re-Ranking</b>", table_cell), Paragraph("Prioritizes unmonitored patients over attended beds.", table_cell)],
+        [Paragraph("Unsafe priority downgrade", table_cell), Paragraph("<b>100% Protected</b>", table_cell), Paragraph("Hard deterministic floor blocks unsafe score drops.", table_cell)],
     ]
-    bench_table = Table(bench_data, colWidths=[1.8 * inch, 1.5 * inch, 1.9 * inch, 2.4 * inch])
-    bench_table.setStyle(TableStyle([
+    test_table = Table(test_data, colWidths=[2.3 * inch, 1.8 * inch, 3.5 * inch])
+    test_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f1f5f9')),
         ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
         ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
-        ('TOPPADDING', (0, 0), (-1, -1), 2),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
+        ('TOPPADDING', (0, 0), (-1, -1), 1.8),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 1.8),
     ]))
-    story.append(bench_table)
-    story.append(Spacer(1, 2))
+    story.append(test_table)
+    story.append(Spacer(1, 1))
+    story.append(Paragraph("<i>Important note: These are synthetic prototype test results, not results from a real hospital deployment. The next step is real-world clinical validation.</i>", body_style))
 
-    # 6. Implementation Roadmap
-    story.append(Paragraph("6. Implementation Roadmap", h1_style))
-    story.append(Paragraph("• <b>Phase 1 (Completed - Q3 2026):</b> Prototype validation, 51 automated unit/integration tests passing, sub-15ms edge inference latency.", bullet_style))
-    story.append(Paragraph("• <b>Phase 2 (Q4 2026):</b> Non-interventional shadow deployment via HL7 FHIR alongside existing EHRs to measure clinician concordance.", bullet_style))
-    story.append(Paragraph("• <b>Phase 3 (Q1–Q2 2027):</b> Live pilot targeting &gt;45% reduction in Mean Time to Escalation (MTTE) and &ge;25% reduction in Left Without Being Seen (LWBS).", bullet_style))
-    story.append(Paragraph("• <b>Phase 4 (Q3 2027+):</b> Multi-facility network balancing, 108 EMS ambulance telemetry ingestion, and community diversion routing.", bullet_style))
+    # 9. Technology Stack & Edge Architecture
+    story.append(Paragraph("9. Technology Stack & Edge Processing", h1_style))
+    story.append(Paragraph("• <b>Frontend:</b> React 19 for the nurse-facing clinical cockpit • <b>Backend:</b> Python 3.13 + FastAPI for patient monitoring & prioritization logic.", bullet_style))
+    story.append(Paragraph("• <b>Integration & Processing:</b> HL7 FHIR standard resources (<code>Encounter</code>, <code>Observation</code>); air-gapped on-premise edge processing with sub-15ms inference.", bullet_style))
 
-    # 7. Quickstart & Deployment
-    story.append(Paragraph("7. Quickstart & Deployment", h1_style))
-    story.append(Paragraph("<code># Clone the repository<br/>git clone https://github.com/freya1705/PatientTriageAI.git<br/>cd PatientTriageAI<br/><br/># Run automated tests<br/>python -m pytest -v<br/><br/># Start backend &amp; frontend services<br/>.\\start.ps1</code>", code_style))
+    # 10. Future Roadmap
+    story.append(Paragraph("10. Future Roadmap", h1_style))
+    story.append(Paragraph("• <b>Phase 1 (Completed - Q3 2026):</b> Prototype developed, safety rules implemented, 51 automated tests passed.", bullet_style))
+    story.append(Paragraph("• <b>Phase 2 (Q4 2026):</b> Hospital shadow testing alongside existing EHRs without making clinical decisions to compare recommendations.", bullet_style))
+    story.append(Paragraph("• <b>Phase 3 (Q1–Q2 2027):</b> Live ED pilot targeting &gt;45% reduction in Mean Time to Escalation and &ge;25% reduction in Left Without Being Seen.", bullet_style))
+    story.append(Paragraph("• <b>Phase 4 (Q3 2027+):</b> Multi-hospital expansion, ambulance telemetry, and community diversion support.", bullet_style))
 
-    story.append(Spacer(1, 2))
-    story.append(Paragraph(
-        "<b>Regulatory Stance:</b> Positioned as non-device Clinical Decision Support under FDA Non-Device CDS (21 U.S.C. &sect; 360aaa-1). "
-        "Licensed medical professionals retain full decision autonomy and override control. "
-        "<b>Fail-Safe:</b> If network connectivity fails, the platform prompts manual rounding intervals with local deterministic alerts active.",
-        body_style
-    ))
+    # 11. Quick Start
+    story.append(Paragraph("11. Quick Start & Execution", h1_style))
+    story.append(Paragraph("<code>git clone https://github.com/freya1705/PatientTriageAI.git && cd PatientTriageAI && python -m pytest -v && .\\start.ps1</code>", code_style))
 
     doc.build(story, canvasmaker=NumberedCanvas)
     print(f"[OK] README PDF built successfully: {pdf_path} ({os.path.getsize(pdf_path)} bytes)")
