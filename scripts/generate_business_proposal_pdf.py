@@ -2,7 +2,7 @@
 Publication-Grade Business Proposal PDF Generator for PatientTriage.ai
 Generates PatientTriage_AI_Business_Proposal.pdf (Exactly 2 Pages)
 Accenture Innovation Challenge 2026 — Round 2 Business Case
-Clean, executive layout following Document 2 specifications
+Clean, executive layout with top banner removed
 """
 
 import os
@@ -64,8 +64,8 @@ def build_business_proposal_pdf():
         pagesize=letter,
         leftMargin=36,
         rightMargin=36,
-        topMargin=26,
-        bottomMargin=26
+        topMargin=28,
+        bottomMargin=28
     )
 
     styles = getSampleStyleSheet()
@@ -74,35 +74,45 @@ def build_business_proposal_pdf():
         'DocTitle',
         parent=styles['Heading1'],
         fontName='Helvetica-Bold',
-        fontSize=15,
-        leading=18,
+        fontSize=15.5,
+        leading=18.5,
         textColor=colors.HexColor('#0f172a'),
-        spaceAfter=1
+        spaceAfter=2
     )
 
     tagline_style = ParagraphStyle(
         'DocTagline',
         fontName='Helvetica-Bold',
-        fontSize=9.5,
-        leading=12,
+        fontSize=10,
+        leading=13,
         textColor=colors.HexColor('#0284c7'),
-        spaceAfter=1
+        spaceAfter=2
+    )
+
+    sub_accent_style = ParagraphStyle(
+        'DocSubAccent',
+        fontName='Helvetica',
+        fontSize=8.5,
+        leading=11,
+        textColor=colors.HexColor('#64748b'),
+        spaceAfter=4
     )
 
     core_idea_style = ParagraphStyle(
         'CoreIdea',
         fontName='Helvetica-Bold',
-        fontSize=8.2,
-        leading=10.5,
+        fontSize=8.5,
+        leading=11,
         textColor=colors.HexColor('#0f172a'),
-        spaceAfter=3
+        spaceBefore=2,
+        spaceAfter=4
     )
 
     h1_style = ParagraphStyle(
         'CustomH1',
         fontName='Helvetica-Bold',
-        fontSize=9.0,
-        leading=11.2,
+        fontSize=9.2,
+        leading=11.5,
         textColor=colors.HexColor('#0f172a'),
         spaceBefore=4,
         spaceAfter=2,
@@ -112,8 +122,8 @@ def build_business_proposal_pdf():
     body_style = ParagraphStyle(
         'CustomBody',
         fontName='Helvetica',
-        fontSize=7.1,
-        leading=9.1,
+        fontSize=7.2,
+        leading=9.2,
         textColor=colors.HexColor('#1e293b'),
         spaceAfter=2
     )
@@ -121,8 +131,8 @@ def build_business_proposal_pdf():
     bullet_style = ParagraphStyle(
         'CustomBullet',
         fontName='Helvetica',
-        fontSize=7.1,
-        leading=9.0,
+        fontSize=7.2,
+        leading=9.1,
         textColor=colors.HexColor('#1e293b'),
         leftIndent=8,
         firstLineIndent=-5,
@@ -141,16 +151,16 @@ def build_business_proposal_pdf():
     table_cell = ParagraphStyle(
         'TableCell',
         fontName='Helvetica',
-        fontSize=6.7,
-        leading=8.3,
+        fontSize=6.8,
+        leading=8.4,
         textColor=colors.HexColor('#1e293b')
     )
 
     table_cell_bold = ParagraphStyle(
         'TableCellBold',
         fontName='Helvetica-Bold',
-        fontSize=6.7,
-        leading=8.3,
+        fontSize=6.8,
+        leading=8.4,
         textColor=colors.HexColor('#0f172a')
     )
 
@@ -158,28 +168,11 @@ def build_business_proposal_pdf():
 
     # ================= PAGE 1 =================
     story.append(Paragraph("PatientTriage.ai: Business Proposal & Enterprise Strategy", title_style))
-    story.append(Paragraph("“Closing the Emergency Waiting-Room Surveillance Gap”", tagline_style))
-    story.append(Paragraph("<b>Our Idea: PatientTriage.ai helps Emergency Department staff notice which waiting patients may be getting worse and need attention first.</b>", core_idea_style))
+    story.append(Paragraph("Closing the Emergency Waiting-Room Surveillance Gap", tagline_style))
+    story.append(Paragraph("Accenture Innovation Challenge 2026", sub_accent_style))
     story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor('#0284c7'), spaceAfter=4))
 
-    # Meta Table (ROI Highlights)
-    roi_meta_data = [
-        [
-            Paragraph("<b>Gross Annual Value</b><br/><font color='#0369a1'><b>$3.82M / yr</b></font>", table_cell),
-            Paragraph("<b>Net Annual ROI</b><br/><font color='#059669'><b>$3.58M / yr (14.9x)</b></font>", table_cell),
-            Paragraph("<b>LWBS Recovery</b><br/><font color='#0f172a'><b>+$1.12M / yr (30% drop)</b></font>", table_cell),
-            Paragraph("<b>Target Market</b><br/><font color='#0f172a'><b>5,500+ US/EU EDs</b></font>", table_cell)
-        ]
-    ]
-    roi_meta_table = Table(roi_meta_data, colWidths=[1.85 * inch, 1.85 * inch, 1.85 * inch, 2.05 * inch])
-    roi_meta_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8fafc')),
-        ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
-        ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
-        ('TOPPADDING', (0, 0), (-1, -1), 2),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
-    ]))
-    story.append(roi_meta_table)
+    story.append(Paragraph("<b>Our idea in one sentence:</b> <i>PatientTriage.ai helps Emergency Department staff notice which waiting patients may be getting worse and need attention first.</i>", core_idea_style))
     story.append(Spacer(1, 2))
 
     # 1. The Business Problem
@@ -194,7 +187,7 @@ def build_business_proposal_pdf():
     # 2. Our Solution
     story.append(Paragraph("2. Our Solution: Extra Safety Layer for the Waiting Room", h1_style))
     story.append(Paragraph(
-        "PatientTriage.ai continuously looks at available patient information and answers three simple questions:<br/>"
+        "PatientTriage.ai works like an extra safety layer for the waiting room. It continuously looks at available patient information and answers three simple questions:<br/>"
         "• <b>1. Is the patient getting worse?</b> Checks changes in vital signs over time (&Delta;SpO₂, &Delta;HR).<br/>"
         "• <b>2. Is the information still reliable?</b> Checks how old the latest observations are (shelf-life expiration).<br/>"
         "• <b>3. Do we know enough about the patient?</b> If important information is missing, it asks staff to physically verify the patient (<i>Unknown &ne; Safe</i>).<br/>"
@@ -224,8 +217,8 @@ def build_business_proposal_pdf():
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f1f5f9')),
         ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
         ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
-        ('TOPPADDING', (0, 0), (-1, -1), 1.8),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 1.8),
+        ('TOPPADDING', (0, 0), (-1, -1), 2),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
     ]))
     story.append(stake_table)
 
@@ -257,8 +250,8 @@ def build_business_proposal_pdf():
         ('BACKGROUND', (0, 8), (-1, 8), colors.HexColor('#ecfdf5')),
         ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
         ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
-        ('TOPPADDING', (0, 0), (-1, -1), 1.8),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 1.8),
+        ('TOPPADDING', (0, 0), (-1, -1), 2),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
     ]))
     story.append(fin_table)
     story.append(Spacer(1, 2))
@@ -278,7 +271,7 @@ def build_business_proposal_pdf():
     story.append(Paragraph("• <b>Stage 4 — Scale (Q3 2027+):</b> Expand to more hospitals, ambulance telemetry, and regional patient flow coordination.", bullet_style))
 
     # 8. Closing
-    story.append(Spacer(1, 1))
+    story.append(Spacer(1, 2))
     story.append(Paragraph(
         "<b>Final Proposition:</b> PatientTriage.ai is not another triage system. It is a waiting-room monitoring and prioritization layer that works after triage and before treatment, answering: <i>“Who has changed, and who needs attention now?”</i><br/>"
         "<b>Because a patient being stable at 2:00 PM does not mean they will still be stable at 4:00 PM. Triage is a snapshot. Risk isn't.</b>",
