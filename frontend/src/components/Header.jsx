@@ -7,6 +7,8 @@ import {
   RotateCcw,
   QrCode,
   Flame,
+  UserPlus,
+  UserCheck,
 } from 'lucide-react';
 
 export const Header = () => {
@@ -19,6 +21,8 @@ export const Header = () => {
     surgeActive,
     handleResetData,
     incomingEmsList,
+    setActiveTab,
+    activeTab,
   } = useTriage();
 
   const [searchInput, setSearchInput] = useState('');
@@ -76,7 +80,7 @@ export const Header = () => {
       </div>
 
       {/* Center: Search */}
-      <form onSubmit={handleSearchSubmit} className="hidden sm:flex items-center relative w-60">
+      <form onSubmit={handleSearchSubmit} className="hidden sm:flex items-center relative w-56">
         <Search className="w-3.5 h-3.5 absolute left-3 text-slate-400 pointer-events-none" />
         <input
           type="text"
@@ -87,8 +91,22 @@ export const Header = () => {
         />
       </form>
 
-      {/* Right: 3X Surge Toggle, Demo Action Tools & Patient Companion */}
+      {/* Right: Actions, 3X Surge Toggle, Add Patient, Clinician Login */}
       <div className="flex items-center space-x-2">
+        {/* ➕ ADD PATIENT / INTAKE BUTTON */}
+        <button
+          onClick={() => setActiveTab('intake')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-1.5 shadow-xs ${
+            activeTab === 'intake'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+          }`}
+          title="Intake New Patient"
+        >
+          <UserPlus className="w-3.5 h-3.5" />
+          <span>+ Add Patient</span>
+        </button>
+
         {/* 🚨 3X SURGE MODE TOGGLE */}
         <button
           onClick={handleToggleSurge}
@@ -100,17 +118,17 @@ export const Header = () => {
           title="Toggle 3X Surge Mode (60 ED Patients)"
         >
           <Flame className="w-3.5 h-3.5 text-amber-500" />
-          <span>{surgeActive ? '🚨 Surge Active (60 ED)' : '3X Surge Mode'}</span>
+          <span>{surgeActive ? '🚨 Surge Active' : '3X Surge'}</span>
         </button>
 
         {/* 1-Click Demo Trigger: Simulate Deterioration */}
         <button
           onClick={() => handleSimulateDeterioration('P-014')}
-          className="px-3 py-1.5 rounded-lg text-xs font-black bg-rose-600 hover:bg-rose-700 text-white transition-all flex items-center space-x-1.5 shadow-xs"
+          className="px-2.5 py-1.5 rounded-lg text-xs font-black bg-rose-600 hover:bg-rose-700 text-white transition-all flex items-center space-x-1 shadow-xs"
           title="Demo: Simulate acute oxygen drop on P-014"
         >
           <Zap className="w-3.5 h-3.5" />
-          <span>⚡ Demo: Drop SpO₂</span>
+          <span className="hidden md:inline">⚡ Drop SpO₂</span>
         </button>
 
         {/* Reset Demo Data */}
@@ -125,13 +143,28 @@ export const Header = () => {
         {/* Patient Mobile Companion QR */}
         <button
           onClick={() => openPatientPortalCompanion('P-014')}
-          className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors flex items-center space-x-1"
+          className="px-2 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors flex items-center space-x-1"
           title="Patient Mobile Tracker"
         >
           <QrCode className="w-3.5 h-3.5 text-slate-600" />
-          <span className="hidden md:inline">Patient QR</span>
+          <span className="hidden lg:inline">QR</span>
         </button>
+
+        {/* 👤 CLINICIAN IDENTITY (WHO IS LOGGED IN) */}
+        <div className="hidden xl:flex items-center space-x-2 pl-2.5 border-l border-slate-200">
+          <div className="w-7 h-7 rounded-full bg-slate-900 text-emerald-400 flex items-center justify-center font-bold text-[10px] shadow-xs">
+            SJ
+          </div>
+          <div className="leading-tight text-left">
+            <div className="font-bold text-[11px] text-slate-800 flex items-center space-x-1">
+              <span>Nurse Sarah Jenkins, RN</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" title="Active On-Duty"></span>
+            </div>
+            <div className="text-[9.5px] text-slate-400 font-medium">Triage Desk 1 • Duty RN</div>
+          </div>
+        </div>
       </div>
     </header>
   );
 };
+

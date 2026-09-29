@@ -1,10 +1,8 @@
-"""
-PatientTriage.ai FastAPI Application Entry Point
-Accenture Innovation Challenge 2026 — Round 2 Prototype
-"""
-
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from contextlib import asynccontextmanager
 
 from .database import init_db
@@ -62,3 +60,19 @@ def health_check():
         "version": "2.0.0",
         "regulatory_mode": "Synthetic Demo / Research Prototype (HIPAA / GDPR Aligned)"
     }
+
+# Mount static frontend if dist exists (Production on Render / unified deployment)
+frontend_dist = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "dist")
+
+if os.path.exists(frontend_dist):
+    assets_dir = os.path.join(frontend_dist, "assets")
+    if os.path.exists(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        file_path = os.path.join(frontend_dist, full_path)
+        if full_path and os.path.isfile(file_path):
+            return FileResponse(file_path)
+        return FileResponse(os.path.join(frontend_dist, "index.html"))
+

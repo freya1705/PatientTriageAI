@@ -12,4 +12,15 @@ timeout /t 2 >nul
 
 echo [2/2] Starting React Frontend on http://localhost:5173 ...
 cd frontend
+
+python -m uvicorn backend.main:app --port 8000 --host 0.0.0.0 --reload
 npm run dev
+
+python -c "
+import urllib.request, time
+time.sleep(2)
+b = urllib.request.urlopen('http://localhost:8000/api/health')
+print('Backend:', b.getcode(), b.read().decode())
+f = urllib.request.urlopen('http://localhost:5173')
+print('Frontend:', f.getcode())
+"

@@ -5,6 +5,7 @@ import {
   Users,
   Compass,
   FileText,
+  UserPlus,
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
@@ -29,6 +30,11 @@ export const Sidebar = ({ isCollapsed, onToggleCollapse }) => {
       icon: CheckSquare,
       badge: actNowCount > 0 ? `${actNowCount}` : null,
       badgeColor: 'bg-rose-100 text-rose-800 font-bold',
+    },
+    {
+      id: 'intake',
+      label: 'Intake Patient',
+      icon: UserPlus,
     },
     {
       id: 'all-waiting',

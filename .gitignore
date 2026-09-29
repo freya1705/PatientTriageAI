@@ -19,3 +19,7 @@ dist/
 # IDE
 .vscode/
 .idea/
+
+# Local interview prep
+ACCENTURE_*.md
+ALL_ANGLES_*.md
